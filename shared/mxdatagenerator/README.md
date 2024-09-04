@@ -14,9 +14,9 @@ This library supports data generation for different floating point formats, as w
 ## Building the library
 
 ### Dependencies
-- C++17
+- C++20
 - Compatible Compilers
-    - clang++
+    - amdclang
     - g++
     - hipcc
 ### Quick start instruction
