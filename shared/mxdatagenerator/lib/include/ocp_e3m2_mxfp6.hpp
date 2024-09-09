@@ -11,7 +11,7 @@ namespace DGen
         static constexpr uint mantissaBits = 2;
         static constexpr uint bias         = 3;
 
-        static constexpr int unBiasedEMin = -1;
+        static constexpr int unBiasedEMin = -2;
         static constexpr int unBiasedEMax = 4;
         static constexpr int biasedEMin   = 1;
         static constexpr int biasedEMax   = 7;
