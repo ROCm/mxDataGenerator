@@ -9,6 +9,7 @@ namespace DGen
         static constexpr uint exponentBits = 8;
         static constexpr uint mantissaBits = 7;
         static constexpr uint bias         = 127;
+        static constexpr uint srShift      = 16;
 
         static constexpr int unBiasedEMin = -126;
         static constexpr int unBiasedEMax = 127;
