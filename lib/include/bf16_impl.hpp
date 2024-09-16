@@ -273,17 +273,18 @@ inline void
 }
 
 template <>
-inline void
-    setDataMax<bf16>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
+inline void setDataMax<bf16>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
 {
     if(subNormal)
         setDataFP16(dataBytes,
                     dataIndex,
-                    positive ? bf16::dataMaxPositiveSubNormalMask : bf16::dataMaxNegativeSubNormalMask);
+                    positive ? bf16::dataMaxPositiveSubNormalMask
+                             : bf16::dataMaxNegativeSubNormalMask);
 
     else
-        setDataFP16(
-            dataBytes, dataIndex, positive ? bf16::dataMaxPositiveNormalMask : bf16::dataMaxNegativeNormalMask);
+        setDataFP16(dataBytes,
+                    dataIndex,
+                    positive ? bf16::dataMaxPositiveNormalMask : bf16::dataMaxNegativeNormalMask);
 }
 
 template <>
@@ -374,6 +375,74 @@ inline uint64_t nonSatConvertToType<bf16>(float value)
     }
 
     uint16_t res = convertToType<uint16_t, bf16>(value);
+
+    uint8_t tData[] = {0b0, 0b0};
+
+    setDataFP16(tData, 0, res);
+
+    float resVal = toFloat<bf16>(tData, tData, 0, 0);
+
+    if(std::abs(resVal) > bf16::dataMaxNormalNumber) //covers inf case as well
+        return value < 0 ? bf16::dataNegativeInfMask : bf16::dataInfMask;
+
+    if(std::abs(resVal) < bf16::dataMinSubNormalNumber)
+        return value < 0 ? bf16::negativeZeroMask : bf16::positiveZeroMask;
+
+    return res;
+}
+
+template <>
+inline uint64_t satConvertToTypeSR<bf16>(float value, uint seed)
+{
+    union cvt
+    {
+        float in;
+        uint  bRep;
+    } t;
+
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+    {
+
+        return sign << 15 | bf16::dataNanMask;
+    }
+    uint16_t res = convertToTypeSR<uint16_t, bf16>(value, seed);
+
+    uint8_t tData[] = {0b0, 0b0};
+
+    setDataFP16(tData, 0, res);
+
+    float resVal = toFloat<bf16>(tData, tData, 0, 0);
+
+    if(std::abs(resVal) > bf16::dataMaxNormalNumber) //covers inf case as well
+        return value < 0 ? bf16::dataMaxNegativeNormalMask : bf16::dataMaxPositiveNormalMask;
+
+    if(std::abs(resVal) < bf16::dataMinSubNormalNumber)
+        return value < 0 ? bf16::negativeZeroMask : bf16::positiveZeroMask;
+
+    return res;
+}
+
+template <>
+inline uint64_t nonSatConvertToTypeSR<bf16>(float value, uint seed)
+{
+    union cvt
+    {
+        float in;
+        uint  bRep;
+    } t;
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+    {
+
+        return sign << 15 | bf16::dataNanMask;
+    }
+
+    uint16_t res = convertToTypeSR<uint16_t, bf16>(value, seed);
 
     uint8_t tData[] = {0b0, 0b0};
 

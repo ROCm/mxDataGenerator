@@ -1,8 +1,9 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
 #include <tuple>
+#include <vector>
+
 
 namespace DGen
 {

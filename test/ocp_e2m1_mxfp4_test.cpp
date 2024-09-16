@@ -966,13 +966,13 @@ TEST_F(ocp_e2m1_mxfp4_test, setZeroPacked)
                        0b11111110,
                        0b11111110};
     uint8_t data[]  = {0b11111110,
-                      0b11111110,
-                      0b11111110,
-                      0b11111110,
-                      0b11111110,
-                      0b11111110,
-                      0b11111110,
-                      0b11111110};
+                       0b11111110,
+                       0b11111110,
+                       0b11111110,
+                       0b11111110,
+                       0b11111110,
+                       0b11111110,
+                       0b11111110};
 
     setZeroPacked<DT>(scale, data, 0, 0);
     EXPECT_EQ(0.0, toDoublePacked<DT>(scale, data, 0, 0));
@@ -1223,16 +1223,40 @@ TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeLargePos)
     EXPECT_EQ(0b0111, satConvertToType<DT>(largePos)); // Expect +max norm
 }
 
+TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeSRLargePos)
+{
+    float largePos = 123456.7891234567f;
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(largePos, 0)); // Expect +max norm
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(largePos, UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(largePos, UINT_MAX / 2)); // Expect +max norm
+}
+
 TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypePosMax)
 {
     float e2m1Max = 7.5f;
     EXPECT_EQ(0b0111, satConvertToType<DT>(e2m1Max)); // Expect +max norm
 }
 
+TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeSRPosMax)
+{
+    float e2m1Max = 7.5f;
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(e2m1Max, 0)); // Expect +max norm
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(e2m1Max, UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(e2m1Max, UINT_MAX / 2)); // Expect +max norm
+}
+
 TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeZero)
 {
     float zero = 0.f;
     EXPECT_EQ(0b0, satConvertToType<DT>(zero));
+}
+
+TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeSRZero)
+{
+    float zero = 0.f;
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(zero, 0));
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(zero, UINT_MAX));
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(zero, UINT_MAX / 2));
 }
 
 TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeNegMax)
@@ -1242,16 +1266,43 @@ TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeNegMax)
               satConvertToType<DT>(e2m1NegMax)); // Expect -max norm
 }
 
+TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeSRNegMax)
+{
+    float e2m1NegMax = -7.5f;
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(e2m1NegMax, 0)); // Expect -max norm
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(e2m1NegMax, UINT_MAX)); // Expect -max norm
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(e2m1NegMax, UINT_MAX / 2)); // Expect -max norm
+}
+
 TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeLargeNeg)
 {
     float largeNeg = -123456.7891234567f;
     EXPECT_EQ(0b1111, satConvertToType<DT>(largeNeg)); // Expect -max norm
 }
 
+TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeSRLargeNeg)
+{
+    float largeNeg = -123456.7891234567f;
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(largeNeg, 0)); // Expect -max norm
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(largeNeg, UINT_MAX)); // Expect -max norm
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(largeNeg, UINT_MAX / 2)); // Expect -max norm
+}
+
 TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeNaN)
 {
     uint8_t tData[] = {static_cast<uint8_t>(satConvertToType<DT>(NAN))};
     uint8_t scale[] = {Constants::E8M0_1};
+    EXPECT_EQ(toFloat<DT>(scale, tData, 0, 0), getDataMax<DT>());
+}
+
+TEST_F(ocp_e2m1_mxfp4_test, satConvertToTypeSRNaN)
+{
+    uint8_t tData[] = {static_cast<uint8_t>(satConvertToTypeSR<DT>(NAN, 0))};
+    uint8_t scale[] = {Constants::E8M0_1};
+    EXPECT_EQ(toFloat<DT>(scale, tData, 0, 0), getDataMax<DT>());
+    *tData = static_cast<uint8_t>(satConvertToTypeSR<DT>(NAN, UINT_MAX));
+    EXPECT_EQ(toFloat<DT>(scale, tData, 0, 0), getDataMax<DT>());
+    *tData = static_cast<uint8_t>(satConvertToTypeSR<DT>(NAN, UINT_MAX / 2));
     EXPECT_EQ(toFloat<DT>(scale, tData, 0, 0), getDataMax<DT>());
 }
 
@@ -1381,6 +1432,104 @@ TEST_F(ocp_e2m1_mxfp4_test, roundToEvenTest)
     }
 }
 
+TEST_F(ocp_e2m1_mxfp4_test, roundToZeroTestSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    for(int i = 0; i < 7; i++)
+    {
+
+        float negNum = e2m1ValuesOCP[i + 8];
+        float posNum = e2m1ValuesOCP[i];
+
+        while(posNum < e2m1ValuesOCP[i + 1])
+        {
+            *tData = satConvertToTypeSR<DT>(posNum, 0);
+            EXPECT_EQ(e2m1ValuesOCP[i], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e2m1ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = satConvertToTypeSR<DT>(negNum, 0);
+            EXPECT_EQ(e2m1ValuesOCP[i + 8], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e2m1ValuesOCP[i + 8] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            negNum -= 0.01;
+            posNum += 0.01;
+        }
+    }
+}
+
+TEST_F(ocp_e2m1_mxfp4_test, roundToNextTestSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    for(int i = 0; i < 7; i++)
+    {
+
+        float negNum = e2m1ValuesOCP[i + 8] - 0.1;
+        float posNum = e2m1ValuesOCP[i] + 0.1;
+
+        while(posNum < e2m1ValuesOCP[i + 1])
+        {
+            *tData = satConvertToTypeSR<DT>(posNum, UINT_MAX);
+            EXPECT_EQ(e2m1ValuesOCP[i + 1], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e2m1ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = satConvertToTypeSR<DT>(negNum, UINT_MAX);
+            EXPECT_EQ(e2m1ValuesOCP[i + 9], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e2m1ValuesOCP[i + 8] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            negNum -= 0.01;
+            posNum += 0.01;
+        }
+    }
+}
+
+// SR probablity is defined by the distanec to the next number
+// if a number is in the middle it should be converted to the
+// two numbers half the time
+TEST_F(ocp_e2m1_mxfp4_test, midPointSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+    for(int i = 0; i < 7; i++)
+    {
+
+        float lP = e2m1ValuesOCP[i], rP = e2m1ValuesOCP[i + 1], lN = e2m1ValuesOCP[i + 8],
+              rN = e2m1ValuesOCP[i + 9];
+
+        int plc = 0, prc = 0, nlc = 0, nrc = 0;
+
+        float pMid = (lP + rP) / 2;
+        float nMid = (lN + rN) / 2;
+        for(long seed = 0; seed <= UINT_MAX; seed += 4096)
+        {
+            *tData = satConvertToTypeSR<DT>(pMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lP)
+                plc++;
+            else
+                prc++;
+
+            *tData = satConvertToTypeSR<DT>(nMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lN)
+                nlc++;
+            else
+                nrc++;
+        }
+        EXPECT_EQ(plc, prc) << "left point: " << lP << " right Point: " << rP
+                            << " mid point: " << pMid;
+        EXPECT_EQ(nlc, nrc) << "left point: " << lN << " right Point: " << rN
+                            << " mid point: " << nMid;
+    }
+}
+
 TEST_F(ocp_e2m1_mxfp4_test, preserveSign)
 {
     union cvt
@@ -1394,4 +1543,15 @@ TEST_F(ocp_e2m1_mxfp4_test, preserveSign)
     t.bRep |= 1 << 31;
 
     EXPECT_EQ(0b1111, satConvertToType<DT>(t.num));
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(t.num, 0));
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(t.num, UINT_MAX));
+    EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(t.num, UINT_MAX / 2));
+
+    t.bRep <<= 1;
+    t.bRep >>= 1;
+
+    EXPECT_EQ(0b0111, satConvertToType<DT>(t.num));
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(t.num, 0));
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(t.num, UINT_MAX));
+    EXPECT_EQ(0b0111, satConvertToTypeSR<DT>(t.num, UINT_MAX / 2));
 }
