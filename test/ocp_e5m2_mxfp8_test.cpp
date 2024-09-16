@@ -212,7 +212,7 @@ protected:
 TEST_F(ocp_e5m2_mxfp8_test, isOne)
 {
     EXPECT_EQ(false, isOne<DT>(scales, data, 0, 0)); // 1 * 0
-    EXPECT_EQ(true,  isOne<DT>(scales, data, 0, 1)); // 1 * 1
+    EXPECT_EQ(true, isOne<DT>(scales, data, 0, 1)); // 1 * 1
     EXPECT_EQ(false, isOne<DT>(scales, data, 0, 2)); // 1 * NaN 1
     EXPECT_EQ(false, isOne<DT>(scales, data, 0, 3)); // 1 * NaN 2
     EXPECT_EQ(false, isOne<DT>(scales, data, 0, 4)); // 1 * NaN 3
@@ -348,7 +348,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isOne)
 
 TEST_F(ocp_e5m2_mxfp8_test, isZero)
 {
-    EXPECT_EQ(true,  isZero<DT>(scales, data, 0, 0)); // 1 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, data, 0, 0)); // 1 * 0
     EXPECT_EQ(false, isZero<DT>(scales, data, 0, 1)); // 1 * 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 0, 2)); // 1 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 0, 3)); // 1 * NaN 2
@@ -370,7 +370,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, data, 1, 8)); // NaN * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, data, 1, 9)); // NaN * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, data, 2, 0)); // 0.0078125 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, data, 2, 0)); // 0.0078125 * 0
     EXPECT_EQ(false, isZero<DT>(scales, data, 2, 1)); // 0.0078125 * 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 2, 2)); // 0.0078125 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 2, 3)); // 0.0078125 * NaN 2
@@ -381,7 +381,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, data, 2, 8)); // 0.0078125 * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, data, 2, 9)); // 0.0078125 * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, data, 3, 0)); // 64 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, data, 3, 0)); // 64 * 0
     EXPECT_EQ(false, isZero<DT>(scales, data, 3, 1)); // 64 * 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 3, 2)); // 64 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 3, 3)); // 64 * NaN 2
@@ -392,7 +392,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, data, 3, 8)); // 64 * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, data, 3, 9)); // 64 * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, data, 4, 0)); // 2^-127 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, data, 4, 0)); // 2^-127 * 0
     EXPECT_EQ(false, isZero<DT>(scales, data, 4, 1)); // 2^-127 * 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 4, 2)); // 2^-127 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 4, 3)); // 2^-127 * NaN 2
@@ -403,7 +403,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, data, 4, 8)); // 2^-127 * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, data, 4, 9)); // 2^-127 * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, data, 5, 0)); // 2^127 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, data, 5, 0)); // 2^127 * 0
     EXPECT_EQ(false, isZero<DT>(scales, data, 5, 1)); // 2^127 * 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 5, 2)); // 2^127 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, data, 5, 3)); // 2^127 * NaN 2
@@ -416,7 +416,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
 
     // =========================================================================================//
 
-    EXPECT_EQ(true,  isZero<DT>(scales, negativeData, 0, 0)); // 1 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, negativeData, 0, 0)); // 1 * 0
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 0, 1)); // 1 * 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 0, 2)); // 1 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 0, 3)); // 1 * NaN 2
@@ -438,7 +438,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 1, 8)); // NaN * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 1, 9)); // NaN * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, negativeData, 2, 0)); // 0.0078125 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, negativeData, 2, 0)); // 0.0078125 * 0
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 2, 1)); // 0.0078125 * 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 2, 2)); // 0.0078125 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 2, 3)); // 0.0078125 * NaN 2
@@ -449,7 +449,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 2, 8)); // 0.0078125 * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 2, 9)); // 0.0078125 * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, negativeData, 3, 0)); // 64 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, negativeData, 3, 0)); // 64 * 0
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 3, 1)); // 64 * 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 3, 2)); // 64 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 3, 3)); // 64 * NaN 2
@@ -460,7 +460,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 3, 8)); // 64 * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 3, 9)); // 64 * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, negativeData, 4, 0)); // 2^-127 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, negativeData, 4, 0)); // 2^-127 * 0
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 4, 1)); // 2^-127 * 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 4, 2)); // 2^-127 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 4, 3)); // 2^-127 * NaN 2
@@ -471,7 +471,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isZero)
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 4, 8)); // 2^-127 * min sub-normal
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 4, 9)); // 2^-127 * max sub-normal
 
-    EXPECT_EQ(true,  isZero<DT>(scales, negativeData, 5, 0)); // 2^126 * 0
+    EXPECT_EQ(true, isZero<DT>(scales, negativeData, 5, 0)); // 2^126 * 0
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 5, 1)); // 2^126 * 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 5, 2)); // 2^126 * NaN 1
     EXPECT_EQ(false, isZero<DT>(scales, negativeData, 5, 3)); // 2^126 * NaN 2
@@ -487,31 +487,31 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 {
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 0)); // 1 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 1)); // 1 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 0, 2)); // 1 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 0, 3)); // 1 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 0, 4)); // 1 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 0, 2)); // 1 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 0, 3)); // 1 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 0, 4)); // 1 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 5)); // 1 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 6)); // 1 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 7)); // 1 * max normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 8)); // 1 * min sub-normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 0, 9)); // 1 * max sub-normal
 
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 0)); // NaN * 0
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 1)); // NaN * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 2)); // NaN * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 3)); // NaN * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 4)); // NaN * NaN 3
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 5)); // NaN * Inf
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 6)); // NaN * min normal
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 7)); // NaN * max normal
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 8)); // NaN * min sub-normal
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 1, 9)); // NaN * max sub-normal
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 0)); // NaN * 0
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 1)); // NaN * 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 2)); // NaN * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 3)); // NaN * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 4)); // NaN * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 5)); // NaN * Inf
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 6)); // NaN * min normal
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 7)); // NaN * max normal
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 8)); // NaN * min sub-normal
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 1, 9)); // NaN * max sub-normal
 
     EXPECT_EQ(false, isNaN<DT>(scales, data, 2, 0)); // 0.0078125 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, data, 2, 1)); // 0.0078125 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 2, 2)); // 0.0078125 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 2, 3)); // 0.0078125 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 2, 4)); // 0.0078125 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 2, 2)); // 0.0078125 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 2, 3)); // 0.0078125 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 2, 4)); // 0.0078125 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, data, 2, 5)); // 0.0078125 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, data, 2, 6)); // 0.0078125 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 2, 7)); // 0.0078125 * max normal
@@ -520,9 +520,9 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, data, 3, 0)); // 64 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, data, 3, 1)); // 64 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 3, 2)); // 64 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 3, 3)); // 64 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 3, 4)); // 64 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 3, 2)); // 64 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 3, 3)); // 64 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 3, 4)); // 64 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, data, 3, 5)); // 64 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, data, 3, 6)); // 64 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 3, 7)); // 64 * max normal
@@ -531,9 +531,9 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, data, 4, 0)); // 2^-127 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, data, 4, 1)); // 2^-127 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 4, 2)); // 2^-127 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 4, 3)); // 2^-127 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 4, 4)); // 2^-127 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 4, 2)); // 2^-127 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 4, 3)); // 2^-127 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 4, 4)); // 2^-127 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, data, 4, 5)); // 2^-127 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, data, 4, 6)); // 2^-127 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 4, 7)); // 2^-127 * max normal
@@ -542,9 +542,9 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, data, 5, 0)); // 2^127 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, data, 5, 1)); // 2^127 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 5, 2)); // 2^127 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 5, 3)); // 2^127 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, data, 5, 4)); // 2^127 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 5, 2)); // 2^127 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 5, 3)); // 2^127 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, data, 5, 4)); // 2^127 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, data, 5, 5)); // 2^127 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, data, 5, 6)); // 2^127 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, data, 5, 7)); // 2^127 * max normal
@@ -555,31 +555,31 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 0)); // 1 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 1)); // 1 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 0, 2)); // 1 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 0, 3)); // 1 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 0, 4)); // 1 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 0, 2)); // 1 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 0, 3)); // 1 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 0, 4)); // 1 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 5)); // 1 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 6)); // 1 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 7)); // 1 * max normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 8)); // 1 * min sub-normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 0, 9)); // 1 * max sub-normal
 
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 0)); // NaN * 0
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 1)); // NaN * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 2)); // NaN * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 3)); // NaN * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 4)); // NaN * NaN 3
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 5)); // NaN * Inf
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 6)); // NaN * min normal
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 7)); // NaN * max normal
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 8)); // NaN * min sub-normal
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 1, 9)); // NaN * max sub-normal
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 0)); // NaN * 0
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 1)); // NaN * 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 2)); // NaN * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 3)); // NaN * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 4)); // NaN * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 5)); // NaN * Inf
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 6)); // NaN * min normal
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 7)); // NaN * max normal
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 8)); // NaN * min sub-normal
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 1, 9)); // NaN * max sub-normal
 
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 2, 0)); // 0.0078125 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 2, 1)); // 0.0078125 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 2, 2)); // 0.0078125 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 2, 3)); // 0.0078125 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 2, 4)); // 0.0078125 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 2, 2)); // 0.0078125 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 2, 3)); // 0.0078125 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 2, 4)); // 0.0078125 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 2, 5)); // 0.0078125 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 2, 6)); // 0.0078125 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 2, 7)); // 0.0078125 * max normal
@@ -588,9 +588,9 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 3, 0)); // 64 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 3, 1)); // 64 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 3, 2)); // 64 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 3, 3)); // 64 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 3, 4)); // 64 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 3, 2)); // 64 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 3, 3)); // 64 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 3, 4)); // 64 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 3, 5)); // 64 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 3, 6)); // 64 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 3, 7)); // 64 * max normal
@@ -599,9 +599,9 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 4, 0)); // 2^-127 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 4, 1)); // 2^-127 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 4, 2)); // 2^-127 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 4, 3)); // 2^-127 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 4, 4)); // 2^-127 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 4, 2)); // 2^-127 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 4, 3)); // 2^-127 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 4, 4)); // 2^-127 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 4, 5)); // 2^-127 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 4, 6)); // 2^-127 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 4, 7)); // 2^-127 * max normal
@@ -610,9 +610,9 @@ TEST_F(ocp_e5m2_mxfp8_test, isNaN)
 
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 5, 0)); // 2^126 * 0
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 5, 1)); // 2^126 * 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 5, 2)); // 2^126 * NaN 1
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 5, 3)); // 2^126 * NaN 2
-    EXPECT_EQ(true,  isNaN<DT>(scales, negativeData, 5, 4)); // 2^126 * NaN 3
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 5, 2)); // 2^126 * NaN 1
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 5, 3)); // 2^126 * NaN 2
+    EXPECT_EQ(true, isNaN<DT>(scales, negativeData, 5, 4)); // 2^126 * NaN 3
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 5, 5)); // 2^126 * Inf
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 5, 6)); // 2^126 * min normal
     EXPECT_EQ(false, isNaN<DT>(scales, negativeData, 5, 7)); // 2^126 * max normal
@@ -627,7 +627,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, data, 0, 2)); // 1 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, data, 0, 3)); // 1 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, data, 0, 4)); // 1 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, data, 0, 5)); // 1 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, data, 0, 5)); // 1 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, data, 0, 6)); // 1 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 0, 7)); // 1 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 0, 8)); // 1 * min sub-normal
@@ -638,7 +638,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, data, 1, 2)); // NaN * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, data, 1, 3)); // NaN * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, data, 1, 4)); // NaN * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, data, 1, 5)); // NaN * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, data, 1, 5)); // NaN * Inf
     EXPECT_EQ(false, isInf<DT>(scales, data, 1, 6)); // NaN * min normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 1, 7)); // NaN * max normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 1, 8)); // NaN * min sub-normal
@@ -649,7 +649,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, data, 2, 2)); // 0.0078125 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, data, 2, 3)); // 0.0078125 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, data, 2, 4)); // 0.0078125 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, data, 2, 5)); // 0.0078125 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, data, 2, 5)); // 0.0078125 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, data, 2, 6)); // 0.0078125 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 2, 7)); // 0.0078125 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 2, 8)); // 0.0078125 * min sub-normal
@@ -660,7 +660,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, data, 3, 2)); // 64 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, data, 3, 3)); // 64 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, data, 3, 4)); // 64 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, data, 3, 5)); // 64 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, data, 3, 5)); // 64 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, data, 3, 6)); // 64 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 3, 7)); // 64 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 3, 8)); // 64 * min sub-normal
@@ -671,7 +671,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, data, 4, 2)); // 2^-127 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, data, 4, 3)); // 2^-127 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, data, 4, 4)); // 2^-127 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, data, 4, 5)); // 2^-127 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, data, 4, 5)); // 2^-127 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, data, 4, 6)); // 2^-127 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 4, 7)); // 2^-127 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 4, 8)); // 2^-127 * min sub-normal
@@ -682,7 +682,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, data, 5, 2)); // 2^127 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, data, 5, 3)); // 2^127 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, data, 5, 4)); // 2^127 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, data, 5, 5)); // 2^127 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, data, 5, 5)); // 2^127 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, data, 5, 6)); // 2^127 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 5, 7)); // 2^127 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, data, 5, 8)); // 2^127 * min sub-normal
@@ -695,7 +695,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 0, 2)); // 1 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 0, 3)); // 1 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 0, 4)); // 1 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, negativeData, 0, 5)); // 1 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, negativeData, 0, 5)); // 1 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 0, 6)); // 1 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 0, 7)); // 1 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 0, 8)); // 1 * min sub-normal
@@ -706,7 +706,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 1, 2)); // NaN * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 1, 3)); // NaN * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 1, 4)); // NaN * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, negativeData, 1, 5)); // NaN * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, negativeData, 1, 5)); // NaN * Inf
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 1, 6)); // NaN * min normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 1, 7)); // NaN * max normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 1, 8)); // NaN * min sub-normal
@@ -717,7 +717,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 2, 2)); // 0.0078125 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 2, 3)); // 0.0078125 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 2, 4)); // 0.0078125 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, negativeData, 2, 5)); // 0.0078125 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, negativeData, 2, 5)); // 0.0078125 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 2, 6)); // 0.0078125 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 2, 7)); // 0.0078125 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 2, 8)); // 0.0078125 * min sub-normal
@@ -728,7 +728,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 3, 2)); // 64 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 3, 3)); // 64 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 3, 4)); // 64 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, negativeData, 3, 5)); // 64 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, negativeData, 3, 5)); // 64 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 3, 6)); // 64 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 3, 7)); // 64 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 3, 8)); // 64 * min sub-normal
@@ -739,7 +739,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 4, 2)); // 2^-127 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 4, 3)); // 2^-127 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 4, 4)); // 2^-127 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, negativeData, 4, 5)); // 2^-127 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, negativeData, 4, 5)); // 2^-127 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 4, 6)); // 2^-127 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 4, 7)); // 2^-127 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 4, 8)); // 2^-127 * min sub-normal
@@ -750,7 +750,7 @@ TEST_F(ocp_e5m2_mxfp8_test, isInf)
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 5, 2)); // 2^126 * NaN 1
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 5, 3)); // 2^126 * NaN 2
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 5, 4)); // 2^126 * NaN 3
-    EXPECT_EQ(true,  isInf<DT>(scales, negativeData, 5, 5)); // 2^126 * Inf
+    EXPECT_EQ(true, isInf<DT>(scales, negativeData, 5, 5)); // 2^126 * Inf
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 5, 6)); // 2^126 * min normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 5, 7)); // 2^126 * max normal
     EXPECT_EQ(false, isInf<DT>(scales, negativeData, 5, 8)); // 2^126 * min sub-normal
@@ -815,7 +815,8 @@ TEST_F(ocp_e5m2_mxfp8_test, isGreater)
                 double negProd = toDouble<DT>(scales, negativeData, i, j);
 
                 EXPECT_EQ(prod > values[k], isGreater<DT>(values[k], scales, data, i, j));
-                EXPECT_EQ(negProd > values[k], isGreater<DT>(values[k], scales, negativeData, i, j));
+                EXPECT_EQ(negProd > values[k],
+                          isGreater<DT>(values[k], scales, negativeData, i, j));
             }
         }
     }
@@ -985,10 +986,27 @@ TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeLargePos)
     EXPECT_EQ(0b01111011, satConvertToType<DT>(largePos)); // Expect max norm (57344)
 }
 
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSRLargePos)
+{
+    float largePos = 123456.7891234567f;
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(largePos, 0)); // Expect max norm (57344)
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(largePos, UINT_MAX)); // Expect max norm (57344)
+    EXPECT_EQ(0b01111011,
+              satConvertToTypeSR<DT>(largePos, UINT_MAX / 2)); // Expect max norm (57344)
+}
+
 TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypePosMax)
 {
     float e5m2Max = 57344.f;
     EXPECT_EQ(0b01111011, satConvertToType<DT>(e5m2Max)); // Expect max norm (57344)
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSRPosMax)
+{
+    float e5m2Max = getDataMax<DT>();
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(e5m2Max, 0)); // Expect max norm (57344)
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(e5m2Max, UINT_MAX)); // Expect max norm (57344)
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(e5m2Max, UINT_MAX / 2)); // Expect max norm (57344)
 }
 
 TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeZero)
@@ -997,10 +1015,29 @@ TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeZero)
     EXPECT_EQ(0b00000000, satConvertToType<DT>(zero));
 }
 
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSRZero)
+{
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(0, 0)); // Expect max norm (57344)
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(0, UINT_MAX)); // Expect max norm (57344)
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(0, UINT_MAX / 2)); // Expect max norm (57344)
+}
+
 TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeNegMax)
 {
     float e5m2NegMax = -57344.f;
     EXPECT_EQ(0b11111011, satConvertToType<DT>(e5m2NegMax)); // Expect -max norm (-57344)
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSRNegMax)
+{
+    EXPECT_EQ(0b11111011,
+              satConvertToTypeSR<DT>(-getDataMax<DT>(), 0)); // Expect -max norm (-57344)
+    EXPECT_EQ(0b11111011,
+              satConvertToTypeSR<DT>(-getDataMax<DT>(),
+                                     UINT_MAX)); // Expect -max norm (-57344)
+    EXPECT_EQ(0b11111011,
+              satConvertToTypeSR<DT>(-getDataMax<DT>(),
+                                     UINT_MAX / 2)); // Expect -max norm (-57344)
 }
 
 TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeLargeNeg)
@@ -1009,12 +1046,38 @@ TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeLargeNeg)
     EXPECT_EQ(0b11111011, satConvertToType<DT>(largeNeg)); // Expect -max norm (-57344)
 }
 
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSRLargeNeg)
+{
+    EXPECT_EQ(0b11111011,
+              satConvertToTypeSR<DT>(-123456.789123456f, 0)); // Expect -max norm (-57344)
+    EXPECT_EQ(0b11111011,
+              satConvertToTypeSR<DT>(-123456.789123456f, UINT_MAX)); // Expect -max norm (-57344)
+    EXPECT_EQ(0b11111011,
+              satConvertToTypeSR<DT>(-123456.789123456f,
+                                     UINT_MAX / 2)); // Expect -max norm (-57344)
+}
+
 TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeNaN)
 {
     uint8_t scale[] = {DGen::Constants::E8M0_1};
     uint8_t res     = satConvertToType<DT>(NAN);
     uint8_t data[]  = {res};
     EXPECT_EQ(true, std::isnan(toDouble<DT>(scale, data, 0, 0)));
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSRNaN)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    *tData = satConvertToTypeSR<DT>(NAN, 0);
+    EXPECT_TRUE(std::isnan(toDouble<DT>(tScale, tData, 0, 0)));
+
+    *tData = satConvertToTypeSR<DT>(NAN, UINT_MAX);
+    EXPECT_TRUE(std::isnan(toDouble<DT>(tScale, tData, 0, 0)));
+
+    *tData = satConvertToTypeSR<DT>(NAN, UINT_MAX / 2);
+    EXPECT_TRUE(std::isnan(toDouble<DT>(tScale, tData, 0, 0)));
 }
 
 // Generate 1000000 numbers and see if the conversion is good
@@ -1046,6 +1109,17 @@ TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeRandom)
         EXPECT_EQ(closestDiff, std::abs(rNum - output))
             << "rNum: " << rNum << "\noutput: " << output;
     }
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, satConvertToTypeSROutOfRange)
+{
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(Inf, 0));
+
+    EXPECT_EQ(0b01111011, satConvertToTypeSR<DT>(69000, 0));
+
+    EXPECT_EQ(0b11111011, satConvertToTypeSR<DT>(NegInf, 0));
+
+    EXPECT_EQ(0b11111011, satConvertToTypeSR<DT>(-69000, 0));
 }
 
 // NON SAT TESTS
@@ -1112,16 +1186,42 @@ TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypePosMax)
     EXPECT_EQ(0b01111011, nonSatConvertToType<DT>(e5m2Max)); // Expect max norm (57344)
 }
 
+TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeSRPosMax)
+{
+    float e5m2Max = 57344.f;
+    EXPECT_EQ(0b01111011, nonSatConvertToTypeSR<DT>(e5m2Max, 0)); // Expect max norm (57344)
+    EXPECT_EQ(0b01111011, nonSatConvertToTypeSR<DT>(e5m2Max, UINT_MAX)); // Expect max norm (57344)
+    EXPECT_EQ(0b01111011,
+              nonSatConvertToTypeSR<DT>(e5m2Max, UINT_MAX / 2)); // Expect max norm (57344)
+}
+
 TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeZero)
 {
     float zero = 0.f;
     EXPECT_EQ(0b00000000, nonSatConvertToType<DT>(zero));
 }
 
+TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeSRZero)
+{
+    EXPECT_EQ(0b00000000, nonSatConvertToTypeSR<DT>(0, 0));
+    EXPECT_EQ(0b00000000, nonSatConvertToTypeSR<DT>(0, UINT_MAX));
+    EXPECT_EQ(0b00000000, nonSatConvertToTypeSR<DT>(0, UINT_MAX / 2));
+}
+
 TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeNegMax)
 {
     float e5m2NegMax = -57344.f;
     EXPECT_EQ(0b11111011, nonSatConvertToType<DT>(e5m2NegMax)); // Expect -max norm (-57344)
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeSRNegMax)
+{
+    float e5m2NegMax = -57344.f;
+    EXPECT_EQ(0b11111011, nonSatConvertToTypeSR<DT>(e5m2NegMax, 0)); // Expect -max norm (-57344)
+    EXPECT_EQ(0b11111011,
+              nonSatConvertToTypeSR<DT>(e5m2NegMax, UINT_MAX)); // Expect -max norm (-57344)
+    EXPECT_EQ(0b11111011,
+              nonSatConvertToTypeSR<DT>(e5m2NegMax, UINT_MAX / 2)); // Expect -max norm (-57344)
 }
 
 TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeNaN)
@@ -1131,6 +1231,21 @@ TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeNaN)
 
     uint8_t data[] = {res};
     EXPECT_EQ(true, std::isnan(toDouble<DT>(scale, data, 0, 0)));
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeSRNaN)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    *tData = nonSatConvertToTypeSR<DT>(NAN, 0);
+    EXPECT_TRUE(std::isnan(toDouble<DT>(tScale, tData, 0, 0)));
+
+    *tData = nonSatConvertToTypeSR<DT>(NAN, UINT_MAX);
+    EXPECT_TRUE(std::isnan(toDouble<DT>(tScale, tData, 0, 0)));
+
+    *tData = nonSatConvertToTypeSR<DT>(NAN, UINT_MAX / 2);
+    EXPECT_TRUE(std::isnan(toDouble<DT>(tScale, tData, 0, 0)));
 }
 
 TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeOutOfRange)
@@ -1150,6 +1265,25 @@ TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeOutOfRange)
     data[0] = nonSatConvertToType<DT>(-69000);
     EXPECT_TRUE(std::isinf(toDouble<DT>(scale, data, 0, 0)));
     EXPECT_TRUE((toDouble<DT>(scale, data, 0, 0) < 0));
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, nonSatConvertToTypeSROutOfRange)
+{
+    uint8_t scale[] = {Constants::E8M0_1};
+    uint8_t res     = nonSatConvertToTypeSR<DT>(Inf, 0);
+    uint8_t data[]  = {res};
+    EXPECT_EQ(true, std::isinf(toDouble<DT>(scale, data, 0, 0)));
+
+    data[0] = nonSatConvertToTypeSR<DT>(69000, 0);
+    EXPECT_EQ(true, std::isinf(toDouble<DT>(scale, data, 0, 0)));
+
+    data[0] = nonSatConvertToTypeSR<DT>(NegInf, 0);
+    EXPECT_EQ(true, std::isinf(toDouble<DT>(scale, data, 0, 0)));
+    EXPECT_EQ(true, (toDouble<DT>(scale, data, 0, 0) < 0));
+
+    data[0] = nonSatConvertToTypeSR<DT>(-69000, 0);
+    EXPECT_EQ(true, std::isinf(toDouble<DT>(scale, data, 0, 0)));
+    EXPECT_EQ(true, (toDouble<DT>(scale, data, 0, 0) < 0));
 }
 
 // Generate 1000000 numbers and see if the conversion is good
@@ -1257,6 +1391,143 @@ TEST_F(ocp_e5m2_mxfp8_test, roundToEvenTest)
     }
 }
 
+TEST_F(ocp_e5m2_mxfp8_test, roundToZeroTestSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    for(int i = 0; i < 123; i++)
+    {
+
+        float negNum = e5m2ValuesOCP[i + 128];
+        float posNum = e5m2ValuesOCP[i];
+
+        while(posNum < e5m2ValuesOCP[i + 1])
+        {
+            *tData = satConvertToTypeSR<DT>(posNum, 0);
+            EXPECT_EQ(e5m2ValuesOCP[i], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = satConvertToTypeSR<DT>(negNum, 0);
+            EXPECT_EQ(e5m2ValuesOCP[i + 128], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i + 128] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = nonSatConvertToTypeSR<DT>(posNum, 0);
+            EXPECT_EQ(e5m2ValuesOCP[i], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = nonSatConvertToTypeSR<DT>(negNum, 0);
+            EXPECT_EQ(e5m2ValuesOCP[i + 128], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i + 128] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            negNum -= 0.01;
+            posNum += 0.01;
+        }
+    }
+}
+
+TEST_F(ocp_e5m2_mxfp8_test, roundToNextTestSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    for(int i = 0; i < 123; i++)
+    {
+
+        float negNum = e5m2ValuesOCP[i + 128] - 0.01;
+        float posNum = e5m2ValuesOCP[i] + 0.01;
+
+        while(posNum < e5m2ValuesOCP[i + 1])
+        {
+            *tData = satConvertToTypeSR<DT>(posNum, UINT_MAX);
+            EXPECT_EQ(e5m2ValuesOCP[i + 1], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = satConvertToTypeSR<DT>(negNum, UINT_MAX);
+            EXPECT_EQ(e5m2ValuesOCP[i + 129], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i + 128] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = nonSatConvertToTypeSR<DT>(posNum, UINT_MAX);
+            EXPECT_EQ(e5m2ValuesOCP[i + 1], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = nonSatConvertToTypeSR<DT>(negNum, UINT_MAX);
+            EXPECT_EQ(e5m2ValuesOCP[i + 129], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e5m2ValuesOCP[i + 128] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            negNum -= 0.01;
+            posNum += 0.01;
+        }
+    }
+}
+
+// SR probablity is defined by the distanec to the next number
+// if a number is in the middle it should be converted to the
+// two numbers half the time
+TEST_F(ocp_e5m2_mxfp8_test, midPointSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+    for(int i = 0; i < 31; i++)
+    {
+
+        float lP = e5m2ValuesOCP[i], rP = e5m2ValuesOCP[i + 1], lN = e5m2ValuesOCP[i + 32],
+              rN = e5m2ValuesOCP[i + 33];
+
+        int satPlc = 0, satPrc = 0, satNlc = 0, satNrc = 0;
+        int nSatPlc = 0, nSatPrc = 0, nSatNlc = 0, nSatNrc = 0;
+
+        float pMid = (lP + rP) / 2;
+        float nMid = (lN + rN) / 2;
+        for(long seed = 0; seed <= UINT_MAX; seed += 4096)
+        {
+            *tData = satConvertToTypeSR<DT>(pMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lP)
+                satPlc++;
+            else
+                satPrc++;
+
+            *tData = satConvertToTypeSR<DT>(nMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lN)
+                satNlc++;
+            else
+                satNrc++;
+
+            *tData = nonSatConvertToTypeSR<DT>(pMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lP)
+                nSatPlc++;
+            else
+                nSatPrc++;
+
+            *tData = nonSatConvertToTypeSR<DT>(nMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lN)
+                nSatNlc++;
+            else
+                nSatNrc++;
+        }
+        EXPECT_EQ(satPlc, satPrc) << "left point: " << lP << " right Point: " << rP
+                                  << " mid point: " << pMid;
+        EXPECT_EQ(satNlc, satNrc) << "left point: " << lN << " right Point: " << rN
+                                  << " mid point: " << nMid;
+        EXPECT_EQ(nSatPlc, nSatPrc)
+            << "left point: " << lP << " right Point: " << rP << " mid point: " << pMid;
+        EXPECT_EQ(nSatNlc, nSatNrc)
+            << "left point: " << lN << " right Point: " << rN << " mid point: " << nMid;
+    }
+}
+
 TEST_F(ocp_e5m2_mxfp8_test, greaterThanMaxTest)
 {
 
@@ -1290,6 +1561,27 @@ TEST_F(ocp_e5m2_mxfp8_test, greaterThanMaxTest)
 
 TEST_F(ocp_e5m2_mxfp8_test, infInput)
 {
-    uint8_t output = nonSatConvertToType<DT>(Inf);
+    uint8_t output = nonSatConvertToType<DT>(std::numeric_limits<float>::infinity());
     EXPECT_EQ(output, 0b01111100);
+
+    uint8_t tData[]  = {static_cast<uint8_t>(nonSatConvertToTypeSR<DT>(getDataMax<DT>() + 10, 0))};
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    EXPECT_EQ(getDataMax<DT>(), toFloat<DT>(tScale, tData, 0, 0));
+
+    *tData = nonSatConvertToTypeSR<DT>(getDataMax<DT>() + 10, UINT_MAX);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(tScale, tData, 0, 0)))
+        << "Input: " << getDataMax<DT>() + 10 << " seed: " << UINT_MAX;
+    *tData = nonSatConvertToTypeSR<DT>(getDataMax<DT>() + 10, UINT_MAX / 2);
+    EXPECT_FALSE(std::isinf(toFloat<DT>(tScale, tData, 0, 0)))
+        << "Input: " << getDataMax<DT>() + 10 << " seed: " << UINT_MAX / 2;
+    *tData = nonSatConvertToTypeSR<DT>(std::numeric_limits<float>::infinity(), UINT_MAX / 2);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(tScale, tData, 0, 0)))
+        << "Input: " << std::numeric_limits<float>::infinity() << " seed: " << UINT_MAX / 2;
+    *tData = nonSatConvertToTypeSR<DT>(std::numeric_limits<float>::infinity(), UINT_MAX);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(tScale, tData, 0, 0)))
+        << "Input: " << std::numeric_limits<float>::infinity() << " seed: " << UINT_MAX;
+    *tData = nonSatConvertToTypeSR<DT>(std::numeric_limits<float>::infinity(), 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(tScale, tData, 0, 0)))
+        << "Input: " << std::numeric_limits<float>::infinity() << " seed: " << 0;
 }

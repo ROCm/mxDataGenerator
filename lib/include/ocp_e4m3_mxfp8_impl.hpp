@@ -68,9 +68,9 @@ inline bool isInf<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes,
 
 template <>
 inline bool isInfPacked<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes,
-                                  uint8_t const* dataBytes,
-                                  size_t         scaleIndex,
-                                  size_t         dataIndex)
+                                        uint8_t const* dataBytes,
+                                        size_t         scaleIndex,
+                                        size_t         dataIndex)
 {
     return isInf<ocp_e4m3_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -126,9 +126,9 @@ inline float toFloat<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes,
 
 template <>
 inline float toFloatPacked<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes,
-                                             uint8_t const* dataBytes,
-                                             size_t         scaleIndex,
-                                             size_t         dataIndex)
+                                           uint8_t const* dataBytes,
+                                           size_t         scaleIndex,
+                                           size_t         dataIndex)
 {
     return toFloat<ocp_e4m3_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -144,15 +144,12 @@ inline bool isSubnorm<ocp_e4m3_mxfp8>(uint8_t const* dataBytes, size_t dataIndex
 template <>
 inline bool isSubnormPacked<ocp_e4m3_mxfp8>(uint8_t const* dataBytes, size_t dataIndex)
 {
-  return isSubnorm<ocp_e4m3_mxfp8>(dataBytes, dataIndex);
+    return isSubnorm<ocp_e4m3_mxfp8>(dataBytes, dataIndex);
 }
 
 template <>
-inline void setOne<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
-                                   uint8_t* dataBytes,
-                                   size_t   scaleIndex,
-                                   size_t   dataIndex,
-                                   bool     subNormal)
+inline void setOne<ocp_e4m3_mxfp8>(
+    uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex, bool subNormal)
 {
     //if its sub normal, 0b00000010 * E8M0_135 will equal to 1
     *(scaleBytes + scaleIndex) = subNormal ? Constants::E8M0_135 : Constants::E8M0_1;
@@ -191,10 +188,8 @@ inline void setInf<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
 }
 
 template <>
-inline void setDataMax<ocp_e4m3_mxfp8>(uint8_t* dataBytes,
-                                       size_t   dataIndex,
-                                       bool     subNormal,
-                                       bool     positive)
+inline void
+    setDataMax<ocp_e4m3_mxfp8>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
 {
     if(subNormal)
         *(dataBytes + dataIndex) = positive ? ocp_e4m3_mxfp8::dataMaxPositiveSubNormalMask
@@ -262,6 +257,74 @@ inline uint64_t nonSatConvertToType<ocp_e4m3_mxfp8>(float value)
     //std::abs(value) > dataMaxNornal covers inf case as well
     if(std::abs(resVal) > ocp_e4m3_mxfp8::dataMaxNormalNumber || std::isnan(value))
         return sign << 15 | ocp_e4m3_mxfp8::dataNaNMasks[0];
+
+    if(std::abs(resVal) < ocp_e4m3_mxfp8::dataMinSubnormalNumber)
+        return value < 0 ? ocp_e4m3_mxfp8::negativeZeroMask : ocp_e4m3_mxfp8::positiveZeroMask;
+
+    return res;
+}
+
+template <>
+inline uint64_t satConvertToTypeSR<ocp_e4m3_mxfp8>(float value, uint seed)
+{
+    union
+    {
+        float in;
+        uint  bRep;
+    } t;
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+        return sign << 7 | ocp_e4m3_mxfp8::dataNaNMasks[0];
+    else if(value > ocp_e4m3_mxfp8::dataMaxRoundedRange)
+        return ocp_e4m3_mxfp8::dataMaxPositiveNormalMask;
+    else if(value < -ocp_e4m3_mxfp8::dataMaxRoundedRange)
+        return ocp_e4m3_mxfp8::dataMaxNegativeNormalMask;
+
+    uint8_t res = convertToTypeSR<uint8_t, ocp_e4m3_mxfp8>(value, seed);
+
+    uint8_t tData[]  = {res};
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    float resVal = toFloat<ocp_e4m3_mxfp8>(tScale, tData, 0, 0);
+
+    if(std::abs(resVal) > ocp_e4m3_mxfp8::dataMaxNormalNumber
+       || std::isnan(resVal)) // covers inf case too
+        return value < 0 ? ocp_e4m3_mxfp8::dataMaxNegativeNormalMask
+                         : ocp_e4m3_mxfp8::dataMaxPositiveNormalMask;
+
+    if(std::abs(resVal) < ocp_e4m3_mxfp8::dataMinSubnormalNumber)
+        return value < 0 ? ocp_e4m3_mxfp8::negativeZeroMask : ocp_e4m3_mxfp8::positiveZeroMask;
+
+    return res;
+}
+
+template <>
+inline uint64_t nonSatConvertToTypeSR<ocp_e4m3_mxfp8>(float value, uint seed)
+{
+
+    cvt t;
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+        return sign << 7 | ocp_e4m3_mxfp8::dataNaNMasks[0];
+    else if(value > ocp_e4m3_mxfp8::dataMaxRoundedRange)
+        return ocp_e4m3_mxfp8::dataNaNMasks[0];
+    else if(value < -ocp_e4m3_mxfp8::dataMaxRoundedRange)
+        return ocp_e4m3_mxfp8::dataNaNMasks[0];
+
+    uint8_t res = convertToTypeSR<uint8_t, ocp_e4m3_mxfp8>(value, seed);
+
+    uint8_t tData[]  = {res};
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    float resVal = toFloat<ocp_e4m3_mxfp8>(tScale, tData, 0, 0);
+
+    //std::abs(value) > dataMaxNornal covers inf case as well
+    if(std::abs(resVal) > ocp_e4m3_mxfp8::dataMaxNormalNumber || std::isnan(value))
+        return sign << 7 | ocp_e4m3_mxfp8::dataNaNMasks[0];
 
     if(std::abs(resVal) < ocp_e4m3_mxfp8::dataMinSubnormalNumber)
         return value < 0 ? ocp_e4m3_mxfp8::negativeZeroMask : ocp_e4m3_mxfp8::positiveZeroMask;

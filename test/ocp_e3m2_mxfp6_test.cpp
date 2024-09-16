@@ -1302,16 +1302,38 @@ TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeLargePos)
     EXPECT_EQ(0b011111, satConvertToType<DT>(largePos)); // Expect +max norm
 }
 
+TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeSRLargePos)
+{
+    float largePos = 123456.7891234567f;
+    EXPECT_EQ(0b011111, satConvertToTypeSR<DT>(largePos, 0)); // Expect +max norm
+    EXPECT_EQ(0b011111, satConvertToTypeSR<DT>(largePos, UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b011111, satConvertToTypeSR<DT>(largePos, UINT_MAX / 2)); // Expect +max norm
+}
+
 TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypePosMax)
 {
     float e3m2Max = 28.0f;
     EXPECT_EQ(0b011111, satConvertToType<DT>(e3m2Max)); // Expect +max norm
 }
 
+TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeSRPosMax)
+{
+    EXPECT_EQ(0b011111, satConvertToTypeSR<DT>(getDataMax<DT>(), 0)); // Expect +max norm
+    EXPECT_EQ(0b011111, satConvertToTypeSR<DT>(getDataMax<DT>(), UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b011111, satConvertToTypeSR<DT>(getDataMax<DT>(), UINT_MAX / 2)); // Expect +max norm
+}
+
 TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeZero)
 {
     float zero = 0.f;
     EXPECT_EQ(0b0, satConvertToType<DT>(zero));
+}
+
+TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeSRZero)
+{
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(0.0f, 0)); // Expect +max norm
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(0.0f, UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b0, satConvertToTypeSR<DT>(0.0f, UINT_MAX / 2)); // Expect +max norm
 }
 
 TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeNegMax)
@@ -1321,10 +1343,26 @@ TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeNegMax)
               satConvertToType<DT>(e3m2NegMax)); // Expect -max norm
 }
 
+TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeSRNegMax)
+{
+    EXPECT_EQ(0b111111, satConvertToTypeSR<DT>(-getDataMax<DT>(), 0)); // Expect +max norm
+    EXPECT_EQ(0b111111, satConvertToTypeSR<DT>(-getDataMax<DT>(), UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b111111,
+              satConvertToTypeSR<DT>(-getDataMax<DT>(), UINT_MAX / 2)); // Expect +max norm
+}
+
 TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeLargeNeg)
 {
     float largeNeg = -123456.7891234567f;
     EXPECT_EQ(0b111111, satConvertToType<DT>(largeNeg)); // Expect -max norm
+}
+
+TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeSRLargeNeg)
+{
+    float largePos = -123456.7891234567f;
+    EXPECT_EQ(0b111111, satConvertToTypeSR<DT>(largePos, 0)); // Expect +max norm
+    EXPECT_EQ(0b111111, satConvertToTypeSR<DT>(largePos, UINT_MAX)); // Expect +max norm
+    EXPECT_EQ(0b111111, satConvertToTypeSR<DT>(largePos, UINT_MAX / 2)); // Expect +max norm
 }
 
 TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeNaN)
@@ -1499,5 +1537,103 @@ TEST_F(ocp_e3m2_mxfp6_test, roundToEvenTest)
 
         EXPECT_EQ(e3m2ValuesOCP[i], toFloat<DT>(tScale, tData, 0, 0));
         EXPECT_EQ(static_cast<double>(e3m2ValuesOCP[i]), toDouble<DT>(tScale, tData, 0, 0));
+    }
+}
+
+TEST_F(ocp_e3m2_mxfp6_test, roundToZeroTestSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    for(int i = 0; i < 31; i++)
+    {
+
+        float negNum = e3m2ValuesOCP[i + 32];
+        float posNum = e3m2ValuesOCP[i];
+
+        while(posNum < e3m2ValuesOCP[i + 1])
+        {
+            *tData = satConvertToTypeSR<DT>(posNum, 0);
+            EXPECT_EQ(e3m2ValuesOCP[i], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e3m2ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = satConvertToTypeSR<DT>(negNum, 0);
+            EXPECT_EQ(e3m2ValuesOCP[i + 32], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e3m2ValuesOCP[i + 32] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            negNum -= 0.01;
+            posNum += 0.01;
+        }
+    }
+}
+
+TEST_F(ocp_e3m2_mxfp6_test, roundToNextTestSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    for(int i = 0; i < 31; i++)
+    {
+
+        float negNum = e3m2ValuesOCP[i + 32] - 0.01;
+        float posNum = e3m2ValuesOCP[i] + 0.01;
+
+        while(posNum < e3m2ValuesOCP[i + 1])
+        {
+            *tData = satConvertToTypeSR<DT>(posNum, UINT_MAX);
+            EXPECT_EQ(e3m2ValuesOCP[i + 1], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e3m2ValuesOCP[i] << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            *tData = satConvertToTypeSR<DT>(negNum, UINT_MAX);
+            EXPECT_EQ(e3m2ValuesOCP[i + 33], toFloat<DT>(tScale, tData, 0, 0))
+                << "Original Number: " << e3m2ValuesOCP[i + 32] << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(tScale, tData, 0, 0);
+
+            negNum -= 0.01;
+            posNum += 0.01;
+        }
+    }
+}
+
+// SR probablity is defined by the distanec to the next number
+// if a number is in the middle it should be converted to the
+// two numbers half the time
+TEST_F(ocp_e3m2_mxfp6_test, midPointSR)
+{
+    uint8_t tData[1];
+    uint8_t tScale[] = {Constants::E8M0_1};
+    for(int i = 0; i < 31; i++)
+    {
+
+        float lP = e3m2ValuesOCP[i], rP = e3m2ValuesOCP[i + 1], lN = e3m2ValuesOCP[i + 32],
+              rN = e3m2ValuesOCP[i + 33];
+
+        int plc = 0, prc = 0, nlc = 0, nrc = 0;
+
+        float pMid = (lP + rP) / 2;
+        float nMid = (lN + rN) / 2;
+        for(long seed = 0; seed <= UINT_MAX; seed += 4096)
+        {
+            *tData = satConvertToTypeSR<DT>(pMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lP)
+                plc++;
+            else
+                prc++;
+
+            *tData = satConvertToTypeSR<DT>(nMid, static_cast<uint>(seed));
+
+            if(toFloat<DT>(tScale, tData, 0, 0) == lN)
+                nlc++;
+            else
+                nrc++;
+        }
+        EXPECT_EQ(plc, prc) << "left point: " << lP << " right Point: " << rP
+                            << " mid point: " << pMid;
+        EXPECT_EQ(nlc, nrc) << "left point: " << lN << " right Point: " << rN
+                            << " mid point: " << nMid;
     }
 }

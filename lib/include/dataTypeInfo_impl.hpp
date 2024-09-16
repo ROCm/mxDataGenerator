@@ -123,6 +123,12 @@ inline bool getDataHasZero()
 }
 
 template <typename DTYPE>
+inline uint getDataSRShift()
+{
+    return DTYPE::dataInfo.srShift;
+}
+
+template <typename DTYPE>
 inline float getDataMax()
 {
     int e = DTYPE::dataInfo.exponentBits, m = DTYPE::dataInfo.mantissaBits;
@@ -407,216 +413,135 @@ inline T convertToType(float value)
            | (out_exponent << getDataMantissaBits<DTYPE>()) | mantissa;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// BEGIN OLD DYNAMIC POLYMORPHISM VERSION
-//
-#if 0
-#include "dataTypeInfo.hpp"
+template <typename T, typename DTYPE>
+inline T convertToTypeSR(float value, uint seed)
+{
+    using namespace Constants;
 
-inline uint DataTypeInfo::getDataSignBits() const
-{
-    return dataInfo->signBits;
-}
-
-inline uint DataTypeInfo::getDataExponentBits() const
-{
-    return dataInfo->exponentBits;
-}
-
-inline uint DataTypeInfo::getDataMantissaBits() const
-{
-    return dataInfo->mantissaBits;
-}
-
-inline uint DataTypeInfo::getDataBias() const
-{
-    return dataInfo->bias;
-}
-
-inline int DataTypeInfo::getDataUnBiasedEMin() const
-{
-    return dataInfo->unBiasedEMin;
-}
-
-inline int DataTypeInfo::getDataUnBiasedEMax() const
-{
-    return dataInfo->unBiasedEMax;
-}
-inline int DataTypeInfo::getDataBiasedEMin() const
-{
-    return dataInfo->biasedEMin;
-}
-inline int DataTypeInfo::getDataBiasedEMax() const
-{
-    return dataInfo->biasedEMax;
-}
-inline bool DataTypeInfo::getDataHasInf() const
-{
-    return dataInfo->hasInf;
-}
-inline bool DataTypeInfo::getDataHasNan() const
-{
-    return dataInfo->hasNan;
-}
-inline bool DataTypeInfo::getDataHasZero() const
-{
-    return dataInfo->hasZero;
-}
-
-inline float DataTypeInfo::getDataMax() const
-{
-    int e = dataInfo->exponentBits, m = dataInfo->mantissaBits;
-
-    if(e == 5 && m == 2) //bf 8
-        return 57344;
-    else if(e == 4 && m == 3) //fp 4
-        return 448;
-    else if(e == 3 && m == 2) //bf 6
-        return 28;
-    else if(e == 2 && m == 3) // fp6
-        return 7.5;
-    else if(e == 2 && m == 1) // fp4
-        return 6;
-    else
-    { // float values greater than 8 bits
-        uint expMask = ((1 << dataInfo->exponentBits) - 2) << dataInfo->mantissaBits;
-
-        uint temp         = 1 << (dataInfo->mantissaBits - 1);
-        uint mantissaMask = 1 << dataInfo->mantissaBits | temp | (temp - 1);
-
-        float exp = getExponentValue<uint>(expMask, dataInfo->mantissaBits, dataInfo->exponentBits)
-                    - static_cast<int>(dataInfo->bias);
-
-        float mantissa
-            = getMantissaValue<uint>(mantissaMask, dataInfo->mantissaBits, dataInfo->exponentBits);
-
-        return std::pow(2, exp) * mantissa;
-    }
-}
-
-inline float DataTypeInfo::getDataMin() const
-{
-    return std::pow(2, 1 - static_cast<int>(dataInfo->bias));
-}
-
-inline float DataTypeInfo::getDataMaxSubnorm() const
-{
-    uint temp         = 1 << (dataInfo->mantissaBits - 1);
-    uint mantissaMask = temp | (temp - 1);
-
-    return getMantissaValue<uint>(mantissaMask, dataInfo->mantissaBits, dataInfo->exponentBits)
-           * std::pow(2, 1 - static_cast<int>(dataInfo->bias));
-}
-
-inline float DataTypeInfo::getDataMinSubnorm() const
-{
-    return std::pow(2, -static_cast<int>(dataInfo->mantissaBits))
-           * std::pow(2, 1 - static_cast<int>(dataInfo->bias));
-}
-
-inline uint DataTypeInfo::getScaleSignBits() const
-{
-    return scaleInfo->signBits;
-}
-inline uint DataTypeInfo::getScaleExponentBits() const
-{
-    return scaleInfo->exponentBits;
-}
-inline uint DataTypeInfo::getScaleMantissaBits() const
-{
-    return scaleInfo->mantissaBits;
-}
-inline uint DataTypeInfo::getScaleBias() const
-{
-    return scaleInfo->bias;
-}
-inline int DataTypeInfo::getScaleUnBiasedEMin() const
-{
-    return scaleInfo->unBiasedEMin;
-}
-inline int DataTypeInfo::getScaleUnBiasedEMax() const
-{
-    return scaleInfo->unBiasedEMax;
-}
-inline int DataTypeInfo::getScaleBiasedEMin() const
-{
-    return scaleInfo->biasedEMin;
-}
-inline int DataTypeInfo::getScaleBiasedEMax() const
-{
-    return scaleInfo->biasedEMax;
-}
-inline bool DataTypeInfo::getScaleHasInf() const
-{
-    return scaleInfo->hasInf;
-}
-inline bool DataTypeInfo::getScaleHasNan() const
-{
-    return scaleInfo->hasNan;
-}
-inline bool DataTypeInfo::getScaleHasZero() const
-{
-    return scaleInfo->hasZero;
-}
-
-inline FloatingPointInfo DataTypeInfo::getDataInfo() const
-{
-    return *dataInfo;
-}
-inline FloatingPointInfo DataTypeInfo::getScaleInfo() const
-{
-    return *scaleInfo;
-}
-
-// inline std::shared_ptr<DataTypeInfo> DataTypeInfo::Get(DataType dType)
-// {
-//     switch(dType)
-//     {
-//     case BF16:
-//         return std::make_shared<DGen::bf16>();
-//     case FP16:
-//         return std::make_shared<DGen::fp16>();
-//     case OCP_E4M3_MXFP8:
-//         return std::make_shared<DGen::ocp_e4m3_mxfp8>();
-//     case OCP_E5M2_MXFP8:
-//         return std::make_shared<DGen::ocp_e5m2_mxfp8>();
-//     case OCP_E2M3_MXFP6:
-//         return std::make_shared<DGen::ocp_e2m3_mxfp6>();
-//     case OCP_E3M2_MXFP6:
-//         return std::make_shared<DGen::ocp_e3m2_mxfp6>();
-//     case OCP_E2M1_MXFP4:
-//         return std::make_shared<DGen::ocp_e2m1_mxfp4>();
-//     case F32:
-//         return std::make_shared<DGen::f32>();
-//     default:
-//         throw std::invalid_argument("Invalid DataType value.");
-//     }
-// }
-
-inline std::ostream& operator<<(std::ostream& os, const DataType& dt)
-{
-    switch(dt)
+    if(std::abs(value) > getDataMax<DTYPE>())
     {
-    case OCP_E4M3_MXFP8:
-        return (os << "OCP_E4M3_MXFP8");
-    case OCP_E5M2_MXFP8:
-        return (os << "OCP_E5M2_MXFP8");
-    case OCP_E2M3_MXFP6:
-        return (os << "OCP_E2M3_MXFP6");
-    case OCP_E3M2_MXFP6:
-        return (os << "OCP_E3M2_MXFP6");
-    case OCP_E2M1_MXFP4:
-        return (os << "OCP_E2M1_MXFP4");
-    case FP16:
-        return (os << "FP16");
-    case BF16:
-        return (os << "BF16");
-    case F32:
-        return (os << "F32");
+        float maxVal = getDataMax<DTYPE>();
+
+        union cvt
+        {
+            float num;
+            uint  bRep;
+        } t;
+
+        t.num     = maxVal;
+        uint bMax = t.bRep;
+
+        t.num      = value;
+        T sign     = t.bRep >> 31;
+        T exp      = ((bMax >> F32MANTISSABITS) & 0xff) - (127 - getDataBias<DTYPE>());
+        T mantissa = bMax >> (F32MANTISSABITS - getDataMantissaBits<DTYPE>());
+
+        uint mPrev = bMax >> (F32MANTISSABITS - getDataMantissaBits<DTYPE>());
+        mPrev &= ((1 << getDataMantissaBits<DTYPE>()) - 1);
+        mPrev--;
+
+        mPrev <<= (F32MANTISSABITS - getDataMantissaBits<DTYPE>());
+        uint prevBit = ((bMax >> 23) << 23) | mPrev;
+
+        t.bRep        = prevBit;
+        float prevVal = t.num;
+        float diff    = maxVal - prevVal;
+
+        float actualMax = maxVal + (diff / 2);
+
+        if(std::abs(value) < actualMax)
+        {
+            double dmaxVal = static_cast<double>(maxVal);
+            double daMax   = static_cast<double>(actualMax);
+            double dValue  = static_cast<double>(value);
+            double dis     = std::abs(dmaxVal - daMax);
+            double dSeed   = static_cast<double>(seed);
+            double dProb   = 1.0f - (std::abs(dValue - dmaxVal) / dis); //prob to round down
+
+            double thresh = UINT_MAX * dProb;
+
+            if(!getDataHasInf<DTYPE>() || dSeed <= thresh)
+                // return static_cast<T>(satConvertToType(getDataMax<DTYPE>())); //round down time
+                return sign == 0 ? DTYPE::dataMaxPositiveNormalMask
+                                 : DTYPE::dataMaxNegativeNormalMask;
+            else
+            {
+                exp++;
+                return sign << ((getDataExponentBits<DTYPE>()
+                                 + getDataMantissaBits<DTYPE>())) // inf
+                       | (exp << getDataMantissaBits<DTYPE>());
+            }
+        }
+        else
+        {
+            if(!getDataHasInf<DTYPE>())
+                return (1 << (getDataMantissaBits<DTYPE>() + getDataExponentBits<DTYPE>())) - 1;
+            else
+            {
+                exp++;
+                return sign << ((getDataExponentBits<DTYPE>()
+                                 + getDataMantissaBits<DTYPE>())) // inf
+                       | (exp << getDataMantissaBits<DTYPE>());
+            }
+        }
     }
-    return os;
-};
-#endif
-//
-// END OLD DYNAMIC POLYMORPHISM VERSION
-//////////////////////////////////////////////////////////////////////////////
+
+    uint32_t f32 = reinterpret_cast<uint32_t&>(value);
+
+    auto f32Man = f32 & 0x7FFFFF;
+    auto head   = f32 & 0xFF800000;
+    auto f32Exp = (head >> 23) & 0xFF;
+
+    auto signBit = head >> 31;
+    auto sign    = signBit << (getDataExponentBits<DTYPE>() + getDataMantissaBits<DTYPE>());
+
+    f32Exp          = (int32_t)f32Exp - 127;
+    int32_t exp     = f32Exp;
+    auto    man     = f32Man;
+    bool    subnorm = false;
+
+    if(value == 0)
+        return 0b0;
+
+    if(exp >= getDataUnBiasedEMin<DTYPE>())
+    {
+        man = f32Man;
+    }
+    // if the exponent bit is 8, then the subnormal is exactly the same as f32
+    else if(exp < getDataUnBiasedEMin<DTYPE>() && getDataExponentBits<DTYPE>() < 8)
+    {
+        subnorm   = true;
+        auto diff = (uint32_t)(getDataUnBiasedEMin<DTYPE>() - exp);
+        if(diff >= 32)
+        {
+            man    = 0;
+            f32Man = 0;
+        }
+        else
+        {
+            f32Man |= (uint32_t)1 << 23;
+            f32Man >>= diff;
+        }
+        exp = 0;
+        man = f32Man;
+    }
+
+    uint srShift = getDataSRShift<DTYPE>();
+
+    // For stochastic-rounding we add the aligned random value to the
+    // mantissa and then truncate (RTZ).
+    man += seed >> srShift;
+
+    // Increment exponent when mantissa overflows due to rounding
+    if(man >= (uint32_t)1 << 23)
+        ++exp;
+    man >>= (23 - getDataMantissaBits<DTYPE>());
+    man &= ((1 << getDataMantissaBits<DTYPE>()) - 1);
+
+    auto biasedExp = (uint32_t)exp;
+    if(!subnorm)
+        biasedExp = (uint32_t)(exp + getDataBias<DTYPE>());
+    biasedExp &= ((1 << getDataExponentBits<DTYPE>()) - 1);
+    auto val = sign | biasedExp << getDataMantissaBits<DTYPE>() | man;
+    return val;
+}

@@ -1,5 +1,5 @@
 # AMD's Floating Point Data Generator
-This library supports data generation for different floating point formats, as well as conversion instructions between lower precision floating points to single precision floating point.
+This library supports data generation for different floating point formats, as well as conversion instructions between lower precision floating points and single precision floating point.
 
 ## Formats Supported
 - F32 (E8M23)
@@ -14,7 +14,7 @@ This library supports data generation for different floating point formats, as w
 ## Building the library
 
 ### Dependencies
-- C++20
+- C++ 20
 - Compatible Compilers
     - amdclang
     - g++

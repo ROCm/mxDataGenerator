@@ -367,3 +367,40 @@ inline uint64_t nonSatConvertToType<ocp_e2m1_mxfp4>(float value)
 {
     return 0b0;
 }
+
+template <>
+inline uint64_t satConvertToTypeSR<ocp_e2m1_mxfp4>(float value, uint seed)
+{
+    union
+    {
+        float in;
+        uint  bRep;
+    } t;
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+        return sign ? ocp_e2m1_mxfp4::dataMaxNegativeNormalMask
+                    : ocp_e2m1_mxfp4::dataMaxPositiveNormalMask;
+
+    if(std::abs(value) > ocp_e2m1_mxfp4::dataMaxNormalNumber) //covers inf case as well
+        return sign ? ocp_e2m1_mxfp4::dataMaxNegativeNormalMask
+                    : ocp_e2m1_mxfp4::dataMaxPositiveNormalMask;
+
+    uint8_t res = convertToTypeSR<uint8_t, ocp_e2m1_mxfp4>(value, seed);
+
+    uint8_t tData[]  = {res};
+    uint8_t tScale[] = {Constants::E8M0_1};
+
+    if(std::abs(toFloat<ocp_e2m1_mxfp4>(tScale, tData, 0, 0))
+       < ocp_e2m1_mxfp4::dataMinSubNormalNumber)
+        return value < 0 ? ocp_e2m1_mxfp4::negativeZeroMask : ocp_e2m1_mxfp4::positiveZeroMask;
+
+    return res;
+}
+
+template <>
+inline uint64_t nonSatConvertToTypeSR<ocp_e2m1_mxfp4>(float value, uint seed)
+{
+    return 0b0;
+}

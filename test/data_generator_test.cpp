@@ -11,14 +11,14 @@ using ::testing::TestWithParam;
 
 using namespace DGen;
 
-using DataGeneratorTypes = ::testing::Types<//f32,
-                                            //fp16,
-                                            //bf16,
-                                            ocp_e4m3_mxfp8,
-                                            ocp_e5m2_mxfp8,
-                                            ocp_e2m3_mxfp6,
-                                            ocp_e3m2_mxfp6,
-                                            ocp_e2m1_mxfp4>;
+using DataGeneratorTypes = ::testing::Types< //f32,
+    //fp16,
+    //bf16,
+    ocp_e4m3_mxfp8,
+    ocp_e5m2_mxfp8,
+    ocp_e2m3_mxfp6,
+    ocp_e3m2_mxfp6,
+    ocp_e2m1_mxfp4>;
 
 typedef std::tuple<bool, bool, bool, bool, vector<double>, DataScaling, vector<int>>
     BoundedTupleType;
@@ -114,7 +114,7 @@ void set_block_size_stride(const vector<int>& dims,
     stride       = vector<int>(&dims[n + 1], &dims[dims.size()]);
 }
 
-std::ostream& operator<<(std::ostream &os, const DataGeneratorOptions& opts)
+std::ostream& operator<<(std::ostream& os, const DataGeneratorOptions& opts)
 {
     vector<int> size, stride;
 
@@ -135,14 +135,16 @@ std::ostream& operator<<(std::ostream &os, const DataGeneratorOptions& opts)
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::vector<int>& vec) {
+std::ostream& operator<<(std::ostream& os, const std::vector<int>& vec)
+{
 
-  os << "{ ";
-  for (const auto v : vec) {
-    os << v << ", ";
-  }
-  os << "}";
-  return os;
+    os << "{ ";
+    for(const auto v : vec)
+    {
+        os << v << ", ";
+    }
+    os << "}";
+    return os;
 }
 
 template <typename DataType>
@@ -176,13 +178,13 @@ class DataGeneratorBoundedTest : public ::TestWithParam<BoundedTupleType>
     }
 
 public:
-    void testForDataType(BoundedTupleType &params)
+    void testForDataType(BoundedTupleType& params)
     {
         DataGeneratorOptions opts;
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = Bounded;
 
@@ -272,7 +274,8 @@ public:
 };
 
 template <typename DataType>
-class DataGeneratorBoundedAlternatingSignTest : public ::TestWithParam<BoundedAlternatingSignTupleType>
+class DataGeneratorBoundedAlternatingSignTest
+    : public ::TestWithParam<BoundedAlternatingSignTupleType>
 {
     void set_options(BoundedAlternatingSignTupleType tup,
                      DataGeneratorOptions&           opts,
@@ -292,13 +295,13 @@ class DataGeneratorBoundedAlternatingSignTest : public ::TestWithParam<BoundedAl
     }
 
 public:
-    void testForDataType(BoundedAlternatingSignTupleType &params)
+    void testForDataType(BoundedAlternatingSignTupleType& params)
     {
         DataGeneratorOptions opts;
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = BoundedAlternatingSign;
 
@@ -337,7 +340,7 @@ public:
             const int scale_i = data_i / opts.blockScaling;
 
             // test
-            const auto ref_value     = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
+            const auto ref_value = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
             const auto abs_ref_value = std::abs(ref_value);
 
             if(!std::isnan(ref_value) && !std::isinf(ref_value))
@@ -389,7 +392,8 @@ public:
         if(opts.includeInf && getDataHasInf<DataType>())
             EXPECT_TRUE(has_inf);
         if(opts.forceDenorm && isScaled<DataType>()
-           && (opts.max > getDataMinSubnorm<DataType>() || opts.max > -getDataMinSubnorm<DataType>()))
+           && (opts.max > getDataMinSubnorm<DataType>()
+               || opts.max > -getDataMinSubnorm<DataType>()))
             EXPECT_TRUE(has_sbn);
     }
 };
@@ -419,7 +423,7 @@ public:
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = Unbounded;
 
@@ -523,7 +527,7 @@ public:
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = Trigonometric;
 
@@ -628,7 +632,7 @@ public:
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = Zeros;
 
@@ -695,7 +699,7 @@ public:
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = Ones;
 
@@ -769,7 +773,7 @@ public:
         vector<int>          size, stride;
 
         set_options(params, opts, size, stride);
-        std::cout << "testing " << opts  << " size=" << size << " stride=" << stride << "\n";
+        std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
         opts.pattern = Identity;
 
@@ -842,7 +846,7 @@ TYPED_TEST_SUITE(DataGeneratorZerosTest, DataGeneratorTypes);
 TYPED_TEST_SUITE(DataGeneratorOnesTest, DataGeneratorTypes);
 TYPED_TEST_SUITE(DataGeneratorIdentityTest, DataGeneratorTypes);
 
-#define begin_end(container) begin(container),end(container)
+#define begin_end(container) begin(container), end(container)
 
 TYPED_TEST(DataGeneratorBoundedTest, TestForEachDataType)
 {

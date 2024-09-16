@@ -8,6 +8,7 @@ namespace DGen
         static constexpr uint exponentBits = 2;
         static constexpr uint mantissaBits = 1;
         static constexpr uint bias         = 1;
+        static constexpr uint srShift      = 10;
 
         static constexpr int unBiasedEMin = 0;
         static constexpr int unBiasedEMax = 2;
@@ -21,8 +22,8 @@ namespace DGen
 
     struct ocp_e2m1_mxfp4
     {
-        static constexpr OCP_E2M1_MXFP4_DATA  dataInfo{};
-        static constexpr E8M0_SCALE_INFO scaleInfo{};
+        static constexpr OCP_E2M1_MXFP4_DATA dataInfo{};
+        static constexpr E8M0_SCALE_INFO     scaleInfo{};
 
         static constexpr uint8_t oneMask     = 0b0010;
         static constexpr uint8_t setSignMask = 0b0111;

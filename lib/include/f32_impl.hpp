@@ -289,12 +289,14 @@ inline void setDataMax<f32>(uint8_t* dataBytes, size_t dataIndex, bool subNormal
 {
     if(subNormal)
         setDataF32(dataBytes,
-                dataIndex,
-                positive ? f32::dataMaxPositiveSubNormalMask : f32::dataMaxNegativeSubNormalMask);
+                   dataIndex,
+                   positive ? f32::dataMaxPositiveSubNormalMask
+                            : f32::dataMaxNegativeSubNormalMask);
 
     else
-        setDataF32(
-            dataBytes, dataIndex, positive ? f32::dataMaxPositiveNormalMask : f32::dataMaxNegativeNormalMask);
+        setDataF32(dataBytes,
+                   dataIndex,
+                   positive ? f32::dataMaxPositiveNormalMask : f32::dataMaxNegativeNormalMask);
 }
 
 template <>
@@ -344,6 +346,24 @@ inline uint64_t satConvertToType<f32>(float value)
 
 template <>
 inline uint64_t nonSatConvertToType<f32>(float value)
+{
+    cvt t;
+    t.in = value;
+
+    return t.bRep;
+}
+
+template <>
+inline uint64_t satConvertToTypeSR<f32>(float value, uint seed)
+{
+    cvt t;
+    t.in = value;
+
+    return t.bRep;
+}
+
+template <>
+inline uint64_t nonSatConvertToTypeSR<f32>(float value, uint seed)
 {
     cvt t;
     t.in = value;

@@ -340,3 +340,59 @@ inline uint64_t nonSatConvertToType<fp16>(float value)
 
     return res;
 }
+
+template <>
+inline uint64_t satConvertToTypeSR<fp16>(float value, uint seed)
+{
+    cvt t;
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+        return sign << 15 | fp16::dataNanMask;
+    else if(std::isinf(value))
+        return value > 0 ? fp16::dataMaxPositiveNormalMask : fp16::dataMaxNegativeNormalMask;
+
+    uint16_t res = convertToTypeSR<uint16_t, fp16>(value, seed);
+
+    uint8_t tData[] = {0b0, 0b0};
+
+    setDataFP16(tData, 0, res);
+
+    float resVal = toFloat<fp16>(tData, tData, 0, 0);
+
+    if(std::abs(resVal) > fp16::dataMaxNormalNumber) //covers inf case as well
+        return value < 0 ? fp16::dataMaxNegativeNormalMask : fp16::dataMaxPositiveNormalMask;
+
+    if(std::abs(resVal) < fp16::dataMinSubNormalNumber)
+        return value < 0 ? fp16::negativeZeroMask : fp16::positiveZeroMask;
+
+    return res;
+}
+
+template <>
+inline uint64_t nonSatConvertToTypeSR<fp16>(float value, uint seed)
+{
+    cvt t;
+    t.in      = value;
+    uint sign = t.bRep >> 31;
+
+    if(std::isnan(value))
+        return sign << 15 | fp16::dataNanMask;
+
+    uint16_t res = convertToTypeSR<uint16_t, fp16>(value, seed);
+
+    uint8_t tData[] = {0b0, 0b0};
+
+    setDataFP16(tData, 0, res);
+
+    float resVal = toFloat<fp16>(tData, tData, 0, 0);
+
+    if(std::abs(resVal) > fp16::dataMaxNormalNumber) //covers inf case as well
+        return value < 0 ? fp16::dataNegativeInfMask : fp16::dataInfMask;
+
+    if(std::abs(resVal) < fp16::dataMinSubNormalNumber)
+        return value < 0 ? fp16::negativeZeroMask : fp16::positiveZeroMask;
+
+    return res;
+}

@@ -771,16 +771,49 @@ TEST_F(fp16_test, satConvertToTypeLarge)
     EXPECT_EQ(0b1111101111111111, satConvertToType<DT>(-1e60)); // Expect max norm
 }
 
+TEST_F(fp16_test, satConvertToTypeSRLarge)
+{
+    EXPECT_EQ(0b0111101111111111, satConvertToTypeSR<DT>(1e60, 0)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111, satConvertToTypeSR<DT>(-1e60, 0)); // Expect max norm
+
+    EXPECT_EQ(0b0111101111111111, satConvertToTypeSR<DT>(1e60, UINT_MAX)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111, satConvertToTypeSR<DT>(-1e60, UINT_MAX)); // Expect max norm
+
+    EXPECT_EQ(0b0111101111111111, satConvertToTypeSR<DT>(1e60, UINT_MAX / 2)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111, satConvertToTypeSR<DT>(-1e60, UINT_MAX / 2)); // Expect max norm
+}
+
 TEST_F(fp16_test, satConvertToTypeMax)
 {
     EXPECT_EQ(0b0111101111111111, satConvertToType<DT>(MAXNORM)); // Expect max norm
     EXPECT_EQ(0b1111101111111111, satConvertToType<DT>(-1 * MAXNORM)); // Expect max norm
 }
 
+TEST_F(fp16_test, satConvertToTypeSRMax)
+{
+    EXPECT_EQ(0b0111101111111111, satConvertToTypeSR<DT>(MAXNORM, 0)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111, satConvertToTypeSR<DT>(-MAXNORM, 0)); // Expect max norm
+
+    EXPECT_EQ(0b0111101111111111, satConvertToTypeSR<DT>(MAXNORM, UINT_MAX)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111, satConvertToTypeSR<DT>(-MAXNORM, UINT_MAX)); // Expect max norm
+
+    EXPECT_EQ(0b0111101111111111, satConvertToTypeSR<DT>(MAXNORM, UINT_MAX / 2)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111,
+              satConvertToTypeSR<DT>(-MAXNORM, UINT_MAX / 2)); // Expect max norm
+}
+
 TEST_F(fp16_test, satConvertToTypeZero)
 {
     float zero = 0.f;
     EXPECT_EQ(0b00000000, satConvertToType<DT>(zero));
+}
+
+TEST_F(fp16_test, satConvertToTypeSRZero)
+{
+    float zero = 0.f;
+    EXPECT_EQ(0b00000000, satConvertToTypeSR<DT>(zero, 0));
+    EXPECT_EQ(0b00000000, satConvertToTypeSR<DT>(zero, UINT_MAX));
+    EXPECT_EQ(0b00000000, satConvertToTypeSR<DT>(zero, UINT_MAX / 2));
 }
 
 TEST_F(fp16_test, satConvertToTypeNaN)
@@ -792,6 +825,43 @@ TEST_F(fp16_test, satConvertToTypeNaN)
 
     uint8_t lsb = static_cast<uint16_t>(res) & 0b11111111;
     uint8_t msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(std::isnan(toDouble<DT>(temp, temp, 0, 0)));
+}
+
+TEST_F(fp16_test, satConvertToTypeSRNaN)
+{
+    uint8_t temp[] = {0b0, 0b0};
+
+    float norm = std::numeric_limits<float>::quiet_NaN();
+
+    uint16_t res = satConvertToTypeSR<DT>(norm, 0);
+
+    uint8_t lsb = static_cast<uint16_t>(res) & 0b11111111;
+    uint8_t msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(std::isnan(toDouble<DT>(temp, temp, 0, 0)));
+
+    res = satConvertToTypeSR<DT>(norm, UINT_MAX);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(std::isnan(toDouble<DT>(temp, temp, 0, 0)));
+
+    res = satConvertToTypeSR<DT>(norm, UINT_MAX / 2);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
 
     *(temp)     = lsb;
     *(temp + 1) = msb;
@@ -974,17 +1044,116 @@ TEST_F(fp16_test, nonSatConvertToTypeLarge)
     EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
 }
 
+TEST_F(fp16_test, nonSatConvertToTypeSRLarge)
+{
+    EXPECT_EQ(0b0111110000000000, nonSatConvertToTypeSR<DT>(1e60, 0)); // Expect pos inf
+    EXPECT_EQ(0b1111110000000000, nonSatConvertToTypeSR<DT>(-1e60, 0)); // Expect negative inf
+
+    EXPECT_EQ(0b0111110000000000, nonSatConvertToTypeSR<DT>(1e60, UINT_MAX)); // Expect pos inf
+    EXPECT_EQ(0b1111110000000000,
+              nonSatConvertToTypeSR<DT>(-1e60, UINT_MAX)); // Expect negative inf
+
+    EXPECT_EQ(0b0111110000000000, nonSatConvertToTypeSR<DT>(1e60, UINT_MAX / 2)); // Expect pos inf
+    EXPECT_EQ(0b1111110000000000,
+              nonSatConvertToTypeSR<DT>(-1e60, UINT_MAX / 2)); // Expect negative inf
+
+    uint8_t temp[] = {0b0, 0b0};
+
+    float    largeNum = 1e60;
+    uint16_t res      = nonSatConvertToTypeSR<DT>(largeNum, 0);
+
+    uint8_t lsb = static_cast<uint16_t>(res) & 0b11111111;
+    uint8_t msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(toFloat<DT>(temp, temp, 0, 0) > 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(-largeNum, 0);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+    EXPECT_TRUE(toFloat<DT>(temp, temp, 0, 0) < 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(largeNum, UINT_MAX);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+    EXPECT_TRUE(toFloat<DT>(temp, temp, 0, 0) > 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(-largeNum, UINT_MAX);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+    EXPECT_TRUE(toFloat<DT>(temp, temp, 0, 0) < 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(largeNum, UINT_MAX / 2);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+    EXPECT_TRUE(toFloat<DT>(temp, temp, 0, 0) > 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(-largeNum, UINT_MAX / 2);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+    EXPECT_TRUE(toFloat<DT>(temp, temp, 0, 0) < 0);
+    EXPECT_TRUE(std::isinf(toFloat<DT>(temp, temp, 0, 0)));
+}
+
 TEST_F(fp16_test, nonSatConvertToTypeMax)
 {
     EXPECT_EQ(0b0111101111111111, nonSatConvertToType<DT>(MAXNORM)); // Expect max norm
     EXPECT_EQ(0b1111101111111111,
               nonSatConvertToType<DT>(-1 * MAXNORM)); // Expect max norm
 }
+TEST_F(fp16_test, nonSatConvertToTypeSRMax)
+{
+    EXPECT_EQ(0b0111101111111111, nonSatConvertToTypeSR<DT>(MAXNORM, 0)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111, nonSatConvertToTypeSR<DT>(-1 * MAXNORM, 0)); // Expect max norm
+
+    EXPECT_EQ(0b0111101111111111, nonSatConvertToTypeSR<DT>(MAXNORM, UINT_MAX)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111,
+              nonSatConvertToTypeSR<DT>(-1 * MAXNORM, UINT_MAX)); // Expect max norm
+
+    EXPECT_EQ(0b0111101111111111,
+              nonSatConvertToTypeSR<DT>(MAXNORM, UINT_MAX / 2)); // Expect max norm
+    EXPECT_EQ(0b1111101111111111,
+              nonSatConvertToTypeSR<DT>(-1 * MAXNORM, UINT_MAX / 2)); // Expect max norm
+}
 
 TEST_F(fp16_test, nonSatConvertToTypeZero)
 {
     float zero = 0.f;
     EXPECT_EQ(0b00000000, nonSatConvertToType<DT>(zero));
+}
+
+TEST_F(fp16_test, nonSatConvertToTypeSRZero)
+{
+    EXPECT_EQ(0b00000000, nonSatConvertToTypeSR<DT>(0, 0));
+    EXPECT_EQ(0b00000000, nonSatConvertToTypeSR<DT>(0, UINT_MAX));
+    EXPECT_EQ(0b00000000, nonSatConvertToTypeSR<DT>(0, UINT_MAX / 2));
 }
 
 TEST_F(fp16_test, nonSatConvertToTypeNaN)
@@ -996,6 +1165,43 @@ TEST_F(fp16_test, nonSatConvertToTypeNaN)
 
     uint8_t lsb = static_cast<uint16_t>(res) & 0b11111111;
     uint8_t msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(std::isnan(toDouble<DT>(temp, temp, 0, 0)));
+}
+
+TEST_F(fp16_test, nonSatConvertToTypeSRNaN)
+{
+    uint8_t temp[] = {0b0, 0b0};
+
+    float norm = std::numeric_limits<float>::quiet_NaN();
+
+    uint16_t res = nonSatConvertToTypeSR<DT>(norm, 0);
+
+    uint8_t lsb = static_cast<uint16_t>(res) & 0b11111111;
+    uint8_t msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(std::isnan(toDouble<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(norm, UINT_MAX);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
+
+    *(temp)     = lsb;
+    *(temp + 1) = msb;
+
+    EXPECT_TRUE(std::isnan(toDouble<DT>(temp, temp, 0, 0)));
+
+    res = nonSatConvertToTypeSR<DT>(norm, UINT_MAX / 2);
+
+    lsb = static_cast<uint16_t>(res) & 0b11111111;
+    msb = static_cast<uint16_t>(res) >> 8;
 
     *(temp)     = lsb;
     *(temp + 1) = msb;
@@ -1177,6 +1383,243 @@ TEST_F(fp16_test, roundToEvenTest)
     }
 }
 
+TEST_F(fp16_test, roundToZeroTest)
+{
+    uint8_t tData[2];
+
+    int offset = 1 << 15;
+    for(int i = 0; i < (1 << 15) - 992; i++)
+    {
+        float diff      = std::abs(fp16Values[i] - fp16Values[i + 1]);
+        float increment = diff / 6; // 5 increments each
+
+        float negNum = fp16Values[i + offset];
+        float posNum = fp16Values[i];
+
+        while(posNum < fp16Values[i + 1])
+        {
+
+            uint16_t temp = satConvertToTypeSR<DT>(posNum, 0);
+
+            uint8_t lsb = temp & 0b11111111;
+            uint8_t msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i] << " Right Number: " << fp16Values[i + 1]
+                << "\n--- Current Input: " << posNum
+                << "\n--- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << "\n--- Seed: " << 0
+                << "\n--- Index: " << i << std::endl;
+
+            temp = satConvertToTypeSR<DT>(negNum, 0);
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i + offset], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i + offset]
+                << " Right Number: " << fp16Values[i + offset + 1]
+                << "\n--- Current Input: " << negNum
+                << "\n--- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << "\n--- Seed: " << 0
+                << "\n--- Index: " << i << std::endl;
+
+            temp = nonSatConvertToTypeSR<DT>(posNum, 0);
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i] << " Right Number: " << fp16Values[i + 1]
+                << "\n--- Current Input: " << posNum
+                << "\n--- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << "\n--- Seed: " << 0
+                << "\n--- Index: " << i << std::endl;
+
+            temp = nonSatConvertToTypeSR<DT>(negNum, 0);
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i + offset], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i + offset]
+                << " Right Number: " << fp16Values[i + 1 + offset]
+                << "\n--- Current Input: " << negNum
+                << "\n--- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << "\n--- Seed: " << 0
+                << "\n--- Index: " << i << std::endl;
+
+            negNum -= increment;
+            posNum += increment;
+        }
+    }
+}
+
+TEST_F(fp16_test, roundToNextTest)
+{
+    uint8_t tData[2];
+
+    int offset = 1 << 15;
+    for(int i = 0; i < (1 << 15) - 992; i++)
+    {
+        float diff      = std::abs(fp16Values[i] - fp16Values[i + 1]);
+        float increment = diff / 6; // 5 increments each
+
+        float negNum = fp16Values[i + offset] - increment;
+        float posNum = fp16Values[i] + increment;
+
+        while(posNum < fp16Values[i + 1])
+        {
+
+            uint16_t temp = satConvertToTypeSR<DT>(posNum, UINT_MAX);
+
+            uint8_t lsb = temp & 0b11111111;
+            uint8_t msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i + 1], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i] << " Right Number: " << fp16Values[i + 1]
+                << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << " --- Seed: " << UINT_MAX
+                << std::endl;
+
+            temp = satConvertToTypeSR<DT>(negNum, UINT_MAX);
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i + offset + 1], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i + offset]
+                << " Right Number: " << fp16Values[i + offset + 1]
+                << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << " --- Seed: " << UINT_MAX
+                << std::endl;
+
+            temp = nonSatConvertToTypeSR<DT>(posNum, UINT_MAX);
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i + 1], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i] << " Right Number: " << fp16Values[i + 1]
+                << " --- Current Input: " << posNum
+                << " --- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << " --- Seed: " << UINT_MAX
+                << std::endl;
+
+            temp = nonSatConvertToTypeSR<DT>(negNum, UINT_MAX);
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            EXPECT_EQ(fp16Values[i + offset + 1], toFloat<DT>(nullptr, tData, 0, 0))
+                << "Left Number: " << fp16Values[i + offset]
+                << " Right Number: " << fp16Values[i + 1 + offset]
+                << " --- Current Input: " << negNum
+                << " --- Output: " << toFloat<DT>(nullptr, tData, 0, 0) << " --- Seed: " << UINT_MAX
+                << std::endl;
+
+            negNum -= increment;
+            posNum += increment;
+        }
+    }
+}
+
+TEST_F(fp16_test, midPointTest)
+{
+    uint8_t tData[2];
+
+    u_int64_t sInc = UINT_MAX / 15;
+
+    uint offset = 1 << 15;
+    for(uint i = 0; i < (1 << 15) - 1025; i++)
+    {
+        //cast to double to prevent float overflow
+        float pMidPoint = static_cast<float>(
+            (static_cast<double>(fp16Values[i]) + static_cast<double>(fp16Values[i + 1])) / 2);
+        float nMidPoint = static_cast<float>((static_cast<double>(fp16Values[i + offset])
+                                              + static_cast<double>(fp16Values[i + offset + 1]))
+                                             / 2);
+
+        int pSatCount = 0, nSatCount = 0, pNSatCount = 0, nNSatCount = 0;
+
+        for(u_int64_t seed = 0; seed <= UINT_MAX; seed += sInc)
+        {
+
+            uint16_t temp = satConvertToTypeSR<DT>(pMidPoint, static_cast<uint>(seed));
+
+            uint8_t lsb = temp & 0b11111111;
+            uint8_t msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            pSatCount += toFloat<DT>(nullptr, tData, 0, 0) == fp16Values[i] ? 1 : -1;
+
+            temp = satConvertToTypeSR<DT>(nMidPoint, static_cast<uint>(seed));
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            nSatCount += toFloat<DT>(nullptr, tData, 0, 0) == fp16Values[i + offset] ? 1 : -1;
+
+            temp = nonSatConvertToTypeSR<DT>(pMidPoint, static_cast<uint>(seed));
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            pNSatCount += toFloat<DT>(nullptr, tData, 0, 0) == fp16Values[i] ? 1 : -1;
+
+            temp = nonSatConvertToTypeSR<DT>(nMidPoint, static_cast<uint>(seed));
+
+            lsb = temp & 0b11111111;
+            msb = temp >> 8;
+
+            *(tData)     = lsb;
+            *(tData + 1) = msb;
+
+            nNSatCount += toFloat<DT>(nullptr, tData, 0, 0) == fp16Values[i + offset] ? 1 : -1;
+        }
+
+        EXPECT_EQ(0, pSatCount) << "Index: " << i << " Input: " << pMidPoint
+                                << " Left Num: " << fp16Values[i]
+                                << " Right Num: " << fp16Values[i + 1];
+        EXPECT_EQ(0, nSatCount) << "Index: " << i << " Input: " << nMidPoint
+                                << " Left Num: " << fp16Values[i + offset]
+                                << " Right Num: " << fp16Values[i + offset + 1];
+        EXPECT_EQ(0, pNSatCount) << "Index: " << i << " Input: " << pMidPoint
+                                 << " Left Num: " << fp16Values[i]
+                                 << " Right Num: " << fp16Values[i + 1];
+        EXPECT_EQ(0, nNSatCount) << "Index: " << i << " Input: " << nMidPoint
+                                 << " Left Num: " << fp16Values[i + offset]
+                                 << " Right Num: " << fp16Values[i + offset + 1];
+    }
+}
+
 TEST_F(fp16_test, greaterThanMaxTest)
 {
 
@@ -1190,11 +1633,11 @@ TEST_F(fp16_test, greaterThanMaxTest)
     t.num     = max;
     uint bMax = t.bRep;
 
-    uint mPrev = bMax >> (Constants::F32MANTISSABITS - getDataMantissaBits<DT>());
+    uint mPrev = bMax >> (DGen::Constants::F32MANTISSABITS - getDataMantissaBits<DT>());
     mPrev &= ((1 << getDataMantissaBits<DT>()) - 1);
     mPrev--;
 
-    mPrev <<= (Constants::F32MANTISSABITS - getDataMantissaBits<DT>());
+    mPrev <<= (DGen::Constants::F32MANTISSABITS - getDataMantissaBits<DT>());
     uint prevBit = ((bMax >> 23) << 23) | mPrev;
 
     t.bRep        = prevBit;
@@ -1229,5 +1672,77 @@ TEST_F(fp16_test, greaterThanMaxTest)
             EXPECT_EQ(getDataMax<DT>(), nSatVal) << "input: " << input << "\noutput: " << nSatVal;
         else
             EXPECT_TRUE(std::isinf(nSatVal));
+
+        uint16_t satOutputSR = satConvertToTypeSR<DT>(input, 0);
+        msb                  = satOutputSR >> 8;
+        lsb                  = satOutputSR & 0xff;
+
+        *tData       = lsb;
+        *(tData + 1) = msb;
+
+        EXPECT_EQ(getDataMax<DT>(), toFloat<DT>(tData, tData, 0, 0));
+
+        satOutputSR = satConvertToTypeSR<DT>(input, UINT_MAX);
+        msb         = satOutputSR >> 8;
+        lsb         = satOutputSR & 0xff;
+
+        *tData       = lsb;
+        *(tData + 1) = msb;
+
+        EXPECT_EQ(getDataMax<DT>(), toFloat<DT>(tData, tData, 0, 0));
+
+        satOutputSR = satConvertToTypeSR<DT>(input, UINT_MAX / 2);
+        msb         = satOutputSR >> 8;
+        lsb         = satOutputSR & 0xff;
+
+        *tData       = lsb;
+        *(tData + 1) = msb;
+
+        EXPECT_EQ(getDataMax<DT>(), toFloat<DT>(tData, tData, 0, 0));
+
+        uint16_t nSatOutputSR = nonSatConvertToTypeSR<DT>(input, 0);
+
+        msb = nSatOutputSR >> 8;
+        lsb = nSatOutputSR & 0xff;
+
+        *tData       = lsb;
+        *(tData + 1) = msb;
+
+        float nSatValSR = toFloat<DT>(tData, tData, 0, 0);
+
+        if(input <= actualMax)
+            EXPECT_EQ(getDataMax<DT>(), nSatVal) << "input: " << input << "\noutput: " << nSatVal;
+        else
+            EXPECT_TRUE(std::isinf(nSatValSR));
+
+        nSatOutputSR = nonSatConvertToTypeSR<DT>(input, UINT_MAX);
+
+        msb = nSatOutputSR >> 8;
+        lsb = nSatOutputSR & 0xff;
+
+        *tData       = lsb;
+        *(tData + 1) = msb;
+
+        nSatValSR = toFloat<DT>(tData, tData, 0, 0);
+
+        if(input <= actualMax)
+            EXPECT_EQ(getDataMax<DT>(), nSatVal) << "input: " << input << "\noutput: " << nSatVal;
+        else
+            EXPECT_TRUE(std::isinf(nSatValSR));
+
+        nSatOutputSR = nonSatConvertToTypeSR<DT>(input, UINT_MAX / 2);
+
+        msb = nSatOutputSR >> 8;
+        lsb = nSatOutputSR & 0xff;
+
+        *tData       = lsb;
+        *(tData + 1) = msb;
+
+        nSatValSR = toFloat<DT>(tData, tData, 0, 0);
+
+        if(input <= actualMax)
+            EXPECT_EQ(getDataMax<DT>(), nSatVal) << "input: " << input << "\noutput: " << nSatVal;
+        else
+            EXPECT_TRUE(std::isinf(nSatValSR));
     }
 }
