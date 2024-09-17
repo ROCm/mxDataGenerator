@@ -133,15 +133,15 @@ inline float getDataMax()
 {
     int e = DTYPE::dataInfo.exponentBits, m = DTYPE::dataInfo.mantissaBits;
 
-    if(e == 5 && m == 2) //bf 8
+    if(e == 5 && m == 2) // bf8
         return 57344;
-    else if(e == 4 && m == 3) //fp 4
+    else if(e == 4 && m == 3) //fp8 
         return 448;
-    else if(e == 3 && m == 2) //bf 6
+    else if(e == 3 && m == 2) //bf6
         return 28;
-    else if(e == 2 && m == 3) // fp6
+    else if(e == 2 && m == 3) //fp6
         return 7.5;
-    else if(e == 2 && m == 1) // fp4
+    else if(e == 2 && m == 1) //fp4
         return 6;
     else
     { // float values greater than 8 bits
