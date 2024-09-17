@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fp6.hpp"
 
 namespace DGen
 {

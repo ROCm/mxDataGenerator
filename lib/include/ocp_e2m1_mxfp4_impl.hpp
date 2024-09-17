@@ -9,7 +9,7 @@
  *      The packed dataByte buffer to read from
  *
  * @param index
- *      The index to the bit represenation
+ *      The index to the bit representation
  *      to read
  */
 static uint8_t getDataFromPackedF4(uint8_t const* dataBytes, int index)

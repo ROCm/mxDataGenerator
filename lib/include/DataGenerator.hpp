@@ -143,7 +143,6 @@ namespace DGen
             return *this;
         }
 
-        // m_info    = info;
         m_options = options;
 
         // reorder sizes & strides from least to greatest stride

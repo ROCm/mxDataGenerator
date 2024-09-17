@@ -255,7 +255,7 @@ namespace DGen
      *
      * @return
      *      A boolean signaling whether or not the
-     *      product of the scale and data is infinte
+     *      product of the scale and data is infinite
      */
     template <typename DTYPE>
     inline bool isInf(uint8_t const* scaleBytes,
@@ -512,7 +512,7 @@ namespace DGen
      *
      * @return
      *      A boolean signaling whether or not the
-     *      product of the scale and data is infinte
+     *      product of the scale and data is infinite
      */
     template <typename DTYPE>
     inline bool isInfPacked(uint8_t const* scaleBytes,
@@ -764,7 +764,7 @@ namespace DGen
      * @param positive
      *      An optional flag to set if the max
      *      will be max positive or max negative.
-     *      Default is true (positve)
+     *      Default is true (positive)
      */
     template <typename DTYPE>
     void setDataMax(uint8_t* dataBytes,
@@ -889,7 +889,7 @@ namespace DGen
      * @param positive
      *      An optional flag to set if the max
      *      will be max positive or max negative.
-     *      Default is true (positve)
+     *      Default is true (positive)
      */
     template <typename DTYPE>
     void setDataMaxPacked(uint8_t* dataBytes,
@@ -976,7 +976,7 @@ namespace DGen
 
     /**
      * Performs stochastic rounding on a float32 value to 
-     * type T representatio
+     * type T representation
      * DOES NOT CHECK FOR OUT OF RANGE/NAN/INF
      *      Should be done before calling this method
      * 

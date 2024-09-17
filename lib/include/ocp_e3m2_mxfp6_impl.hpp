@@ -74,7 +74,7 @@ inline bool isNaN<ocp_e3m2_mxfp6>(uint8_t const* scaleBytes,
                                   size_t         scaleIndex,
                                   size_t         dataIndex)
 {
-    // no need to check for NAN in dataBytes since theres no NAN representation
+    // no need to check for NAN in dataBytes since there's no NAN representation
     return *(scaleBytes + scaleIndex) == Constants::E8M0_NAN;
 }
 

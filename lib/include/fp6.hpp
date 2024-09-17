@@ -72,7 +72,7 @@ inline void setDataPackedF6(uint8_t* dataBytes, int index, uint8_t mask)
         *(dataBytes + cellIndex + 2) &= 0b11111100; // blank last 2 bit from second cell
 
         l = (mask & 0b00001111) << 4; // get last four bit, shift to left
-        r = (mask & 0b00110000) >> 4; // get first 2 bit, shigt to right
+        r = (mask & 0b00110000) >> 4; // get first 2 bit, shift to right
 
         *(dataBytes + cellIndex + 1) |= l; // setting the buffers
         *(dataBytes + cellIndex + 2) |= r;
