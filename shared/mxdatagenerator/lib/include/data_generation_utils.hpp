@@ -145,24 +145,6 @@ namespace DGen
         return res;
     }
 
-    inline void split_double(double val, uint8_t* sign, uint32_t* exponent, uint64_t* mantissa)
-    {
-        union
-        {
-            double   input;
-            uint64_t output;
-        } bit_rep;
-
-        bit_rep.input = val;
-
-        if(sign)
-            *sign = bit_rep.output >> 63;
-        if(exponent)
-            *exponent = (bit_rep.output >> 52) & 0x7ff;
-        if(mantissa)
-            *mantissa = bit_rep.output & 0x000fffffffffffff;
-    }
-
     inline void split_dynamic(uint64_t  input,
                               uint32_t  exp_size,
                               uint32_t  man_size,
@@ -178,4 +160,16 @@ namespace DGen
             *mantissa = input & ((1 << man_size) - 1);
     }
 
+    inline void split_double(double val, uint8_t* sign, uint32_t* exponent, uint64_t* mantissa)
+    {
+        union
+        {
+            double   input;
+            uint64_t output;
+        } bit_rep;
+
+        bit_rep.input = val;
+
+	split_dynamic(bit_rep.output, 11u, 52u, sign, exponent, mantissa);
+    }
 }

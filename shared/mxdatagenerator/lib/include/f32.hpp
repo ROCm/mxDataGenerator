@@ -20,12 +20,12 @@ namespace DGen
         static constexpr bool hasZero = true;
     };
 
-    //** NOTE THAT ALL SCALES WILL BE IGNORED IN F32*/
+    /* NOTE THAT ALL SCALES WILL BE IGNORED IN F32 */
     struct f32
     {
         static constexpr F32_DATA dataInfo{};
 
-        static constexpr uint oneMask     = 0x3f800000; // exp = 127, mantisaa = 0
+        static constexpr uint oneMask     = 0x3f800000; // exp = 127, mantissa = 0
         static constexpr uint setSignMask = 0x7fffffff; // all 1s except for sign;
         static constexpr uint dataNanMask
             = 0x7fc00000; // exponent is all 1s and mantissa has 1 bit set
@@ -46,8 +46,6 @@ namespace DGen
         static constexpr uint positiveZeroMask = 0;
         static constexpr uint negativeZeroMask = 1 << 23;
 
-        // uint getData(const uint8_t* dataBytes, size_t index) const;
-        // void setData(uint8_t* dataBytes, size_t index, uint mask) const;
     };
 
 #include "f32_impl.hpp"
