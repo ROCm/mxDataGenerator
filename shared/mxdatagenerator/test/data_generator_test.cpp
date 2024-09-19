@@ -11,9 +11,9 @@ using ::testing::TestWithParam;
 
 using namespace DGen;
 
-using DataGeneratorTypes = ::testing::Types< //f32,
-    //fp16,
-    //bf16,
+using DataGeneratorTypes = ::testing::Types<f32,
+    fp16,
+    bf16,
     ocp_e4m3_mxfp8,
     ocp_e5m2_mxfp8,
     ocp_e2m3_mxfp6,
@@ -145,15 +145,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<int>& vec)
     }
     os << "}";
     return os;
-}
-
-template <typename DataType>
-constexpr bool isScaled()
-{
-    auto isF32  = std::is_same_v<DataType, f32>;
-    auto isFP16 = std::is_same_v<DataType, fp16>;
-    auto isBF16 = std::is_same_v<DataType, bf16>;
-    return !(isF32 || isFP16 || isBF16);
 }
 
 template <typename DataType>
