@@ -188,67 +188,111 @@ inline float getDataMinSubnorm()
 template <typename DTYPE>
 inline uint getScaleSignBits()
 {
-    return DTYPE::scaleInfo.signBits;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.signBits;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline uint getScaleExponentBits()
 {
-    return DTYPE::scaleInfo.exponentBits;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.exponentBits;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline uint getScaleMantissaBits()
 {
-    return DTYPE::scaleInfo.mantissaBits;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.mantissaBits;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline uint getScaleBias()
 {
-    return DTYPE::scaleInfo.bias;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.bias;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline int getScaleUnBiasedEMin()
 {
-    return DTYPE::scaleInfo.unBiasedEMin;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.unBiasedEMin;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline int getScaleUnBiasedEMax()
 {
-    return DTYPE::scaleInfo.unBiasedEMax;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.unBiasedEMax;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline int getScaleBiasedEMin()
 {
-    return DTYPE::scaleInfo.biasedEMin;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.biasedEMin;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline int getScaleBiasedEMax()
 {
-    return DTYPE::scaleInfo.biasedEMax;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.biasedEMax;
+    }
+    return 0;
 }
 
 template <typename DTYPE>
 inline bool getScaleHasInf()
 {
-    return DTYPE::scaleInfo.hasInf;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.hasInf;
+    }
+    return false;
 }
 
 template <typename DTYPE>
 inline bool getScaleHasNan()
 {
-    return DTYPE::scaleInfo.hasNan;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.hasNan;
+    }
+    return false;
 }
 
 template <typename DTYPE>
 inline bool getScaleHasZero()
 {
-    return DTYPE::scaleInfo.hasZero;
+    if constexpr(DGen::isScaled<DTYPE>())
+    {
+        return DTYPE::scaleInfo.hasZero;
+    }
+    return false;
 }
 
 template <typename T, typename DTYPE>

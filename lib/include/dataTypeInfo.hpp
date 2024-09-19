@@ -53,16 +53,16 @@ namespace DGen
         constexpr uint8_t E8M0_MAX = 0b11111110;
         constexpr uint8_t E8M0_NAN = 0b11111111;
 
-        constexpr int F32EXPONENTBITS = 8;
-        constexpr int F32MANTISSABITS = 23;
-        constexpr int F32SIGNBITS     = 1;
-        constexpr int F32BIAS         = 127;
-        constexpr int F32MINEXP       = -126;
-        constexpr int F32MAXEXP       = 127;
-        constexpr int F64EXPONENTBITS = 11;
-        constexpr int F64MANTISSABITS = 52;
-        constexpr int F64SIGNBITS     = 1;
-        constexpr int F64BIAS         = 1023;
+        constexpr int32_t F32EXPONENTBITS = 8;
+        constexpr int32_t F32MANTISSABITS = 23;
+        constexpr int32_t F32SIGNBITS     = 1;
+        constexpr int32_t F32BIAS         = 127;
+        constexpr int32_t F32MINEXP       = -126;
+        constexpr int32_t F32MAXEXP       = 127;
+        constexpr int32_t F64EXPONENTBITS = 11;
+        constexpr int32_t F64MANTISSABITS = 52;
+        constexpr int32_t F64SIGNBITS     = 1;
+        constexpr int32_t F64BIAS         = 1023;
 
         constexpr double QNaN   = std::numeric_limits<double>::quiet_NaN();
         constexpr double Inf    = std::numeric_limits<double>::infinity();
@@ -1050,10 +1050,19 @@ namespace DGen
 #include "ocp_e4m3_mxfp8.hpp"
 #include "ocp_e5m2_mxfp8.hpp"
 
+
 //
 // Generic implementations
 //
 namespace DGen
 {
+    template <typename DataType>
+    constexpr bool isScaled()
+    {
+        auto isF32  = std::is_same_v<DataType, f32>;
+        auto isFP16 = std::is_same_v<DataType, fp16>;
+        auto isBF16 = std::is_same_v<DataType, bf16>;
+        return !(isF32 || isFP16 || isBF16);
+    }
 #include "dataTypeInfo_impl.hpp"
 }
