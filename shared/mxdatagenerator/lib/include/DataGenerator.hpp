@@ -343,12 +343,12 @@ namespace DGen
         auto dataExponentBits = getDataExponentBits<DTYPE>();
         auto dataUnbiasedEMin = getDataUnBiasedEMin<DTYPE>();
         // setup scale distribution
-        auto scaleBias = getScaleBias<DTYPE>();
-        auto min_scale   = getScaleUnBiasedEMin<DTYPE>();
-        auto max_scale   = getScaleUnBiasedEMax<DTYPE>();
-        auto max_pos_exp = max_scale + max_scale;
-        auto max_neg_exp = max_pos_exp;
-        auto min_exp     = int32_t(min_scale - scaleBias);
+        int32_t scaleBias = getScaleBias<DTYPE>();
+        int32_t min_scale   = getScaleUnBiasedEMin<DTYPE>();
+        int32_t max_scale   = getScaleUnBiasedEMax<DTYPE>();
+        int32_t max_pos_exp = max_scale + getDataUnBiasedEMax<DTYPE>();
+        int32_t max_neg_exp = max_pos_exp;
+        int32_t min_exp     = int32_t(min_scale - int32_t(dataBias));
 
         if(m_options.clampToF32)
         {
@@ -367,8 +367,8 @@ namespace DGen
         split_double(max, nullptr, &biased_exp_of_max, &man_of_max);
         split_double(min, nullptr, &biased_exp_of_min, &man_of_min);
 
-        int32_t exp_of_max = biased_exp_of_max - F64BIAS;
-        int32_t exp_of_min = biased_exp_of_min - F64BIAS;
+        int32_t exp_of_max = int32_t(biased_exp_of_max) - F64BIAS;
+        int32_t exp_of_min = int32_t(biased_exp_of_min) - F64BIAS;
 
         max_neg_exp = std::min(exp_of_min, max_neg_exp);
         max_pos_exp = std::min(exp_of_max, max_pos_exp);
@@ -450,9 +450,9 @@ namespace DGen
 
             // generate sign
             bool sign;
-            if(no_neg || int32_t(ub_block_scale - dataBias) > max_neg_exp)
+            if(no_neg || int32_t(ub_block_scale - int32_t(dataBias)) > max_neg_exp)
                 sign = 0;
-            else if(no_pos || int32_t(ub_block_scale - dataBias) > max_pos_exp)
+            else if(no_pos || int32_t(ub_block_scale - int32_t(dataBias)) > max_pos_exp)
                 sign = 1;
             else
             {
@@ -470,7 +470,7 @@ namespace DGen
             std::uniform_int_distribution<> exp_dist(exp_dist_min, exp_dist_max);
 
             ub_exp = exp_dist(m_gen);
-            exp    = ub_exp + dataBias;
+            exp    = ub_exp + int32_t(dataBias);
 
             // generate mantissa
             uint64_t mantissa = 0;
@@ -495,8 +495,8 @@ namespace DGen
                && min_exp
                       > dataUnbiasedEMin + ub_block_scale - int32_t(dataMantissaBits))
             {
-                uint64_t temp     = 1 << int32_t(dataMantissaBits + min_exp
-                                             - dataUnbiasedEMin - ub_block_scale);
+                uint64_t temp     = 1ULL << int32_t(int32_t(dataMantissaBits) + min_exp
+                                             - int32_t(dataUnbiasedEMin) - ub_block_scale);
                 mantissa_dist_min = std::max(mantissa_dist_min, temp);
             }
 
@@ -732,7 +732,7 @@ namespace DGen
             if(isScaled<DTYPE>() && block_i == block_size - 1)
             {
                 int32_t scaleMax = scaleBiasedEMax;
-                int32_t scaleMin = scaleBiasedEMax;
+                int32_t scaleMin = scaleBiasedEMin;
 
                 if(m_options.clampToF32)
                 {
@@ -1310,9 +1310,9 @@ namespace DGen
                         uint64_t mantissa_dist_min = 1;
                         uint64_t mantissa_dist_max = (uint64_t(1) << getDataMantissaBits<DTYPE>()) - 1;
 
-                        if(unbiased_min_exp > int32_t(exp_bound - getDataMantissaBits<DTYPE>()))
+                        if(unbiased_min_exp > int32_t(exp_bound - int32_t(getDataMantissaBits<DTYPE>())))
                         {
-                            mantissa_dist_min = 1 << int32_t(getDataMantissaBits<DTYPE>()
+                            mantissa_dist_min = 1 << int32_t(int32_t(getDataMantissaBits<DTYPE>())
                                                              + unbiased_min_exp - exp_bound);
                         }
 

@@ -155,9 +155,9 @@ namespace DGen
         if(sign)
             *sign = input >> (exp_size + man_size);
         if(exponent)
-            *exponent = (input >> man_size) & ((1 << exp_size) - 1);
+            *exponent = (input >> man_size) & ((1UL << exp_size) - 1UL);
         if(mantissa)
-            *mantissa = input & ((1 << man_size) - 1);
+            *mantissa = input & ((1ULL << man_size) - 1ULL);
     }
 
     inline void split_double(double val, uint8_t* sign, uint32_t* exponent, uint64_t* mantissa)
