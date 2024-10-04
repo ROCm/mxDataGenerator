@@ -70,9 +70,9 @@ inline uint8_t scaleOne<ocp_e2m3_mxfp6>()
 
 template <>
 inline bool isNaN<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes,
-                                  uint8_t const* dataBytes,
+                                  uint8_t const* dataBytes [[maybe_unused]],
                                   size_t         scaleIndex,
-                                  size_t         dataIndex)
+                                  size_t         dataIndex [[maybe_unused]])
 {
     // no need to check for NAN in dataBytes since there's no NAN representation
     return *(scaleBytes + scaleIndex) == Constants::E8M0_NAN;
@@ -90,10 +90,10 @@ inline bool isNaNPacked<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes,
 }
 
 template <>
-inline bool isInf<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes,
-                                  uint8_t const* dataBytes,
-                                  size_t         scaleIndex,
-                                  size_t         dataIndex)
+inline bool isInf<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes [[maybe_unused]],
+                                  uint8_t const* dataBytes [[maybe_unused]],
+                                  size_t         scaleIndex [[maybe_unused]],
+                                  size_t         dataIndex [[maybe_unused]])
 {
     // no infinity representation in ocp_e3m2_mxfp6 will always return false
     return false;
@@ -101,10 +101,10 @@ inline bool isInf<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes,
 
 // no infinity representation in ocp_e3m2_mxfp6 will always return false
 template <>
-inline bool isInfPacked<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes,
-                                        uint8_t const* dataBytes,
-                                        size_t         scaleIndex,
-                                        size_t         dataIndex)
+inline bool isInfPacked<ocp_e2m3_mxfp6>(uint8_t const* scaleBytes [[maybe_unused]],
+                                        uint8_t const* dataBytes [[maybe_unused]],
+                                        size_t         scaleIndex [[maybe_unused]],
+                                        size_t         dataIndex [[maybe_unused]])
 {
     return false;
 }
@@ -248,9 +248,9 @@ inline void setOne<ocp_e2m3_mxfp6>(
 
 //set XN = 0, scale X will not be changed
 template <>
-inline void setZero<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
+inline void setZero<ocp_e2m3_mxfp6>(uint8_t* scaleBytes [[maybe_unused]],
                                     uint8_t* dataBytes,
-                                    size_t   scaleIndex,
+                                    size_t   scaleIndex [[maybe_unused]],
                                     size_t   dataIndex)
 {
     *(dataBytes + dataIndex) = positiveZeroMask<ocp_e2m3_mxfp6>();
@@ -259,19 +259,19 @@ inline void setZero<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
 //ocp_e3m2_mxfp6 does not have NAN representation, method will just return
 template <>
 inline void setNaN<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
-                                   uint8_t* dataBytes,
+                                   uint8_t* dataBytes [[maybe_unused]],
                                    size_t   scaleIndex,
-                                   size_t   dataIndex)
+                                   size_t   dataIndex [[maybe_unused]])
 {
     *(scaleBytes + scaleIndex) = Constants::E8M0_NAN;
 }
 
 //ocp_e3m2_mxfp6 does not have an infinity representation, method will just return
 template <>
-inline void setInf<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
-                                   uint8_t* dataBytes,
-                                   size_t   scaleIndex,
-                                   size_t   dataIndex)
+inline void setInf<ocp_e2m3_mxfp6>(uint8_t* scaleBytes [[maybe_unused]],
+                                   uint8_t* dataBytes [[maybe_unused]],
+                                   size_t   scaleIndex [[maybe_unused]],
+                                   size_t   dataIndex [[maybe_unused]])
 {
     return;
 }
@@ -300,9 +300,9 @@ inline void setOnePacked<ocp_e2m3_mxfp6>(
 
 //set XN = 0, scale X will not be changed
 template <>
-inline void setZeroPacked<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
+inline void setZeroPacked<ocp_e2m3_mxfp6>(uint8_t* scaleBytes [[maybe_unused]],
                                           uint8_t* dataBytes,
-                                          size_t   scaleIndex,
+                                          size_t   scaleIndex [[maybe_unused]],
                                           size_t   dataIndex)
 {
     setDataPackedF6(dataBytes, dataIndex, positiveZeroMask<ocp_e2m3_mxfp6>());
@@ -310,19 +310,19 @@ inline void setZeroPacked<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
 
 template <>
 inline void setNaNPacked<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
-                                         uint8_t* dataBytes,
+                                         uint8_t* dataBytes [[maybe_unused]],
                                          size_t   scaleIndex,
-                                         size_t   dataIndex)
+                                         size_t   dataIndex [[maybe_unused]])
 {
     *(scaleBytes + scaleIndex) = Constants::E8M0_NAN;
 }
 
 //ocp_e3m2_mxfp6 does not have an infinity representation, method will just return
 template <>
-inline void setInfPacked<ocp_e2m3_mxfp6>(uint8_t* scaleBytes,
-                                         uint8_t* dataBytes,
-                                         size_t   scaleIndex,
-                                         size_t   dataIndex)
+inline void setInfPacked<ocp_e2m3_mxfp6>(uint8_t* scaleBytes [[maybe_unused]],
+                                         uint8_t* dataBytes [[maybe_unused]],
+                                         size_t   scaleIndex [[maybe_unused]],
+                                         size_t   dataIndex [[maybe_unused]])
 {
     return;
 }
@@ -378,7 +378,7 @@ inline uint64_t satConvertToType<ocp_e2m3_mxfp6>(float value)
 }
 
 template <>
-inline uint64_t nonSatConvertToType<ocp_e2m3_mxfp6>(float value)
+inline uint64_t nonSatConvertToType<ocp_e2m3_mxfp6>(float value [[maybe_unused]])
 {
     return 0b0;
 }
@@ -418,7 +418,8 @@ inline uint64_t satConvertToTypeSR<ocp_e2m3_mxfp6>(float value, uint seed)
 }
 
 template <>
-inline uint64_t nonSatConvertToTypeSR<ocp_e2m3_mxfp6>(float value, uint seed)
+inline uint64_t nonSatConvertToTypeSR<ocp_e2m3_mxfp6>(float value [[maybe_unused]],
+                                                      uint  seed [[maybe_unused]])
 {
     return 0b0;
 }

@@ -37,9 +37,9 @@ inline void setDataF32(uint8_t* dataBytes, size_t index, uint mask)
 
 // return true iff the number is positive one
 template <>
-inline bool isOne<f32>(uint8_t const* scaleBytes,
+inline bool isOne<f32>(uint8_t const* scaleBytes [[maybe_unused]],
                        uint8_t const* dataBytes,
-                       size_t         scaleIndex,
+                       size_t         scaleIndex [[maybe_unused]],
                        size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -52,9 +52,9 @@ inline bool isOne<f32>(uint8_t const* scaleBytes,
 
 //return true iff XN = NAN
 template <>
-inline bool isNaN<f32>(uint8_t const* scaleBytes,
+inline bool isNaN<f32>(uint8_t const* scaleBytes [[maybe_unused]],
                        uint8_t const* dataBytes,
-                       size_t         scaleIndex,
+                       size_t         scaleIndex [[maybe_unused]],
                        size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -85,9 +85,9 @@ inline bool isZero<f32>(uint8_t const* scaleBytes,
 }
 
 template <>
-inline bool isInf<f32>(uint8_t const* scaleBytes,
+inline bool isInf<f32>(uint8_t const* scaleBytes [[maybe_unused]],
                        uint8_t const* dataBytes,
-                       size_t         scaleIndex,
+                       size_t         scaleIndex [[maybe_unused]],
                        size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -101,9 +101,9 @@ inline bool isInf<f32>(uint8_t const* scaleBytes,
 //return true iff XN < val
 template <>
 inline bool isLess<f32>(double         val,
-                        uint8_t const* scaleBytes,
+                        uint8_t const* scaleBytes [[maybe_unused]],
                         uint8_t const* dataBytes,
-                        size_t         scaleIndex,
+                        size_t         scaleIndex [[maybe_unused]],
                         size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -117,9 +117,9 @@ inline bool isLess<f32>(double         val,
 //return true iff XN > val
 template <>
 inline bool isGreater<f32>(double         val,
-                           uint8_t const* scaleBytes,
+                           uint8_t const* scaleBytes [[maybe_unused]],
                            uint8_t const* dataBytes,
-                           size_t         scaleIndex,
+                           size_t         scaleIndex [[maybe_unused]],
                            size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -132,9 +132,9 @@ inline bool isGreater<f32>(double         val,
 
 // // return the double value of XN
 template <>
-inline double toDouble<f32>(uint8_t const* scaleBytes,
+inline double toDouble<f32>(uint8_t const* scaleBytes [[maybe_unused]],
                             uint8_t const* dataBytes,
-                            size_t         scaleIndex,
+                            size_t         scaleIndex [[maybe_unused]],
                             size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -146,9 +146,9 @@ inline double toDouble<f32>(uint8_t const* scaleBytes,
 }
 
 template <>
-inline float toFloat<f32>(uint8_t const* scaleBytes,
+inline float toFloat<f32>(uint8_t const* scaleBytes [[maybe_unused]],
                           uint8_t const* dataBytes,
-                          size_t         scaleIndex,
+                          size_t         scaleIndex [[maybe_unused]],
                           size_t         dataIndex)
 {
     uint bRep = getDataF32(dataBytes, dataIndex);
@@ -255,30 +255,39 @@ inline float toFloatPacked<f32>(uint8_t const* scaleBytes,
 
 //set XN = 1
 template <>
-inline void setOne<f32>(
-    uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex, bool subNormal)
+inline void setOne<f32>(uint8_t* scaleBytes [[maybe_unused]],
+                        uint8_t* dataBytes,
+                        size_t   scaleIndex [[maybe_unused]],
+                        size_t   dataIndex,
+                        bool     subNormal [[maybe_unused]])
 {
     setDataF32(dataBytes, dataIndex, f32::oneMask);
 }
 
 //set X = 0
 template <>
-inline void
-    setZero<f32>(uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex)
+inline void setZero<f32>(uint8_t* scaleBytes [[maybe_unused]],
+                         uint8_t* dataBytes,
+                         size_t   scaleIndex [[maybe_unused]],
+                         size_t   dataIndex)
 {
     setDataF32(dataBytes, dataIndex, f32::positiveZeroMask);
 }
 
 template <>
-inline void
-    setNaN<f32>(uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex)
+inline void setNaN<f32>(uint8_t* scaleBytes [[maybe_unused]],
+                        uint8_t* dataBytes,
+                        size_t   scaleIndex [[maybe_unused]],
+                        size_t   dataIndex)
 {
     setDataF32(dataBytes, dataIndex, f32::dataNanMask);
 }
 
 template <>
-inline void
-    setInf<f32>(uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex)
+inline void setInf<f32>(uint8_t* scaleBytes [[maybe_unused]],
+                        uint8_t* dataBytes,
+                        size_t   scaleIndex [[maybe_unused]],
+                        size_t   dataIndex)
 {
 
     setDataF32(dataBytes, dataIndex, f32::dataInfMask);
@@ -300,8 +309,11 @@ inline void setDataMax<f32>(uint8_t* dataBytes, size_t dataIndex, bool subNormal
 }
 
 template <>
-inline void setOnePacked<f32>(
-    uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex, bool subNormal)
+inline void setOnePacked<f32>(uint8_t* scaleBytes,
+                              uint8_t* dataBytes,
+                              size_t   scaleIndex,
+                              size_t   dataIndex,
+                              bool     subNormal [[maybe_unused]])
 {
     setOne<f32>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -315,15 +327,19 @@ inline void
 }
 
 template <>
-inline void
-    setNaNPacked<f32>(uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex)
+inline void setNaNPacked<f32>(uint8_t* scaleBytes [[maybe_unused]],
+                              uint8_t* dataBytes,
+                              size_t   scaleIndex [[maybe_unused]],
+                              size_t   dataIndex)
 {
     setDataF32(dataBytes, dataIndex, f32::dataNanMask);
 }
 
 template <>
-inline void
-    setInfPacked<f32>(uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex)
+inline void setInfPacked<f32>(uint8_t* scaleBytes [[maybe_unused]],
+                              uint8_t* dataBytes,
+                              size_t   scaleIndex [[maybe_unused]],
+                              size_t   dataIndex)
 {
     setDataF32(dataBytes, dataIndex, f32::dataInfMask);
 }
@@ -354,7 +370,7 @@ inline uint64_t nonSatConvertToType<f32>(float value)
 }
 
 template <>
-inline uint64_t satConvertToTypeSR<f32>(float value, uint seed)
+inline uint64_t satConvertToTypeSR<f32>(float value, uint seed [[maybe_unused]])
 {
     cvt t;
     t.in = value;
@@ -363,7 +379,7 @@ inline uint64_t satConvertToTypeSR<f32>(float value, uint seed)
 }
 
 template <>
-inline uint64_t nonSatConvertToTypeSR<f32>(float value, uint seed)
+inline uint64_t nonSatConvertToTypeSR<f32>(float value, uint seed [[maybe_unused]])
 {
     cvt t;
     t.in = value;

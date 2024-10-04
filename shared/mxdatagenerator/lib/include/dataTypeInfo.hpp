@@ -19,7 +19,8 @@ namespace my_math
 {
 
     template <typename T>
-    requires(std::is_integral_v<T>) constexpr float pow(T base, T exp)
+        requires(std::is_integral_v<T>)
+    constexpr float pow(T base, T exp)
     {
         if(exp == 0)
             return base < 0 ? -1.0f : 1.0f;
@@ -135,10 +136,10 @@ namespace DGen
     {
         double mantissa = isSubNormal<T>(x, mantissaBits, exponentBits) ? 0.0f : 1.0f;
 
-        for(int i = 0; i < mantissaBits; i++)
+        for(uint i = 0; i < mantissaBits; i++)
         {
 
-            mantissa += std::pow(2, -(static_cast<int>(mantissaBits) - i)) * (x & 0b1);
+            mantissa += std::pow(2, -int32_t((mantissaBits - i))) * (x & 0b1);
 
             x >>= 1;
         }
@@ -1049,7 +1050,6 @@ namespace DGen
 #include "ocp_e3m2_mxfp6.hpp"
 #include "ocp_e4m3_mxfp8.hpp"
 #include "ocp_e5m2_mxfp8.hpp"
-
 
 //
 // Generic implementations

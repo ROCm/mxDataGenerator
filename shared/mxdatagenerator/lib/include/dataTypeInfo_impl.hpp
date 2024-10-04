@@ -135,7 +135,7 @@ inline float getDataMax()
 
     if(e == 5 && m == 2) // bf8
         return 57344;
-    else if(e == 4 && m == 3) //fp8 
+    else if(e == 4 && m == 3) //fp8
         return 448;
     else if(e == 3 && m == 2) //bf6
         return 28;
@@ -366,9 +366,6 @@ inline T convertToType(float value)
     sign     = head >> 31;
     bias     = 127;
 
-    uint32_t signed_inf
-        = (sign << 7) + (((1 << getDataExponentBits<DTYPE>()) - 1) << getDataMantissaBits<DTYPE>());
-
     if(x == 0)
     {
         return 0b0;
@@ -399,11 +396,12 @@ inline T convertToType(float value)
         {
             exponent_diff = 0;
         }
-        mantissa += (1 << mfmt);
+        mantissa += (1UL << mfmt);
     }
 
-    bool midpoint = (mantissa & ((1 << (mfmt - getDataMantissaBits<DTYPE>() + exponent_diff)) - 1))
-                    == (1 << (mfmt - getDataMantissaBits<DTYPE>() + exponent_diff - 1));
+    auto shift_amount = (mfmt - getDataMantissaBits<DTYPE>() + exponent_diff);
+    shift_amount      = (shift_amount >= 64) ? 63 : shift_amount;
+    bool midpoint     = (mantissa & ((1UL << shift_amount) - 1)) == (1UL << (shift_amount - 1));
 
     float minSubNorm = getDataMinSubnorm<DTYPE>() * (sign ? -1 : 1);
 
@@ -423,20 +421,20 @@ inline T convertToType(float value)
     bool implicit_one = mantissa & (1 << mfmt);
     out_exponent      = (act_exponent + exponent_diff) + mini_bias - (implicit_one ? 0 : 1);
 
-    uint32_t drop_mask = (1 << (mfmt - getDataMantissaBits<DTYPE>())) - 1;
-    bool     odd       = mantissa & (1 << (mfmt - getDataMantissaBits<DTYPE>()));
+    uint32_t drop_mask = (1UL << (mfmt - getDataMantissaBits<DTYPE>())) - 1;
+    bool     odd       = mantissa & (1UL << (mfmt - getDataMantissaBits<DTYPE>()));
     mantissa += (midpoint ? (odd ? mantissa : mantissa - 1) : mantissa) & drop_mask;
 
     if(out_exponent == 0)
     {
-        if((1 << mfmt) & mantissa)
+        if((1UL << mfmt) & mantissa)
         {
             out_exponent = 1;
         }
     }
     else
     {
-        if((1 << (mfmt + 1)) & mantissa)
+        if((1UL << (mfmt + 1)) & mantissa)
         {
             mantissa >>= 1;
             out_exponent++;
@@ -445,14 +443,12 @@ inline T convertToType(float value)
 
     mantissa >>= (mfmt - getDataMantissaBits<DTYPE>());
 
-    const int max_exp = (1 << getDataExponentBits<DTYPE>()) - 1;
-
     if(out_exponent == 0 && mantissa == 0)
     {
         return 0;
     }
 
-    mantissa &= (1 << getDataMantissaBits<DTYPE>()) - 1;
+    mantissa &= (1UL << getDataMantissaBits<DTYPE>()) - 1;
     return (sign << (getDataExponentBits<DTYPE>() + getDataMantissaBits<DTYPE>()))
            | (out_exponent << getDataMantissaBits<DTYPE>()) | mantissa;
 }
@@ -475,13 +471,12 @@ inline T convertToTypeSR(float value, uint seed)
         t.num     = maxVal;
         uint bMax = t.bRep;
 
-        t.num      = value;
-        T sign     = t.bRep >> 31;
-        T exp      = ((bMax >> F32MANTISSABITS) & 0xff) - (127 - getDataBias<DTYPE>());
-        T mantissa = bMax >> (F32MANTISSABITS - getDataMantissaBits<DTYPE>());
+        t.num  = value;
+        T sign = t.bRep >> 31;
+        T exp  = ((bMax >> F32MANTISSABITS) & 0xff) - (127 - getDataBias<DTYPE>());
 
         uint mPrev = bMax >> (F32MANTISSABITS - getDataMantissaBits<DTYPE>());
-        mPrev &= ((1 << getDataMantissaBits<DTYPE>()) - 1);
+        mPrev &= ((1UL << getDataMantissaBits<DTYPE>()) - 1);
         mPrev--;
 
         mPrev <<= (F32MANTISSABITS - getDataMantissaBits<DTYPE>());

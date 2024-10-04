@@ -128,7 +128,7 @@ protected:
     {
         double closestDiff = UINT32_MAX;
 
-        for(int i = 0; i < e4m3ValuesOCP.size(); i++)
+        for(size_t i = 0; i < e4m3ValuesOCP.size(); i++)
         {
             if(std::isnan(e4m3ValuesOCP[i]))
                 continue;
@@ -555,7 +555,7 @@ TEST_F(ocp_e4m3_mxfp8_test, isSubnorm)
 {
     uint8_t temp[] = {Constants::E8M0_1, 0b0};
 
-    for(int i = 0; i < e4m3ValuesOCP.size(); i++)
+    for(size_t i = 0; i < e4m3ValuesOCP.size(); i++)
     {
         uint8_t data = static_cast<uint8_t>(i) & 0xff;
         temp[1]      = data;
@@ -618,10 +618,10 @@ TEST_F(ocp_e4m3_mxfp8_test, isGreater)
 
 TEST_F(ocp_e4m3_mxfp8_test, toFloatAllScalesAllValues)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         float ref = e8m0Values[i];
-        for(int j = 0; j < e4m3ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e4m3ValuesOCP.size(); j++)
         {
             float  res      = toFloat<DT>(e8m0Bits, e4m3BitsOCP, i, j);
             double expected = ref * e4m3ValuesOCP[j];
@@ -639,11 +639,11 @@ TEST_F(ocp_e4m3_mxfp8_test, toFloatAllScalesAllValues)
 
 TEST_F(ocp_e4m3_mxfp8_test, toDoubleAllScalesAllValues)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         double ref = e8m0Values[i];
 
-        for(int j = 0; j < e4m3ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e4m3ValuesOCP.size(); j++)
         {
             double res      = toDouble<DT>(e8m0Bits, e4m3BitsOCP, i, j);
             double expected = ref * e4m3ValuesOCP[j];

@@ -30,9 +30,9 @@ inline bool isNaNPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 }
 
 template <>
-inline bool isInf<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
+inline bool isInf<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes [[maybe_unused]],
                                   uint8_t const* dataBytes,
-                                  size_t         scaleIndex,
+                                  size_t         scaleIndex [[maybe_unused]],
                                   size_t         dataIndex)
 {
 
@@ -180,27 +180,27 @@ inline void setOne<ocp_e5m2_mxfp8>(
 }
 
 template <>
-inline void setZero<ocp_e5m2_mxfp8>(uint8_t* scaleBytes,
+inline void setZero<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                     uint8_t* dataBytes,
-                                    size_t   scaleIndex,
+                                    size_t   scaleIndex [[maybe_unused]],
                                     size_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e5m2_mxfp8::positiveZeroMask;
 }
 
 template <>
-inline void setNaN<ocp_e5m2_mxfp8>(uint8_t* scaleBytes,
+inline void setNaN<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                    uint8_t* dataBytes,
-                                   size_t   scaleIndex,
+                                   size_t   scaleIndex [[maybe_unused]],
                                    size_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e5m2_mxfp8::dataNaNMasks[0];
 }
 
 template <>
-inline void setInf<ocp_e5m2_mxfp8>(uint8_t* scaleBytes,
+inline void setInf<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                    uint8_t* dataBytes,
-                                   size_t   scaleIndex,
+                                   size_t   scaleIndex [[maybe_unused]],
                                    size_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e5m2_mxfp8::positiveInfMask;

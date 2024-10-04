@@ -11,6 +11,9 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-strict-aliasing -Wno-error=strict-aliasing -fsanitize=undefined)
+add_link_options(-fsanitize=undefined)
+
 add_library(mxDataGenerator INTERFACE)
 target_include_directories(mxDataGenerator INTERFACE lib/include)
 
