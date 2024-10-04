@@ -16,9 +16,7 @@ using namespace DGen;
 using DT = DGen::fp16;
 
 constexpr double NotANumber = Constants::QNaN;
-constexpr double EPSILON
-    = 0.0009765625; // 2^-m, for (m)antissa = 10 bits; diff between 1.0 and next fp (1.0009765625)
-constexpr double MAXNORM = 65504;
+constexpr double MAXNORM    = 65504;
 constexpr double MAXSUBNORM
     = constexpr_pow(2, 1 - 15) * constexpr_pow(2, -10) * (constexpr_pow(2, 10) - 1);
 constexpr double MINSUBNORM = constexpr_pow(2, 1 - 15) * constexpr_pow(2, -10) * (1);

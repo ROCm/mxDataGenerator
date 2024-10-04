@@ -1192,8 +1192,8 @@ TEST_F(bf16_test, getDataMin)
 TEST_F(bf16_test, getDataMaxSubnorm)
 {
     float subMax = 0;
-    for(int i = 0; i < getDataMantissaBits<DT>(); i++)
-        subMax += std::pow(2, -(i + 1));
+    for(size_t i = 0; i < getDataMantissaBits<DT>(); i++)
+        subMax += std::pow(2, -int32_t(i + 1));
 
     subMax *= std::pow(2, -126);
 
@@ -1495,7 +1495,7 @@ TEST_F(bf16_test, preserveSign)
 
     t.num = std::numeric_limits<float>::quiet_NaN();
 
-    t.bRep |= 1 << 31;
+    t.bRep |= 1U << 31;
 
     uint16_t sOutput  = satConvertToType<DT>(t.num);
     uint16_t nSOutput = nonSatConvertToType<DT>(t.num);
