@@ -58,10 +58,10 @@ inline bool isZeroPacked<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes,
 
 // no infinity representation in ocp_e4m3_mxfp8 will always return false
 template <>
-inline bool isInf<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes,
-                                  uint8_t const* dataBytes,
-                                  size_t         scaleIndex,
-                                  size_t         dataIndex)
+inline bool isInf<ocp_e4m3_mxfp8>(uint8_t const* scaleBytes [[maybe_unused]],
+                                  uint8_t const* dataBytes [[maybe_unused]],
+                                  size_t         scaleIndex [[maybe_unused]],
+                                  size_t         dataIndex [[maybe_unused]])
 {
     return false;
 }
@@ -159,9 +159,9 @@ inline void setOne<ocp_e4m3_mxfp8>(
 
 //set XN = 0, scale X will not be changed
 template <>
-inline void setZero<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
+inline void setZero<ocp_e4m3_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                     uint8_t* dataBytes,
-                                    size_t   scaleIndex,
+                                    size_t   scaleIndex [[maybe_unused]],
                                     size_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e4m3_mxfp8::positiveZeroMask;
@@ -169,9 +169,9 @@ inline void setZero<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
 
 //set XN = NAN, scale X will not be changed
 template <>
-inline void setNaN<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
+inline void setNaN<ocp_e4m3_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                    uint8_t* dataBytes,
-                                   size_t   scaleIndex,
+                                   size_t   scaleIndex [[maybe_unused]],
                                    size_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e4m3_mxfp8::dataNaNMasks[0];
@@ -179,10 +179,10 @@ inline void setNaN<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
 
 //ocp_e4m3_mxfp8 does not have an infinity representation, method will just return
 template <>
-inline void setInf<ocp_e4m3_mxfp8>(uint8_t* scaleBytes,
-                                   uint8_t* dataBytes,
-                                   size_t   scaleIndex,
-                                   size_t   dataIndex)
+inline void setInf<ocp_e4m3_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
+                                   uint8_t* dataBytes [[maybe_unused]],
+                                   size_t   scaleIndex [[maybe_unused]],
+                                   size_t   dataIndex [[maybe_unused]])
 {
     return;
 }

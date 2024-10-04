@@ -735,8 +735,8 @@ TEST_F(f32_test, getDataMaxSubnorm)
 {
 
     float subMax = 0;
-    for(int i = 0; i < f32::dataInfo.mantissaBits; i++)
-        subMax += std::pow(2, -(i + 1));
+    for(size_t i = 0; i < f32::dataInfo.mantissaBits; i++)
+        subMax += std::pow(2, -int32_t(i + 1));
 
     subMax *= std::pow(2, -126);
 

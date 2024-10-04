@@ -98,7 +98,7 @@ protected:
     {
         float closestDiff = 50000;
 
-        for(int i = 0; i < e2m3ValuesOCP.size(); i++)
+        for(size_t i = 0; i < e2m3ValuesOCP.size(); i++)
         {
             if(std::isnan(e2m3ValuesOCP[i]))
                 continue;
@@ -865,14 +865,12 @@ TEST_F(ocp_e2m3_mxfp6_test, isSubnorm)
 {
     uint8_t temp[] = {Constants::E8M0_1, 0b0};
 
-    for(int i = 0; i < e2m3ValuesOCP.size(); i++)
+    for(size_t i = 0; i < e2m3ValuesOCP.size(); i++)
     {
         uint8_t data = static_cast<uint8_t>(i) & 0x2f;
         temp[1]      = data;
 
         uint8_t exp = (data >> getDataMantissaBits<DT>()) & 0b011;
-
-        double value = toDouble<DT>(temp, temp, 0, 1);
 
         if(exp != 0b0)
             EXPECT_FALSE(isSubnorm<DT>(temp, 1));
@@ -883,12 +881,11 @@ TEST_F(ocp_e2m3_mxfp6_test, isSubnorm)
 
 TEST_F(ocp_e2m3_mxfp6_test, isSubnormPacked)
 {
-    uint8_t scale[] = {Constants::E8M0_1};
-    uint8_t temp[]  = {0b0, 0b0, 0b0};
+    uint8_t temp[] = {0b0, 0b0, 0b0};
 
-    for(int i = 0; i < e2m3ValuesOCP.size(); i++)
+    for(size_t i = 0; i < e2m3ValuesOCP.size(); i++)
     {
-        int     rem = i % 4;
+        size_t  rem = i % 4;
         uint8_t l = 0b0, r = 0b0;
 
         uint8_t data = static_cast<uint8_t>(i) & 0x3f;
@@ -921,8 +918,6 @@ TEST_F(ocp_e2m3_mxfp6_test, isSubnormPacked)
             *(temp + 2) |= (data << 2);
             break;
         }
-
-        double value = toDouble<DT>(scale, temp, 0, 0);
 
         uint8_t exp = (data >> getDataMantissaBits<DT>()) & 0b011;
         if(exp != 0b0)
@@ -1075,10 +1070,10 @@ TEST_F(ocp_e2m3_mxfp6_test, isGreaterPacked)
 
 TEST_F(ocp_e2m3_mxfp6_test, toFloatAllScalesAllValues)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         float ref = e8m0Values[i];
-        for(int j = 0; j < e2m3ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e2m3ValuesOCP.size(); j++)
         {
             float  res      = toFloat<DT>(e8m0Bits, e2m3BitsOCP, i, j);
             double expected = ref * e2m3ValuesOCP[j];
@@ -1096,10 +1091,10 @@ TEST_F(ocp_e2m3_mxfp6_test, toFloatAllScalesAllValues)
 
 TEST_F(ocp_e2m3_mxfp6_test, toFloatAllScalesAllValuesPacked)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         float ref = e8m0Values[i];
-        for(int j = 0; j < e2m3ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e2m3ValuesOCP.size(); j++)
         {
             float  res      = toFloatPacked<DT>(e8m0Bits, e2m3BitsOCPPacked, i, j);
             double expected = ref * e2m3ValuesOCP[j];
@@ -1117,11 +1112,11 @@ TEST_F(ocp_e2m3_mxfp6_test, toFloatAllScalesAllValuesPacked)
 
 TEST_F(ocp_e2m3_mxfp6_test, toDoubleAllScalesAllValues)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         double ref = e8m0Values[i];
 
-        for(int j = 0; j < e2m3ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e2m3ValuesOCP.size(); j++)
         {
             double res      = toDouble<DT>(e8m0Bits, e2m3BitsOCP, i, j);
             double expected = ref * e2m3ValuesOCP[j];
@@ -1135,11 +1130,11 @@ TEST_F(ocp_e2m3_mxfp6_test, toDoubleAllScalesAllValues)
 
 TEST_F(ocp_e2m3_mxfp6_test, toDoubleAllScalesAllValuesPacked)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         double ref = e8m0Values[i];
 
-        for(int j = 0; j < e2m3ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e2m3ValuesOCP.size(); j++)
         {
             double res      = toDoublePacked<DT>(e8m0Bits, e2m3BitsOCPPacked, i, j);
             double expected = ref * e2m3ValuesOCP[j];
@@ -1403,7 +1398,7 @@ TEST_F(ocp_e2m3_mxfp6_test, preserveSignWithNaN)
 
     t.num = std::numeric_limits<float>::quiet_NaN();
 
-    t.bRep |= 1 << 31;
+    t.bRep |= 1U << 31;
 
     EXPECT_EQ(0b111111, satConvertToType<DT>(t.num));
     EXPECT_EQ(0b111111, satConvertToTypeSR<DT>(t.num, 0));
@@ -1431,19 +1426,17 @@ TEST_F(ocp_e2m3_mxfp6_test, satConvertToTypeRandom)
 
     std::default_random_engine re;
 
-    uint8_t data[1];
     for(int i = 0; i < 1000000; i++)
     {
         std::uniform_real_distribution<float> unif(lb, ub);
 
         float rNum = unif(re);
 
-        uint8_t res    = satConvertToType<DT>(rNum);
-        uint8_t data[] = {res};
+        uint8_t res = satConvertToType<DT>(rNum);
 
         float closestDiff = getClosest(rNum);
 
-        EXPECT_EQ(closestDiff, std::abs(rNum - toDouble<DT>(scale, data, 0, 0)));
+        EXPECT_EQ(closestDiff, std::abs(rNum - toDouble<DT>(scale, &res, 0, 0)));
     }
 }
 

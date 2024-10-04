@@ -127,7 +127,7 @@ protected:
     {
         float closestDiff = 500;
 
-        for(int i = 0; i < e3m2ValuesOCP.size(); i++)
+        for(size_t i = 0; i < e3m2ValuesOCP.size(); i++)
         {
             if(std::isnan(e3m2ValuesOCP[i]))
                 continue;
@@ -993,10 +993,10 @@ TEST_F(ocp_e3m2_mxfp6_test, isGreaterPacked)
 
 TEST_F(ocp_e3m2_mxfp6_test, toFloatAllScalesAllValues)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         float ref = e8m0Values[i];
-        for(int j = 0; j < e3m2ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e3m2ValuesOCP.size(); j++)
         {
             float  res      = toFloat<DT>(e8m0Bits, e3m2BitsOCP, i, j);
             double expected = ref * e3m2ValuesOCP[j];
@@ -1014,10 +1014,10 @@ TEST_F(ocp_e3m2_mxfp6_test, toFloatAllScalesAllValues)
 
 TEST_F(ocp_e3m2_mxfp6_test, toFloatAllScalesAllValuesPacked)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         float ref = e8m0Values[i];
-        for(int j = 0; j < e3m2ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e3m2ValuesOCP.size(); j++)
         {
             float  res      = toFloatPacked<DT>(e8m0Bits, e3m2BitsOCPPacked, i, j);
             double expected = ref * e3m2ValuesOCP[j];
@@ -1035,11 +1035,11 @@ TEST_F(ocp_e3m2_mxfp6_test, toFloatAllScalesAllValuesPacked)
 
 TEST_F(ocp_e3m2_mxfp6_test, toDoubleAllScalesAllValues)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         double ref = e8m0Values[i];
 
-        for(int j = 0; j < e3m2ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e3m2ValuesOCP.size(); j++)
         {
             double res      = toDouble<DT>(e8m0Bits, e3m2BitsOCP, i, j);
             double expected = ref * e3m2ValuesOCP[j];
@@ -1053,11 +1053,11 @@ TEST_F(ocp_e3m2_mxfp6_test, toDoubleAllScalesAllValues)
 
 TEST_F(ocp_e3m2_mxfp6_test, toDoubleAllScalesAllValuesPacked)
 {
-    for(int i = 0; i < e8m0Values.size(); i++)
+    for(size_t i = 0; i < e8m0Values.size(); i++)
     {
         double ref = e8m0Values[i];
 
-        for(int j = 0; j < e3m2ValuesOCP.size(); j++)
+        for(size_t j = 0; j < e3m2ValuesOCP.size(); j++)
         {
             double res      = toDoublePacked<DT>(e8m0Bits, e3m2BitsOCPPacked, i, j);
             double expected = ref * e3m2ValuesOCP[j];
@@ -1379,7 +1379,7 @@ TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeNaN)
     } t;
 
     t.num = std::numeric_limits<float>::quiet_NaN();
-    t.bRep |= (1 << 31);
+    t.bRep |= (1U << 31);
 
     *tData = static_cast<uint8_t>(satConvertToType<DT>(t.num));
     EXPECT_EQ(-getDataMax<DT>(), toFloat<DT>(scale, tData, 0, 0));
@@ -1417,15 +1417,13 @@ TEST_F(ocp_e3m2_mxfp6_test, isSubnormal)
 {
     uint8_t temp[] = {0b0, Constants::E8M0_1};
 
-    for(int i = 0; i < e3m2ValuesOCP.size(); i++)
+    for(size_t i = 0; i < e3m2ValuesOCP.size(); i++)
     {
         uint8_t data = static_cast<uint8_t>(i) & 0x3f;
 
         temp[0] = data;
 
         uint8_t exp = (data >> 2) & 0x7;
-
-        double value = toDouble<DT>(temp, temp, 1, 0);
 
         if(exp != 0b0)
             EXPECT_TRUE(!isSubnorm<DT>(temp, 0));
@@ -1438,9 +1436,9 @@ TEST_F(ocp_e3m2_mxfp6_test, isSubnormalPacked)
 {
     uint8_t temp[] = {0b0, 0b0, 0b0, Constants::E8M0_1};
 
-    for(int i = 0; i < e3m2ValuesOCP.size(); i++)
+    for(size_t i = 0; i < e3m2ValuesOCP.size(); i++)
     {
-        int rem = i % 4;
+        size_t rem = i % 4;
 
         uint8_t l = 0b0;
         uint8_t r = 0b0;
@@ -1481,8 +1479,6 @@ TEST_F(ocp_e3m2_mxfp6_test, isSubnormalPacked)
             *(temp + 2) |= (data << 2);
             break;
         }
-
-        double value = toDouble<DT>(temp, temp, 3, rem);
 
         uint8_t exp = (data >> 2) & 0x7;
 

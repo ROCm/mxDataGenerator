@@ -12,13 +12,13 @@ using ::testing::TestWithParam;
 using namespace DGen;
 
 using DataGeneratorTypes = ::testing::Types<f32,
-    fp16,
-    bf16,
-    ocp_e4m3_mxfp8,
-    ocp_e5m2_mxfp8,
-    ocp_e2m3_mxfp6,
-    ocp_e3m2_mxfp6,
-    ocp_e2m1_mxfp4>;
+                                            fp16,
+                                            bf16,
+                                            ocp_e4m3_mxfp8,
+                                            ocp_e5m2_mxfp8,
+                                            ocp_e2m3_mxfp6,
+                                            ocp_e3m2_mxfp6,
+                                            ocp_e2m1_mxfp4>;
 
 typedef std::tuple<bool, bool, bool, bool, vector<double>, DataScaling, vector<int>>
     BoundedTupleType;
@@ -109,15 +109,13 @@ void set_block_size_stride(const vector<int>& dims,
 
     block_scale = dims[0];
 
-    const auto n = dims.size() / 2;
-    size         = vector<int>(&dims[1], &dims[n + 1]);
-    stride       = vector<int>(&dims[n + 1], &dims[dims.size()]);
+    const auto n = (dims.size() - 1) / 2 + 1;
+    size         = vector<int>(dims.begin() + 1, dims.begin() + n);
+    stride       = vector<int>(dims.begin() + n, dims.end());
 }
 
 std::ostream& operator<<(std::ostream& os, const DataGeneratorOptions& opts)
 {
-    vector<int> size, stride;
-
     os << std::boolalpha;
 
     os << "clampToF32{" << opts.clampToF32 << "} ";
@@ -187,7 +185,7 @@ public:
         const auto ref_float  = dgen.getReferenceFloat();
 
         auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -251,16 +249,23 @@ public:
         }
 
         if(opts.includeNaN && DataType::dataInfo.hasNan)
+        {
             EXPECT_TRUE(has_nan);
+        }
+
         if(opts.includeInf && DataType::dataInfo.hasInf)
+        {
             EXPECT_TRUE(has_inf);
+        }
 
         if(opts.forceDenorm && isScaled<DataType>()
            && ((opts.min < getDataMinSubnorm<DataType>()
                 && opts.max > getDataMinSubnorm<DataType>())
                || (opts.min < -getDataMinSubnorm<DataType>()
                    && opts.max > -getDataMinSubnorm<DataType>())))
+        {
             EXPECT_TRUE(has_sbn);
+        }
     }
 };
 
@@ -304,7 +309,7 @@ public:
         const auto ref_float  = dgen.getReferenceFloat();
 
         auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -379,13 +384,21 @@ public:
         }
 
         if(opts.includeNaN && getDataHasNan<DataType>())
+        {
             EXPECT_TRUE(has_nan);
+        }
+
         if(opts.includeInf && getDataHasInf<DataType>())
+        {
             EXPECT_TRUE(has_inf);
+        }
+
         if(opts.forceDenorm && isScaled<DataType>()
            && (opts.max > getDataMinSubnorm<DataType>()
                || opts.max > -getDataMinSubnorm<DataType>()))
+        {
             EXPECT_TRUE(has_sbn);
+        }
     }
 };
 
@@ -425,8 +438,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        size_t total_size = size[0];
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -436,7 +449,7 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        for(size_t i = 0; i < total_size; i++)
         {
             // find position
             int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
@@ -485,11 +498,19 @@ public:
         }
 
         if(opts.includeNaN && getDataHasNan<DataType>())
+        {
             EXPECT_TRUE(has_nan);
+        }
+
         if(opts.includeInf && getDataHasInf<DataType>())
+        {
             EXPECT_TRUE(has_inf);
+        }
+
         if(opts.forceDenorm && isScaled<DataType>())
+        {
             EXPECT_TRUE(has_sbn);
+        }
     }
 };
 
@@ -529,8 +550,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        size_t total_size = size[0];
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -540,13 +561,13 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        for(size_t i = 0; i < total_size; i++)
         {
             // find position
-            int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            size_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(size_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -554,7 +575,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const int scale_i = data_i / opts.blockScaling;
+            const size_t scale_i = data_i / opts.blockScaling;
 
             // test
             const auto ref_value = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
@@ -594,11 +615,19 @@ public:
         }
 
         if(opts.includeNaN && getDataHasNan<DataType>())
+        {
             EXPECT_TRUE(has_nan);
+        }
+
         if(opts.includeInf && getDataHasInf<DataType>())
+        {
             EXPECT_TRUE(has_inf);
+        }
+
         if(opts.forceDenorm && isScaled<DataType>())
+        {
             EXPECT_TRUE(has_sbn);
+        }
     }
 };
 
@@ -634,17 +663,17 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        size_t total_size = size[0];
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        for(size_t i = 0; i < total_size; i++)
         {
             // find position
-            int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            size_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
             for(int j = size.size() - 2; j > 0; j--)
@@ -655,7 +684,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const int scale_i = data_i / opts.blockScaling;
+            const size_t scale_i = data_i / opts.blockScaling;
 
             // test
             EXPECT_TRUE(isZeroPacked<DataType>(&scale[0], &data[0], scale_i, data_i));
@@ -701,8 +730,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        size_t total_size = size[0];
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -710,10 +739,10 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        for(size_t i = 0; i < total_size; i++)
         {
             // find position
-            int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            size_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
             for(int j = size.size() - 2; j > 0; j--)
@@ -724,7 +753,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const int scale_i = data_i / opts.blockScaling;
+            const size_t scale_i = data_i / opts.blockScaling;
 
             // test
             EXPECT_TRUE(isOnePacked<DataType>(&scale[0], &data[0], scale_i, data_i));
@@ -739,7 +768,9 @@ public:
         }
 
         if(opts.forceDenorm && isScaled<DataType>())
+        {
             EXPECT_TRUE(has_sbn);
+        }
     }
 };
 
@@ -775,8 +806,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        auto total_size = size[0];
-        for(int i = 1; i < size.size(); i++)
+        size_t total_size = size[0];
+        for(size_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -784,19 +815,19 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        for(size_t i = 0; i < total_size; i++)
         {
             // find position
-            bool diag     = true;
-            int  past_idx = i % size[size.size() - 1];
+            bool   diag     = true;
+            size_t past_idx = i % size[size.size() - 1];
 
-            int data_i = past_idx * stride[size.size() - 1];
+            size_t data_i = past_idx * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
             for(int j = size.size() - 2; j > 0; j--)
             {
-                int curr_idx = (tmp % size[j]);
-                diag         = diag && (past_idx == curr_idx);
+                size_t curr_idx = (tmp % size[j]);
+                diag            = diag && (past_idx == curr_idx);
 
                 data_i += past_idx * stride[j];
                 tmp /= size[j];
@@ -807,7 +838,7 @@ public:
             data_i += tmp * stride[0];
             diag = diag && (past_idx == tmp);
 
-            const int scale_i = data_i / opts.blockScaling;
+            const size_t scale_i = data_i / opts.blockScaling;
 
             // test
             if(diag)
@@ -825,7 +856,9 @@ public:
         }
 
         if(opts.forceDenorm && isScaled<DataType>())
+        {
             EXPECT_TRUE(has_sbn);
+        }
     }
 };
 

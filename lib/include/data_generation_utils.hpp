@@ -4,7 +4,6 @@
 #include <tuple>
 #include <vector>
 
-
 namespace DGen
 {
 
@@ -37,7 +36,7 @@ namespace DGen
     struct dimension_iterator
     {
         const std::vector<int> dimensions;
-        dimension_iterator(std::vector<int> dim)
+        dimension_iterator(std::vector<int> const& dim)
             : dimensions(dim)
         {
         }
@@ -50,7 +49,7 @@ namespace DGen
             std::vector<int>*      curr_ptr;
 
         public:
-            iterator(std::vector<int> dim)
+            iterator(std::vector<int> const& dim)
                 : dimensions(dim)
                 , current(dim.size(), 0)
                 , curr_ptr(&current)
@@ -85,7 +84,7 @@ namespace DGen
             // Prefix increment
             iterator& operator++()
             {
-                for(int i = 0; i < dimensions.size(); ++i)
+                for(size_t i = 0; i < dimensions.size(); ++i)
                 {
                     current[i] += 1;
                     if(current[i] >= dimensions[i])
@@ -137,7 +136,7 @@ namespace DGen
     inline int get_strided_idx(const std::vector<int>& indices, const std::vector<int>& stride)
     {
         int res = 0;
-        for(int i = 0; i < indices.size(); i++)
+        for(size_t i = 0; i < indices.size(); i++)
         {
             res += indices[i] * stride[i];
         }
@@ -170,6 +169,6 @@ namespace DGen
 
         bit_rep.input = val;
 
-	split_dynamic(bit_rep.output, 11u, 52u, sign, exponent, mantissa);
+        split_dynamic(bit_rep.output, 11u, 52u, sign, exponent, mantissa);
     }
 }

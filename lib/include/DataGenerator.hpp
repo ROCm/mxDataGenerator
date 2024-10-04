@@ -98,7 +98,7 @@ namespace DGen
                                             const std::vector<int>& stride);
         void generate_pattern_identity(const std::vector<int>& size,
                                        const std::vector<int>& stride);
-        void generate_pattern_ones(const std::vector<int>& size, const std::vector<int>& stride);
+        void generate_pattern_ones();
 
         void dispatch_generate_pattern(const std::vector<int>& size,
                                        const std::vector<int>& stride);
@@ -129,7 +129,7 @@ namespace DGen
         if(size.size() != stride.size())
             throw std::invalid_argument(
                 "Invalid dimensions: size and stride vectors must have the same size.");
-        if(size.size() < 0)
+        if(size.size() == 0)
             throw std::invalid_argument(
                 "Invalid dimensions: size and stride vectors must have size greater than 0.");
 
@@ -144,10 +144,10 @@ namespace DGen
         m_options = options;
 
         // reorder sizes & strides from least to greatest stride
-        const auto       n_size = size.size();
+        const auto          n_size = size.size();
         std::vector<size_t> perm(n_size);
-        std::vector<int> sorted_size(n_size);
-        std::vector<int> sorted_stride(n_size);
+        std::vector<int>    sorted_size(n_size);
+        std::vector<int>    sorted_stride(n_size);
 
         std::iota(perm.begin(), perm.end(), 0);
         std::sort(perm.begin(), perm.end(), [&](auto a, auto b) { return stride[a] < stride[b]; });
@@ -181,7 +181,7 @@ namespace DGen
         m_dataDesc.byte_size   = (m_dataDesc.bit_size + 7) / 8;
         m_dataDesc.buffer_size = m_dataDesc.byte_size * m_dataDesc.array_size;
 
-        m_scaleDesc = {0};
+        m_scaleDesc = {0, 0, 0, 0};
         if constexpr(isScaled<DTYPE>())
         {
             // block size must be g.t. 0 if type is scaled.
@@ -223,9 +223,10 @@ namespace DGen
     {
         std::vector<double> ret(m_dataDesc.array_size);
 
-        const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
+        const auto block_size
+            = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
 
-        for(int i = 0; i < m_dataDesc.array_size; i++)
+        for(size_t i = 0; i < m_dataDesc.array_size; i++)
         {
             const auto scale_idx = i / block_size;
             ret[i] = toDouble<DTYPE>(m_scaleBytes.data(), m_dataBytes.data(), scale_idx, i);
@@ -239,9 +240,10 @@ namespace DGen
     {
         std::vector<float> ret(m_dataDesc.array_size);
 
-        const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
+        const auto block_size
+            = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
 
-        for(int i = 0; i < m_dataDesc.array_size; i++)
+        for(size_t i = 0; i < m_dataDesc.array_size; i++)
         {
             const auto scale_idx = i / block_size;
             ret[i] = toFloat<DTYPE>(m_scaleBytes.data(), m_dataBytes.data(), scale_idx, i);
@@ -271,7 +273,7 @@ namespace DGen
         switch(src_desc.bit_size)
         {
         case 4:
-            for(int i = 0; i < src_desc.array_size; i++)
+            for(size_t i = 0; i < src_desc.array_size; i++)
             {
                 const auto dst = i / 2;
                 if(i % 2 == 0)
@@ -287,7 +289,7 @@ namespace DGen
             }
             break;
         case 6:
-            for(int i = 0; i < src_desc.array_size; i++)
+            for(size_t i = 0; i < src_desc.array_size; i++)
             {
                 const auto dst      = (i * 6) / 8;
                 const auto offset_i = i % 4;
@@ -331,19 +333,20 @@ namespace DGen
         const auto min = m_options.min;
         const auto max = m_options.max;
 
-        const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
+        const auto block_size
+            = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
 
         dimension_iterator ditr(size);
 
         const bool no_neg = (min >= 0);
         const bool no_pos = (max <= 0);
 
-        auto dataBias  = getDataBias<DTYPE>();
+        auto dataBias         = getDataBias<DTYPE>();
         auto dataMantissaBits = getDataMantissaBits<DTYPE>();
         auto dataExponentBits = getDataExponentBits<DTYPE>();
         auto dataUnbiasedEMin = getDataUnBiasedEMin<DTYPE>();
         // setup scale distribution
-        int32_t scaleBias = getScaleBias<DTYPE>();
+        int32_t scaleBias   = getScaleBias<DTYPE>();
         int32_t min_scale   = getScaleUnBiasedEMin<DTYPE>();
         int32_t max_scale   = getScaleUnBiasedEMax<DTYPE>();
         int32_t max_pos_exp = max_scale + getDataUnBiasedEMax<DTYPE>();
@@ -422,9 +425,8 @@ namespace DGen
         int32_t dtype_max_norm_biased_exp = dtype_max_norm_exp - dataBias;
 
         int32_t ub_block_scale = 0;
-        int32_t block_scale    = 0;
 
-        for(auto itr = ditr.begin(); itr != ditr.end(); itr++)
+        for(auto itr = ditr.begin(); itr != ditr.end(); ++itr)
         {
             //
             // compute indices
@@ -440,8 +442,8 @@ namespace DGen
             {
                 if(block_i == 0)
                 {
-                    ub_block_scale = scale_dist(m_gen);
-                    block_scale    = ub_block_scale + scaleBias;
+                    ub_block_scale      = scale_dist(m_gen);
+                    int32_t block_scale = ub_block_scale + scaleBias;
                     std::memcpy(&m_scaleBytes[scale_i], &block_scale, m_scaleDesc.byte_size);
                 }
             }
@@ -491,12 +493,10 @@ namespace DGen
             }
 
             // if subnorm and subnorm exceeds min exponent
-            if(exp == 0
-               && min_exp
-                      > dataUnbiasedEMin + ub_block_scale - int32_t(dataMantissaBits))
+            if(exp == 0 && min_exp > dataUnbiasedEMin + ub_block_scale - int32_t(dataMantissaBits))
             {
                 uint64_t temp     = 1ULL << int32_t(int32_t(dataMantissaBits) + min_exp
-                                             - int32_t(dataUnbiasedEMin) - ub_block_scale);
+                                                - int32_t(dataUnbiasedEMin) - ub_block_scale);
                 mantissa_dist_min = std::max(mantissa_dist_min, temp);
             }
 
@@ -508,8 +508,7 @@ namespace DGen
 
             if(ub_exp + ub_block_scale == (sign ? max_neg_exp : max_pos_exp))
             {
-                mantissa_dist_max
-                    = (sign ? man_of_min : man_of_max) >> (52 - dataMantissaBits);
+                mantissa_dist_max = (sign ? man_of_min : man_of_max) >> (52 - dataMantissaBits);
             }
 
             if(ub_exp == dtype_max_norm_biased_exp)
@@ -539,7 +538,8 @@ namespace DGen
 
         const auto max = std::abs(m_options.max);
 
-        const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
+        const auto block_size
+            = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
 
         dimension_iterator ditr(size);
 
@@ -584,7 +584,7 @@ namespace DGen
         int32_t ub_block_scale = 0;
         int32_t block_scale    = 0;
 
-        for(auto itr = ditr.begin(); itr != ditr.end(); itr++)
+        for(auto itr = ditr.begin(); itr != ditr.end(); ++itr)
         {
             //
             // compute indices
@@ -645,7 +645,8 @@ namespace DGen
             mantissa = man_dist(m_gen);
 
             // assemble
-            result = uint64_t(sign) << (getDataExponentBits<DTYPE>() + getDataMantissaBits<DTYPE>());
+            result = uint64_t(sign)
+                     << (getDataExponentBits<DTYPE>() + getDataMantissaBits<DTYPE>());
             result |= uint64_t(exp) << getDataMantissaBits<DTYPE>();
             result |= mantissa;
 
@@ -661,17 +662,18 @@ namespace DGen
     {
         using namespace Constants;
 
-        const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
+        const auto block_size
+            = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
 
         dimension_iterator ditr(size);
 
-        auto dataBias  = getDataBias<DTYPE>();
-        auto dataMantissaBits = getDataMantissaBits<DTYPE>();
-        auto dataExponentBits = getDataExponentBits<DTYPE>();
-        auto dataUnbiasedEMin = getDataUnBiasedEMin<DTYPE>();
-        auto scaleBias = getScaleBias<DTYPE>();
-        auto scaleBiasedEMax = getScaleBiasedEMax<DTYPE>();
-        auto scaleBiasedEMin = getScaleBiasedEMin<DTYPE>();
+        auto dataBias          = getDataBias<DTYPE>();
+        auto dataMantissaBits  = getDataMantissaBits<DTYPE>();
+        auto dataExponentBits  = getDataExponentBits<DTYPE>();
+        auto dataUnbiasedEMin  = getDataUnBiasedEMin<DTYPE>();
+        auto scaleBias         = getScaleBias<DTYPE>();
+        auto scaleBiasedEMax   = getScaleBiasedEMax<DTYPE>();
+        auto scaleBiasedEMin   = getScaleBiasedEMin<DTYPE>();
         auto scaleUnbiasedEMax = getScaleUnBiasedEMax<DTYPE>();
         auto scaleUnbiasedEMin = getScaleUnBiasedEMin<DTYPE>();
 
@@ -684,14 +686,14 @@ namespace DGen
         int32_t max_exp = std::numeric_limits<int32_t>::min();
         int32_t min_exp = std::numeric_limits<int32_t>::max();
 
-        for(auto itr = ditr.begin(); itr != ditr.end(); itr++)
+        for(auto itr = ditr.begin(); itr != ditr.end(); ++itr)
         {
             //
             // compute indices
             //
-            int data_i  = get_strided_idx(*itr, stride);
-            int scale_i = (data_i / block_size);
-            int block_i = data_i % block_size;
+            size_t data_i  = get_strided_idx(*itr, stride);
+            size_t scale_i = (data_i / block_size);
+            size_t block_i = data_i % block_size;
 
             //
             // generate random block
@@ -710,12 +712,11 @@ namespace DGen
                                     0,
                                     0)));
 
-            const int32_t exp
-                = getExponentValue(d, dataMantissaBits, dataExponentBits) - dataBias;
+            const int32_t exp = getExponentValue(d, dataMantissaBits, dataExponentBits) - dataBias;
 
             max_exp = std::max(max_exp, exp);
 
-            if(exp != -dataBias)
+            if(exp != -int32_t(dataBias))
             {
                 min_exp = std::min(min_exp, exp);
             }
@@ -759,16 +760,16 @@ namespace DGen
                                                               const std::vector<int>& stride)
     {
         // setup
-        auto dataBias = getDataBias<DTYPE>();
-        auto dataMantissaBits = getDataMantissaBits<DTYPE>();
-        auto dataExponentBits = getDataExponentBits<DTYPE>();
-        auto dataUnbiasedEMin = getDataUnBiasedEMin<DTYPE>();
-        auto scaleBias = getScaleBias<DTYPE>();
-        auto scaleUnbiasedEMin = getScaleUnBiasedEMin<DTYPE>();
-        const auto min_exp    = scaleUnbiasedEMin + dataUnbiasedEMin
-                             - dataMantissaBits/*subnormal*/;
+        auto       dataBias          = getDataBias<DTYPE>();
+        auto       dataMantissaBits  = getDataMantissaBits<DTYPE>();
+        auto       dataExponentBits  = getDataExponentBits<DTYPE>();
+        auto       dataUnbiasedEMin  = getDataUnBiasedEMin<DTYPE>();
+        auto       scaleBias         = getScaleBias<DTYPE>();
+        auto       scaleUnbiasedEMin = getScaleUnBiasedEMin<DTYPE>();
+        const auto min_exp = scaleUnbiasedEMin + dataUnbiasedEMin - dataMantissaBits /*subnormal*/;
 
-        const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
+        const auto block_size
+            = (isScaled<DTYPE>() ? m_options.blockScaling : m_dataDesc.array_size);
 
         dimension_iterator ditr(size);
 
@@ -777,8 +778,7 @@ namespace DGen
 
         std::uniform_real_distribution<> angle_dist(0.0, 2.0 * M_PI);
 
-
-        for(auto itr = ditr.begin(); itr != ditr.end(); itr++)
+        for(auto itr = ditr.begin(); itr != ditr.end(); ++itr)
         {
             //
             // compute indices
@@ -811,20 +811,18 @@ namespace DGen
             if(value_unbiased_exp > 0)
                 throw std::runtime_error("Internal Error");
 
-            uint32_t             scale = scaleBias;
-            std::vector<uint8_t> data(m_dataDesc.byte_size, 0x00);
+            uint32_t scale = scaleBias;
 
             // set sign
             uint64_t result
-                = value_sign ? (uint64_t(1) << (dataExponentBits + dataMantissaBits))
-                             : 0;
+                = value_sign ? (uint64_t(1) << (dataExponentBits + dataMantissaBits)) : 0;
 
             // if subnormal -> return 0
 
             // if normal but less than representable range with scale -> return 0
 
             // within representable range
-            if(value_unbiased_exp >= min_exp)
+            if(value_unbiased_exp >= int32_t(min_exp))
             {
                 // subnormal
                 if(value_unbiased_exp < scaleUnbiasedEMin + dataUnbiasedEMin)
@@ -841,8 +839,7 @@ namespace DGen
                     //  - shift remaining exponent
                     uint64_t res_mantissa = value_mantissa >> (53 - dataMantissaBits);
                     res_mantissa |= uint64_t(1) << (dataMantissaBits - 1);
-                    res_mantissa >>= scaleUnbiasedEMin + dataUnbiasedEMin
-                                     - value_unbiased_exp - 1;
+                    res_mantissa >>= scaleUnbiasedEMin + dataUnbiasedEMin - value_unbiased_exp - 1;
 
                     result |= res_mantissa;
                 }
@@ -898,7 +895,7 @@ namespace DGen
                         = dispatch_scale_block(temp_scale, temp_data, block_size);
 
                     // Write to array
-                    for(int i = 0; i < block_size; i++)
+                    for(size_t i = 0; i < block_size; i++)
                     {
                         std::memcpy(&m_dataBytes[(scale_i * block_size + i) * m_dataDesc.byte_size],
                                     &temp_data[i],
@@ -932,7 +929,8 @@ namespace DGen
             const auto diag_index = i * stride[0] + i * stride[1];
             const auto data_index = diag_index * m_dataDesc.byte_size;
             const auto scale_index
-                = isScaled<DTYPE>() ? (diag_index / m_options.blockScaling) * m_scaleDesc.byte_size : 0;
+                = isScaled<DTYPE>() ? (diag_index / m_options.blockScaling) * m_scaleDesc.byte_size
+                                    : 0;
 
             std::memcpy(&m_dataBytes[data_index], &d_one[0], m_dataDesc.byte_size);
 
@@ -944,20 +942,19 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    inline void DataGenerator<DTYPE>::generate_pattern_ones(const std::vector<int>& size,
-                                                            const std::vector<int>& stride)
+    inline void DataGenerator<DTYPE>::generate_pattern_ones()
     {
         std::vector<uint8_t> d_one(m_dataDesc.byte_size, 0x00);
         std::vector<uint8_t> s_one(m_scaleDesc.byte_size, 0x00);
 
         setOne<DTYPE>(s_one.data(), d_one.data(), 0, 0, m_options.forceDenorm);
 
-        for(int i = 0; i < m_dataDesc.array_size; i++)
+        for(size_t i = 0; i < m_dataDesc.array_size; i++)
         {
             std::memcpy(&m_dataBytes[i * m_dataDesc.byte_size], &d_one[0], m_dataDesc.byte_size);
         }
 
-        for(int i = 0; i < m_scaleDesc.array_size; i++)
+        for(size_t i = 0; i < m_scaleDesc.array_size; i++)
         {
             std::memcpy(&m_scaleBytes[i * m_scaleDesc.byte_size], &s_one[0], m_scaleDesc.byte_size);
         }
@@ -980,7 +977,7 @@ namespace DGen
         case Identity:
             return generate_pattern_identity(size, stride);
         case Ones:
-            return generate_pattern_ones(size, stride);
+            return generate_pattern_ones();
         case Zeros:
             return;
         }
@@ -991,13 +988,12 @@ namespace DGen
                                                            std::vector<uint64_t>&       data,
                                                            int                          block_size)
     {
-        auto dataBias = getDataBias<DTYPE>();
+        auto dataBias         = getDataBias<DTYPE>();
         auto dataMantissaBits = getDataMantissaBits<DTYPE>();
         auto dataExponentBits = getDataExponentBits<DTYPE>();
         auto dataUnbiasedEMin = getDataUnBiasedEMin<DTYPE>();
         auto dataHasInf       = getDataHasInf<DTYPE>();
         auto dataHasNan       = getDataHasNan<DTYPE>();
-        auto scaleBias = getScaleBias<DTYPE>();
         //
         // compute block scale
         //
@@ -1022,8 +1018,7 @@ namespace DGen
 
         avg_scale /= n;
 
-        uint32_t block_scale          = std::round(avg_scale);
-        int32_t  unbiased_block_scale = block_scale - scaleBias;
+        uint32_t block_scale = std::round(avg_scale);
 
         //
         // adjust data
@@ -1056,8 +1051,7 @@ namespace DGen
             else
             {
                 int32_t adjusted_s
-                    = getExponentValue(d, dataMantissaBits, dataExponentBits)
-                      - dataBias;
+                    = getExponentValue(d, dataMantissaBits, dataExponentBits) - dataBias;
                 adjusted_s += s - block_scale;
 
                 int32_t min_exp = dataUnbiasedEMin - dataMantissaBits;
@@ -1079,14 +1073,12 @@ namespace DGen
                     if(adjusted_s < dataUnbiasedEMin)
                     {
                         // calc mantissa
-                        uint64_t res_mantissa
-                            = (d & ((uint64_t(1) << dataMantissaBits) - 1)) >> 1;
+                        uint64_t res_mantissa = (d & ((uint64_t(1) << dataMantissaBits) - 1)) >> 1;
                         res_mantissa |= uint64_t(1) << (dataMantissaBits - 1);
                         res_mantissa >>= dataUnbiasedEMin - adjusted_s - 1;
 
                         // set exponent and reset mantissa
-                        d &= ~((uint64_t(1) << (dataExponentBits + dataMantissaBits))
-                               - 1);
+                        d &= ~((uint64_t(1) << (dataExponentBits + dataMantissaBits)) - 1);
 
                         // set mantissa
                         d |= res_mantissa;
@@ -1106,8 +1098,7 @@ namespace DGen
                     else
                     {
                         const auto sign
-                            = d
-                              & (uint64_t(1) << (dataExponentBits + dataMantissaBits));
+                            = d & (uint64_t(1) << (dataExponentBits + dataMantissaBits));
 
                         if(m_options.includeInf && dataHasInf)
                         {
@@ -1128,10 +1119,7 @@ namespace DGen
                             setDataMax<DTYPE>(reinterpret_cast<uint8_t*>(&d), 0);
                         }
 
-                        d = sign
-                            | (d
-                               & ~(uint64_t(1)
-                                   << (dataExponentBits + dataMantissaBits)));
+                        d = sign | (d & ~(uint64_t(1) << (dataExponentBits + dataMantissaBits)));
                     }
                 }
                 else
@@ -1179,7 +1167,7 @@ namespace DGen
             return;
         }
 
-        const auto clmp_block_size
+        const size_t clmp_block_size
             = std::clamp(block_size, {SPRINKLE_BLOCK_MIN}, SPRINKLE_BLOCK_MAX);
         std::uniform_int_distribution<> idx_dist(0, clmp_block_size - 1);
 
@@ -1191,15 +1179,15 @@ namespace DGen
         //  - select a random element to set to Inf if applicable.
         //  - select a random element to set to a denorm if applicable and possible.
         //
-        bool has_nan;
-        bool has_inf;
-        bool has_sbn;
+        bool has_nan [[maybe_unused]] = false;
+        bool has_inf [[maybe_unused]] = false;
+        bool has_sbn                  = false;
 
         std::vector<bool> marked(clmp_block_size);
-        size_t               marked_count = 0;
-        size_t               block_data_i = 0;
+        size_t            marked_count = 0;
+        size_t            block_data_i = 0;
 
-        for(auto itr = ditr.begin(); itr != ditr.end(); itr++)
+        for(auto itr = ditr.begin(); itr != ditr.end(); ++itr)
         {
             size_t data_i       = (size_t)get_strided_idx(*itr, stride);
             size_t scale_i      = (data_i / block_size);
@@ -1301,16 +1289,18 @@ namespace DGen
                         std::memcpy(&result,
                                     &m_dataBytes[target_data_i * m_dataDesc.byte_size],
                                     m_dataDesc.byte_size);
-                        result
-                            &= (uint64_t(1) << (getDataMantissaBits<DTYPE>() + getDataExponentBits<DTYPE>()));
+                        result &= (uint64_t(1) << (getDataMantissaBits<DTYPE>()
+                                                   + getDataExponentBits<DTYPE>()));
 
                         // generate mantissa
                         uint64_t mantissa = 0;
 
                         uint64_t mantissa_dist_min = 1;
-                        uint64_t mantissa_dist_max = (uint64_t(1) << getDataMantissaBits<DTYPE>()) - 1;
+                        uint64_t mantissa_dist_max
+                            = (uint64_t(1) << getDataMantissaBits<DTYPE>()) - 1;
 
-                        if(unbiased_min_exp > int32_t(exp_bound - int32_t(getDataMantissaBits<DTYPE>())))
+                        if(unbiased_min_exp
+                           > int32_t(exp_bound - int32_t(getDataMantissaBits<DTYPE>())))
                         {
                             mantissa_dist_min = 1 << int32_t(int32_t(getDataMantissaBits<DTYPE>())
                                                              + unbiased_min_exp - exp_bound);
