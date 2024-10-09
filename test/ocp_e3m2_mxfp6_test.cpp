@@ -1372,11 +1372,7 @@ TEST_F(ocp_e3m2_mxfp6_test, satConvertToTypeNaN)
     uint8_t scale[] = {Constants::E8M0_1};
     EXPECT_EQ(getDataMax<DT>(), toFloat<DT>(scale, tData, 0, 0));
 
-    union cvt
-    {
-        float num;
-        uint  bRep;
-    } t;
+    cvt t;
 
     t.num = std::numeric_limits<float>::quiet_NaN();
     t.bRep |= (1U << 31);

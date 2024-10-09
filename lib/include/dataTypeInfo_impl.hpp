@@ -305,11 +305,7 @@ inline T convertToType(float value)
 
         float maxVal = getDataMax<DTYPE>();
 
-        union cvt
-        {
-            float num;
-            uint  bRep;
-        } t;
+        cvt t;
 
         t.num     = maxVal;
         uint bMax = t.bRep;
@@ -462,11 +458,7 @@ inline T convertToTypeSR(float value, uint seed)
     {
         float maxVal = getDataMax<DTYPE>();
 
-        union cvt
-        {
-            float num;
-            uint  bRep;
-        } t;
+        cvt t;
 
         t.num     = maxVal;
         uint bMax = t.bRep;

@@ -347,12 +347,8 @@ inline void setDataMaxPacked<ocp_e2m3_mxfp6>(uint8_t* dataBytes,
 template <>
 inline uint64_t satConvertToType<ocp_e2m3_mxfp6>(float value)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -386,12 +382,8 @@ inline uint64_t nonSatConvertToType<ocp_e2m3_mxfp6>(float value [[maybe_unused]]
 template <>
 inline uint64_t satConvertToTypeSR<ocp_e2m3_mxfp6>(float value, uint seed)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in = value;
+    cvt t;
+    t.num = value;
 
     uint sign = t.bRep >> 31;
 

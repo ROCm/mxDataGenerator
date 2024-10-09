@@ -1397,12 +1397,12 @@ TEST_F(ocp_e2m1_mxfp4_test, getDataMax)
 
 TEST_F(ocp_e2m1_mxfp4_test, getDataMin)
 {
-    EXPECT_EQ(std::pow(2, 1 - 1), getDataMin<DT>()); // Min biased exp
+    EXPECT_EQ(1.f, getDataMin<DT>()); // Min biased exp
 }
 
 TEST_F(ocp_e2m1_mxfp4_test, getDataMaxSubnorm)
 {
-    float exp      = std::pow(2, 1 - 1); // Min biased exp
+    float exp      = 1.f; // Min biased exp
     float mBits    = getDataMantissaBits<DT>();
     float mantissa = std::pow(2, -mBits) * (std::pow(2, mBits) - 1);
     EXPECT_EQ(exp * mantissa, getDataMaxSubnorm<DT>());
@@ -1410,7 +1410,7 @@ TEST_F(ocp_e2m1_mxfp4_test, getDataMaxSubnorm)
 
 TEST_F(ocp_e2m1_mxfp4_test, getDataMinSubnorm)
 {
-    float exp          = std::pow(2, 1 - 1); // Min biased exp
+    float exp          = 1.f; // Min biased exp
     float mantissaBits = getDataMantissaBits<DT>();
     float mantissa     = std::pow(2, -mantissaBits) * 1;
     EXPECT_EQ(exp * mantissa, getDataMinSubnorm<DT>());
@@ -1532,15 +1532,11 @@ TEST_F(ocp_e2m1_mxfp4_test, midPointSR)
 
 TEST_F(ocp_e2m1_mxfp4_test, preserveSign)
 {
-    union cvt
-    {
-        float num;
-        uint  bRep;
-    } t;
+    cvt t;
 
     t.num = std::numeric_limits<float>::quiet_NaN();
 
-    t.bRep |= 1 << 31;
+    t.bRep |= 1u << 31;
 
     EXPECT_EQ(0b1111, satConvertToType<DT>(t.num));
     EXPECT_EQ(0b1111, satConvertToTypeSR<DT>(t.num, 0));

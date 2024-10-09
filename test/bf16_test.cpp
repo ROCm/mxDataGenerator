@@ -1487,11 +1487,7 @@ TEST_F(bf16_test, midPointTest)
 
 TEST_F(bf16_test, preserveSign)
 {
-    union cvt
-    {
-        float num;
-        uint  bRep;
-    } t;
+    cvt t;
 
     t.num = std::numeric_limits<float>::quiet_NaN();
 

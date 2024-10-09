@@ -2,12 +2,6 @@
 #include "dataTypeInfo.hpp"
 #include "f32.hpp"
 
-union cvt
-{
-    float in;
-    uint  bRep;
-};
-
 inline uint getDataF32(const uint8_t* dataBytes, size_t index)
 {
     size_t cellIndex = index * 4;
@@ -47,7 +41,7 @@ inline bool isOne<f32>(uint8_t const* scaleBytes [[maybe_unused]],
     cvt t;
     t.bRep = bRep;
 
-    return t.in == 1.0f;
+    return t.num == 1.0f;
 }
 
 //return true iff XN = NAN
@@ -62,7 +56,7 @@ inline bool isNaN<f32>(uint8_t const* scaleBytes [[maybe_unused]],
     cvt t;
     t.bRep = bRep;
 
-    return std::isnan(t.in);
+    return std::isnan(t.num);
 }
 
 // return true iff XN = 0
@@ -81,7 +75,7 @@ inline bool isZero<f32>(uint8_t const* scaleBytes,
     cvt t;
     t.bRep = bRep;
 
-    return t.in == 0.0f;
+    return t.num == 0.0f;
 }
 
 template <>
@@ -95,7 +89,7 @@ inline bool isInf<f32>(uint8_t const* scaleBytes [[maybe_unused]],
     cvt t;
     t.bRep = bRep;
 
-    return std::isinf(t.in);
+    return std::isinf(t.num);
 }
 
 //return true iff XN < val
@@ -111,7 +105,7 @@ inline bool isLess<f32>(double         val,
     cvt t;
     t.bRep = bRep;
 
-    return static_cast<double>(t.in) < val;
+    return static_cast<double>(t.num) < val;
 }
 
 //return true iff XN > val
@@ -127,7 +121,7 @@ inline bool isGreater<f32>(double         val,
     cvt t;
     t.bRep = bRep;
 
-    return static_cast<double>(t.in) > val;
+    return static_cast<double>(t.num) > val;
 }
 
 // // return the double value of XN
@@ -142,7 +136,7 @@ inline double toDouble<f32>(uint8_t const* scaleBytes [[maybe_unused]],
     cvt t;
     t.bRep = bRep;
 
-    return static_cast<double>(t.in);
+    return static_cast<double>(t.num);
 }
 
 template <>
@@ -156,7 +150,7 @@ inline float toFloat<f32>(uint8_t const* scaleBytes [[maybe_unused]],
     cvt t;
     t.bRep = bRep;
 
-    return t.in;
+    return t.num;
 }
 
 // return true iff the number is positive one
@@ -355,7 +349,7 @@ template <>
 inline uint64_t satConvertToType<f32>(float value)
 {
     cvt t;
-    t.in = value;
+    t.num = value;
 
     return t.bRep;
 }
@@ -364,7 +358,7 @@ template <>
 inline uint64_t nonSatConvertToType<f32>(float value)
 {
     cvt t;
-    t.in = value;
+    t.num = value;
 
     return t.bRep;
 }
@@ -373,7 +367,7 @@ template <>
 inline uint64_t satConvertToTypeSR<f32>(float value, uint seed [[maybe_unused]])
 {
     cvt t;
-    t.in = value;
+    t.num = value;
 
     return t.bRep;
 }
@@ -382,7 +376,7 @@ template <>
 inline uint64_t nonSatConvertToTypeSR<f32>(float value, uint seed [[maybe_unused]])
 {
     cvt t;
-    t.in = value;
+    t.num = value;
 
     return t.bRep;
 }
