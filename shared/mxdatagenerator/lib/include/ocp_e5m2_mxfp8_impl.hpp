@@ -221,12 +221,8 @@ inline void
 template <>
 inline uint64_t satConvertToType<ocp_e5m2_mxfp8>(float value)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -255,12 +251,8 @@ inline uint64_t satConvertToType<ocp_e5m2_mxfp8>(float value)
 template <>
 inline uint64_t nonSatConvertToType<ocp_e5m2_mxfp8>(float value)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -287,12 +279,8 @@ inline uint64_t nonSatConvertToType<ocp_e5m2_mxfp8>(float value)
 template <>
 inline uint64_t satConvertToTypeSR<ocp_e5m2_mxfp8>(float value, uint seed)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
     if(std::isnan(value))
         return sign << 15 | ocp_e5m2_mxfp8::dataNaNMasks[0];
@@ -321,13 +309,9 @@ inline uint64_t satConvertToTypeSR<ocp_e5m2_mxfp8>(float value, uint seed)
 template <>
 inline uint64_t nonSatConvertToTypeSR<ocp_e5m2_mxfp8>(float value, uint seed)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
+    cvt t;
 
-    t.in      = value;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))

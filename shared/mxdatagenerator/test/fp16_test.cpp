@@ -1622,11 +1622,7 @@ TEST_F(fp16_test, greaterThanMaxTest)
 {
 
     float max = getDataMax<DT>();
-    union cvt
-    {
-        float num;
-        uint  bRep;
-    } t;
+    cvt t;
 
     t.num     = max;
     uint bMax = t.bRep;

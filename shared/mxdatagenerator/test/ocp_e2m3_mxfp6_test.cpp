@@ -1390,11 +1390,7 @@ TEST_F(ocp_e2m3_mxfp6_test, satConvertToTypeSRLargeNeg)
 
 TEST_F(ocp_e2m3_mxfp6_test, preserveSignWithNaN)
 {
-    union cvt
-    {
-        float num;
-        uint  bRep;
-    } t;
+    cvt t;
 
     t.num = std::numeric_limits<float>::quiet_NaN();
 
@@ -1454,12 +1450,12 @@ TEST_F(ocp_e2m3_mxfp6_test, getDataMax)
 
 TEST_F(ocp_e2m3_mxfp6_test, getDataMin)
 {
-    EXPECT_EQ(std::pow(2, 1 - 1), getDataMin<DT>()); // Min biased exp
+    EXPECT_EQ(1.f, getDataMin<DT>()); // Min biased exp
 }
 
 TEST_F(ocp_e2m3_mxfp6_test, getDataMaxSubnorm)
 {
-    float exp      = std::pow(2, 1 - 1); // Min biased exp
+    float exp      = 1.f; // Min biased exp
     float mBits    = getDataMantissaBits<DT>();
     float mantissa = std::pow(2, -mBits) * (std::pow(2, mBits) - 1);
     EXPECT_EQ(exp * mantissa, getDataMaxSubnorm<DT>());
@@ -1467,7 +1463,7 @@ TEST_F(ocp_e2m3_mxfp6_test, getDataMaxSubnorm)
 
 TEST_F(ocp_e2m3_mxfp6_test, getDataMinSubnorm)
 {
-    float exp      = std::pow(2, 1 - 1); // Min biased exp
+    float exp      = 1.f; // Min biased exp
     float mBits    = getDataMantissaBits<DT>();
     float mantissa = std::pow(2, -mBits) * 1;
     EXPECT_EQ(exp * mantissa, getDataMinSubnorm<DT>());

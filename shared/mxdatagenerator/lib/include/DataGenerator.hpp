@@ -133,14 +133,6 @@ namespace DGen
             throw std::invalid_argument(
                 "Invalid dimensions: size and stride vectors must have size greater than 0.");
 
-        // quick return
-        if(size.size() == 0)
-        {
-            m_dataBytes.resize(0);
-            m_scaleBytes.resize(0);
-            return *this;
-        }
-
         m_options = options;
 
         // reorder sizes & strides from least to greatest stride

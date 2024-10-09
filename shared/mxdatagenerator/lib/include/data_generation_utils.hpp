@@ -36,7 +36,7 @@ namespace DGen
     struct dimension_iterator
     {
         const std::vector<int> dimensions;
-        dimension_iterator(std::vector<int> const& dim)
+        explicit dimension_iterator(std::vector<int> const& dim)
             : dimensions(dim)
         {
         }
@@ -49,7 +49,7 @@ namespace DGen
             std::vector<int>*      curr_ptr;
 
         public:
-            iterator(std::vector<int> const& dim)
+            explicit iterator(std::vector<int> const& dim)
                 : dimensions(dim)
                 , current(dim.size(), 0)
                 , curr_ptr(&current)
