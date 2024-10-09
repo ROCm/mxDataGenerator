@@ -82,6 +82,12 @@ namespace DGen
         static constexpr int biasedEMin   = 0;
         static constexpr int biasedEMax   = 254;
     };
+    
+    union cvt
+    {
+        float num;
+        uint  bRep;
+    };
 
     /**
      * Get the unbiased exponent value from a bit representation

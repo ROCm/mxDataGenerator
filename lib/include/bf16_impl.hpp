@@ -344,12 +344,8 @@ inline void
 template <>
 inline uint64_t satConvertToType<bf16>(float value)
 {
-    union cvt
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -377,12 +373,8 @@ inline uint64_t satConvertToType<bf16>(float value)
 template <>
 inline uint64_t nonSatConvertToType<bf16>(float value)
 {
-    union cvt
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -410,13 +402,9 @@ inline uint64_t nonSatConvertToType<bf16>(float value)
 template <>
 inline uint64_t satConvertToTypeSR<bf16>(float value, uint seed)
 {
-    union cvt
-    {
-        float in;
-        uint  bRep;
-    } t;
+    cvt t;
 
-    t.in      = value;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -444,12 +432,8 @@ inline uint64_t satConvertToTypeSR<bf16>(float value, uint seed)
 template <>
 inline uint64_t nonSatConvertToTypeSR<bf16>(float value, uint seed)
 {
-    union cvt
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))

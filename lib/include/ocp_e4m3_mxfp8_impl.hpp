@@ -203,12 +203,8 @@ template <>
 inline uint64_t satConvertToType<ocp_e4m3_mxfp8>(float value)
 {
 
-    union cvt
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -246,12 +242,8 @@ inline uint64_t nonSatConvertToType<ocp_e4m3_mxfp8>(float value)
 
     float resVal = toFloat<ocp_e4m3_mxfp8>(tScale, tData, 0, 0);
 
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     //std::abs(value) > dataMaxNornal covers inf case as well
@@ -267,12 +259,8 @@ inline uint64_t nonSatConvertToType<ocp_e4m3_mxfp8>(float value)
 template <>
 inline uint64_t satConvertToTypeSR<ocp_e4m3_mxfp8>(float value, uint seed)
 {
-    union
-    {
-        float in;
-        uint  bRep;
-    } t;
-    t.in      = value;
+    cvt t;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -305,7 +293,7 @@ inline uint64_t nonSatConvertToTypeSR<ocp_e4m3_mxfp8>(float value, uint seed)
 {
 
     cvt t;
-    t.in      = value;
+    t.num      = value;
     uint sign = t.bRep >> 31;
 
     if(std::isnan(value))
@@ -323,7 +311,7 @@ inline uint64_t nonSatConvertToTypeSR<ocp_e4m3_mxfp8>(float value, uint seed)
     float resVal = toFloat<ocp_e4m3_mxfp8>(tScale, tData, 0, 0);
 
     //std::abs(value) > dataMaxNornal covers inf case as well
-    if(std::abs(resVal) > ocp_e4m3_mxfp8::dataMaxNormalNumber || std::isnan(value))
+    if(std::abs(resVal) > ocp_e4m3_mxfp8::dataMaxNormalNumber)
         return sign << 7 | ocp_e4m3_mxfp8::dataNaNMasks[0];
 
     if(std::abs(resVal) < ocp_e4m3_mxfp8::dataMinSubnormalNumber)
