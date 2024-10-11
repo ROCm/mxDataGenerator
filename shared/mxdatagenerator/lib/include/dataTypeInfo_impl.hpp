@@ -307,9 +307,11 @@ inline T convertToType(float value)
 
         cvt t;
 
+        // cppcheck-suppress redundantAssignment
         t.num     = maxVal;
         uint bMax = t.bRep;
 
+        // cppcheck-suppress redundantAssignment
         t.num      = value;
         T sign     = t.bRep >> 31;
         T exp      = ((bMax >> F32MANTISSABITS) & 0xff) - (127 - getDataBias<DTYPE>());
@@ -459,10 +461,12 @@ inline T convertToTypeSR(float value, uint seed)
         float maxVal = getDataMax<DTYPE>();
 
         cvt t;
-
+        
+        // cppcheck-suppress redundantAssignment
         t.num     = maxVal;
         uint bMax = t.bRep;
 
+        // cppcheck-suppress redundantAssignment
         t.num  = value;
         T sign = t.bRep >> 31;
         T exp  = ((bMax >> F32MANTISSABITS) & 0xff) - (127 - getDataBias<DTYPE>());

@@ -46,6 +46,8 @@ namespace DGen
     class DataGenerator
     {
     public:
+        DataGenerator() = default;
+
         using Generator = std::mt19937;
         // generate internal byte buffers/
         DataGenerator& generate(std::vector<int>            size,
@@ -75,10 +77,10 @@ namespace DGen
 
         struct BufferDesc
         {
-            size_t array_size;
-            size_t bit_size;
-            size_t byte_size;
-            size_t buffer_size;
+            size_t array_size = 0;
+            size_t bit_size = 0;
+            size_t byte_size = 0;
+            size_t buffer_size = 0;
         };
 
         BufferDesc m_dataDesc;
