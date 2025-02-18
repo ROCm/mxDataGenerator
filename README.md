@@ -23,7 +23,7 @@ This library supports data generation for different floating point formats, as w
 
 To build mxDataGenerator natively
 ```
-git clone https://github.com/ROCm/mxDataGenerator.git
+git clone git@github.com:ROCm/mxDataGenerator.git
 cd mxDataGenerator
 mkdir -p build; cd build;
 CXX=[clang++|g++|hipcc] cmake ..
