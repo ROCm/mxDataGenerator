@@ -53,10 +53,10 @@ RUN wget -nv https://github.com/ccache/ccache/releases/download/v4.4.2/ccache-4.
     rm -r ccache-4.4.2 ccache*.tar.gz build
 
 # ROCm 6.2
-RUN wget -O /tmp/amdgpu_install.deb https://repo.radeon.com/amdgpu-install/6.2/ubuntu/jammy/amdgpu-install_6.2.60200-1_all.deb \
+RUN wget -O /tmp/amdgpu_install.deb https://repo.radeon.com/amdgpu-install/6.2.2/ubuntu/jammy/amdgpu-install_6.2.60202-1_all.deb \
     && sudo apt-get update \
     && apt-get install -y /tmp/amdgpu_install.deb \
-    && amdgpu-install -y --usecase=rocm --no-dkms \
+    && amdgpu-install -y --usecase=rocmdev --no-dkms \
     && rm /tmp/amdgpu_install.deb
 
 RUN ( \

@@ -31,10 +31,12 @@ add_executable(
   test/ocp_e2m1_mxfp4_test.cpp
 )
 
+find_package(OpenMP)
 target_link_libraries(
   mxDataGeneratorTests PRIVATE
   GTest::gtest_main
   mxDataGenerator
+  OpenMP::OpenMP_CXX
 )
 
 include(GoogleTest)
