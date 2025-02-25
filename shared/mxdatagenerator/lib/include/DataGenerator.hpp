@@ -3,6 +3,8 @@
 #include "data_generation_utils.hpp"
 
 #include <limits>
+#include <thread>
+
 #include <omp.h>
 
 namespace DGen
