@@ -14,7 +14,9 @@ enable_testing()
 add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-strict-aliasing -Wno-error=strict-aliasing -fsanitize=undefined)
 add_link_options(-fsanitize=undefined)
 
+find_package(OpenMP)
 add_library(mxDataGenerator INTERFACE)
+target_link_libraries(mxDataGenerator INTERFACE OpenMP::OpenMP_CXX)
 target_include_directories(mxDataGenerator INTERFACE lib/include)
 
 add_executable(
@@ -31,7 +33,6 @@ add_executable(
   test/ocp_e2m1_mxfp4_test.cpp
 )
 
-find_package(OpenMP)
 target_link_libraries(
   mxDataGeneratorTests PRIVATE
   GTest::gtest_main
