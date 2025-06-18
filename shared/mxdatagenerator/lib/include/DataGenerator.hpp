@@ -38,8 +38,8 @@ namespace DGen
 {
     constexpr uint64_t ONE = 1;
 
-    constexpr int SPRINKLE_BLOCK_MIN = 3;
-    constexpr int SPRINKLE_BLOCK_MAX = 15;
+    constexpr index_t SPRINKLE_BLOCK_MIN = 3;
+    constexpr index_t SPRINKLE_BLOCK_MAX = 15;
 
     enum DataPattern
     {
@@ -71,7 +71,7 @@ namespace DGen
         double      max     = 1.0;
 
         DataScaling scaling      = DataScaling::Mean;
-        int         blockScaling = 1;
+        index_t         blockScaling = 1;
     };
 
     template <typename DTYPE>
@@ -82,8 +82,8 @@ namespace DGen
 
         using Generator = std::mt19937;
         // generate internal byte buffers/
-        DataGenerator& generate(std::vector<int>            size,
-                                std::vector<int>            stride,
+        DataGenerator& generate(std::vector<index_t>            size,
+                                std::vector<index_t>            stride,
                                 DataGeneratorOptions const& options);
 
         // get packed data byte buffer.
@@ -111,10 +111,10 @@ namespace DGen
 
         struct BufferDesc
         {
-            size_t array_size  = 0;
-            size_t bit_size    = 0;
-            size_t byte_size   = 0;
-            size_t buffer_size = 0;
+            index_t array_size  = 0;
+            index_t bit_size    = 0;
+            index_t byte_size   = 0;
+            index_t buffer_size = 0;
         };
 
         BufferDesc m_dataDesc;
@@ -125,25 +125,25 @@ namespace DGen
 
         static std::vector<uint8_t> packArray(BufferDesc in_desc, const std::vector<uint8_t>& src);
 
-        void generate_pattern_bounded(const std::vector<int>& size);
-        void generate_pattern_bounded_alternating_sign(const std::vector<int>& size);
-        void generate_pattern_unbounded(const std::vector<int>& size);
-        void generate_pattern_trigonometric(const std::vector<int>& size);
-        void generate_pattern_identity(const std::vector<int>& size,
-                                       const std::vector<int>& stride);
+        void generate_pattern_bounded(const std::vector<index_t>& size);
+        void generate_pattern_bounded_alternating_sign(const std::vector<index_t>& size);
+        void generate_pattern_unbounded(const std::vector<index_t>& size);
+        void generate_pattern_trigonometric(const std::vector<index_t>& size);
+        void generate_pattern_identity(const std::vector<index_t>& size,
+                                       const std::vector<index_t>& stride);
         void generate_pattern_ones();
 
-        void dispatch_generate_pattern(const std::vector<int>& size,
-                                       const std::vector<int>& stride);
+        void dispatch_generate_pattern(const std::vector<index_t>& size,
+                                       const std::vector<index_t>& stride);
 
         uint32_t scale_block_mean(const std::vector<uint32_t>& scales,
                                   std::vector<uint64_t>&       data,
-                                  int                          block_size);
+                                  index_t                          block_size);
         uint32_t dispatch_scale_block(const std::vector<uint32_t>& scales,
                                       std::vector<uint64_t>&       data,
-                                      int                          block_size);
+                                      index_t                          block_size);
 
-        void post_sprinkle(const std::vector<int>& size, int32_t unbiased_min_exp);
+        void post_sprinkle(const std::vector<index_t>& size, int32_t unbiased_min_exp);
 
         void setGenerator(int numThreads);
     };
@@ -155,8 +155,8 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    inline DataGenerator<DTYPE>& DataGenerator<DTYPE>::generate(std::vector<int>            size,
-                                                                std::vector<int>            stride,
+    inline DataGenerator<DTYPE>& DataGenerator<DTYPE>::generate(std::vector<index_t>            size,
+                                                                std::vector<index_t>            stride,
                                                                 DataGeneratorOptions const& options)
     {
         if(size.size() != stride.size())
@@ -170,14 +170,14 @@ namespace DGen
 
         // reorder sizes & strides from least to greatest stride
         const auto          n_size = size.size();
-        std::vector<size_t> perm(n_size);
-        std::vector<int>    sorted_size(n_size);
-        std::vector<int>    sorted_stride(n_size);
+        std::vector<index_t> perm(n_size);
+        std::vector<index_t>    sorted_size(n_size);
+        std::vector<index_t>    sorted_stride(n_size);
 
         std::iota(perm.begin(), perm.end(), 0);
         std::sort(perm.begin(), perm.end(), [&](auto a, auto b) { return stride[a] < stride[b]; });
 
-        for(size_t i = 0; i < n_size; i++)
+        for(index_t i = 0; i < n_size; i++)
         {
             sorted_size[i]   = size[perm[i]];
             sorted_stride[i] = stride[perm[i]];
@@ -253,7 +253,8 @@ namespace DGen
 
         const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : 1);
 
-        for(size_t i = 0; i < m_dataDesc.array_size; i++)
+        #pragma omp parallel for num_threads(m_num_threads)
+        for(index_t i = 0; i < m_dataDesc.array_size; i++)
         {
             const auto scale_idx = i / block_size;
             ret[i] = toDouble<DTYPE>(m_scaleBytes.data(), m_dataBytes.data(), scale_idx, i);
@@ -269,7 +270,8 @@ namespace DGen
 
         const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : 1);
 
-        for(size_t i = 0; i < m_dataDesc.array_size; i++)
+        #pragma omp parallel for num_threads(m_num_threads)
+        for(index_t i = 0; i < m_dataDesc.array_size; i++)
         {
             const auto scale_idx = i / block_size;
             ret[i] = toFloat<DTYPE>(m_scaleBytes.data(), m_dataBytes.data(), scale_idx, i);
@@ -299,7 +301,7 @@ namespace DGen
         switch(src_desc.bit_size)
         {
         case 4:
-            for(size_t i = 0; i < src_desc.array_size; i++)
+            for(index_t i = 0; i < src_desc.array_size; i++)
             {
                 const auto dst = i / 2;
                 if(i % 2 == 0)
@@ -315,7 +317,7 @@ namespace DGen
             }
             break;
         case 6:
-            for(size_t i = 0; i < src_desc.array_size; i++)
+            for(index_t i = 0; i < src_desc.array_size; i++)
             {
                 const auto dst      = (i * 6) / 8;
                 const auto offset_i = i % 4;
@@ -357,7 +359,7 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    inline void DataGenerator<DTYPE>::generate_pattern_bounded(const std::vector<int>& size)
+    inline void DataGenerator<DTYPE>::generate_pattern_bounded(const std::vector<index_t>& size)
     {
         using namespace Constants;
 
@@ -459,7 +461,7 @@ namespace DGen
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t scale_i = 0; scale_i < numBlocks; scale_i++)
+        for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
             const auto tid            = omp_get_thread_num();
             int32_t    ub_block_scale = 0;
@@ -471,7 +473,7 @@ namespace DGen
                 std::memcpy(&m_scaleBytes[scale_i], &block_scale, m_scaleDesc.byte_size);
             }
 
-            for(auto block_i = 0; block_i < block_size; block_i++)
+            for(index_t block_i = 0; block_i < block_size; block_i++)
             {
                 //
                 // compute index
@@ -562,7 +564,7 @@ namespace DGen
 
     template <typename DTYPE>
     void DataGenerator<DTYPE>::generate_pattern_bounded_alternating_sign(
-        const std::vector<int>& size)
+        const std::vector<index_t>& size)
     {
         using namespace Constants;
 
@@ -615,7 +617,7 @@ namespace DGen
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t scale_i = 0; scale_i < numBlocks; scale_i++)
+        for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
             int32_t    ub_block_scale = 0;
             int32_t    block_scale    = 0;
@@ -631,7 +633,7 @@ namespace DGen
                 std::memcpy(&m_scaleBytes[scale_i], &block_scale, m_scaleDesc.byte_size);
             }
 
-            for(auto block_i = 0; block_i < block_size; block_i++)
+            for(index_t block_i = 0; block_i < block_size; block_i++)
             {
                 //
                 // compute index
@@ -689,7 +691,7 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    void DataGenerator<DTYPE>::generate_pattern_unbounded(const std::vector<int>& size)
+    void DataGenerator<DTYPE>::generate_pattern_unbounded(const std::vector<index_t>& size)
     {
         using namespace Constants;
 
@@ -712,7 +714,7 @@ namespace DGen
         const auto     numBlocks       = m_dataDesc.array_size / block_size;
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t scale_i = 0; scale_i < numBlocks; scale_i++)
+        for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
             const auto tid = omp_get_thread_num();
 
@@ -720,12 +722,12 @@ namespace DGen
 
             int32_t max_exp = std::numeric_limits<int32_t>::min();
             int32_t min_exp = std::numeric_limits<int32_t>::max();
-            for(auto block_i = 0; block_i < block_size; block_i++)
+            for(index_t block_i = 0; block_i < block_size; block_i++)
             {
                 //
                 // compute index
                 //
-                size_t data_i = scale_i * block_size + block_i;
+                index_t data_i = scale_i * block_size + block_i;
 
                 //
                 // generate random block
@@ -790,7 +792,7 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    void DataGenerator<DTYPE>::generate_pattern_trigonometric(const std::vector<int>& size)
+    void DataGenerator<DTYPE>::generate_pattern_trigonometric(const std::vector<index_t>& size)
     {
         // setup
         const auto dataBias          = static_cast<int32_t>(getDataBias<DTYPE>());
@@ -808,18 +810,18 @@ namespace DGen
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t scale_i = 0; scale_i < numBlocks; scale_i++)
+        for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
             const auto            tid = omp_get_thread_num();
             std::vector<uint64_t> temp_data((isScaled<DTYPE>() ? block_size : 0), 0);
             std::vector<uint32_t> temp_scale((isScaled<DTYPE>() ? block_size : 0), 0);
 
-            for(auto block_i = 0; block_i < block_size; block_i++)
+            for(index_t block_i = 0; block_i < block_size; block_i++)
             {
                 //
                 // compute index
                 //
-                size_t data_i = scale_i * block_size + block_i;
+                index_t data_i = scale_i * block_size + block_i;
 
                 //
                 // generate random block
@@ -929,7 +931,7 @@ namespace DGen
                             = dispatch_scale_block(temp_scale, temp_data, block_size);
 
                         // Write to array
-                        for(auto i = 0; i < block_size; i++)
+                        for(index_t i = 0; i < block_size; i++)
                         {
                             std::memcpy(
                                 &m_dataBytes[(scale_i * block_size + i) * m_dataDesc.byte_size],
@@ -946,8 +948,8 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    void DataGenerator<DTYPE>::generate_pattern_identity(const std::vector<int>& size,
-                                                         const std::vector<int>& stride)
+    void DataGenerator<DTYPE>::generate_pattern_identity(const std::vector<index_t>& size,
+                                                         const std::vector<index_t>& stride)
     {
         if(size.size() != 2)
             throw std::invalid_argument(
@@ -961,7 +963,7 @@ namespace DGen
         setOne<DTYPE>(s_one.data(), d_one.data(), 0, 0, m_options.forceDenorm);
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(int i = 0; i < rank; i++)
+        for(index_t i = 0; i < rank; i++)
         {
             const auto diag_index = i * stride[0] + i * stride[1];
             const auto data_index = diag_index * m_dataDesc.byte_size;
@@ -987,21 +989,21 @@ namespace DGen
         setOne<DTYPE>(s_one.data(), d_one.data(), 0, 0, m_options.forceDenorm);
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t i = 0; i < m_dataDesc.array_size; i++)
+        for(index_t i = 0; i < m_dataDesc.array_size; i++)
         {
             std::memcpy(&m_dataBytes[i * m_dataDesc.byte_size], &d_one[0], m_dataDesc.byte_size);
         }
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t i = 0; i < m_scaleDesc.array_size; i++)
+        for(index_t i = 0; i < m_scaleDesc.array_size; i++)
         {
             std::memcpy(&m_scaleBytes[i * m_scaleDesc.byte_size], &s_one[0], m_scaleDesc.byte_size);
         }
     }
 
     template <typename DTYPE>
-    inline void DataGenerator<DTYPE>::dispatch_generate_pattern(const std::vector<int>& size,
-                                                                const std::vector<int>& stride)
+    inline void DataGenerator<DTYPE>::dispatch_generate_pattern(const std::vector<index_t>& size,
+                                                                const std::vector<index_t>& stride)
     {
         switch(m_options.pattern)
         {
@@ -1025,7 +1027,7 @@ namespace DGen
     template <typename DTYPE>
     inline uint32_t DataGenerator<DTYPE>::scale_block_mean(const std::vector<uint32_t>& scales,
                                                            std::vector<uint64_t>&       data,
-                                                           int                          block_size)
+                                                           index_t                          block_size)
     {
         const auto dataBias         = static_cast<int32_t>(getDataBias<DTYPE>());
         const auto dataMantissaBits = getDataMantissaBits<DTYPE>();
@@ -1038,8 +1040,8 @@ namespace DGen
         // compute block scale
         //
         double avg_scale = 0.0;
-        int    n         = 0;
-        for(size_t i = 0; i < static_cast<size_t>(block_size); i++)
+        index_t    n         = 0;
+        for(index_t i = 0; i < static_cast<index_t>(block_size); i++)
         {
             auto s = scales[i];
             auto d = data[i];
@@ -1063,7 +1065,7 @@ namespace DGen
         //
         // adjust data
         //
-        for(size_t i = 0; i < static_cast<size_t>(block_size); i++)
+        for(index_t i = 0; i < static_cast<index_t>(block_size); i++)
         {
             auto s = scales[i];
             auto d = data[i];
@@ -1177,7 +1179,7 @@ namespace DGen
     template <typename DTYPE>
     uint32_t DataGenerator<DTYPE>::dispatch_scale_block(const std::vector<uint32_t>& scales,
                                                         std::vector<uint64_t>&       data,
-                                                        int                          block_size)
+                                                        index_t                          block_size)
     {
         switch(m_options.scaling)
         {
@@ -1189,7 +1191,7 @@ namespace DGen
     }
 
     template <typename DTYPE>
-    void DataGenerator<DTYPE>::post_sprinkle(const std::vector<int>& size, int32_t unbiased_min_exp)
+    void DataGenerator<DTYPE>::post_sprinkle(const std::vector<index_t>& size, int32_t unbiased_min_exp)
     {
         const auto block_size = (isScaled<DTYPE>() ? m_options.blockScaling : 1);
 
@@ -1204,12 +1206,12 @@ namespace DGen
             return;
         }
 
-        const size_t clmp_block_size
+        const index_t clmp_block_size
             = std::clamp(block_size, {SPRINKLE_BLOCK_MIN}, SPRINKLE_BLOCK_MAX);
         const auto numClmpBlocks = m_dataDesc.array_size / clmp_block_size;
 
 #pragma omp parallel for num_threads(m_num_threads)
-        for(size_t clmp_i = 0; clmp_i < numClmpBlocks; clmp_i++)
+        for(index_t clmp_i = 0; clmp_i < numClmpBlocks; clmp_i++)
         {
             const auto                      tid = omp_get_thread_num();
             uint8_t                         temp_scale;
@@ -1226,13 +1228,13 @@ namespace DGen
             bool has_sbn                  = false;
 
             std::vector<bool> marked(clmp_block_size);
-            size_t            marked_count = 0;
-            size_t            block_data_i = 0;
+            index_t            marked_count = 0;
+            index_t            block_data_i = 0;
 
-            for(size_t clmp_block_i = 0; clmp_block_i < clmp_block_size; clmp_block_i++)
+            for(index_t clmp_block_i = 0; clmp_block_i < clmp_block_size; clmp_block_i++)
             {
                 const auto data_i  = clmp_i * clmp_block_size + clmp_block_i;
-                size_t     scale_i = (data_i / block_size);
+                index_t     scale_i = (data_i / block_size);
 
                 // reset
                 if(clmp_block_i == 0)
@@ -1285,7 +1287,7 @@ namespace DGen
                 {
                     if(!has_nan && clmp_block_size > marked_count)
                     {
-                        auto target = static_cast<size_t>(idx_dist(m_gen[tid]));
+                        auto target = static_cast<index_t>(idx_dist(m_gen[tid]));
 
                         while(marked[target])
                             target = (target + 1) % clmp_block_size;
@@ -1297,7 +1299,7 @@ namespace DGen
                     }
                     if(!has_inf && clmp_block_size > marked_count)
                     {
-                        auto target = static_cast<size_t>(idx_dist(m_gen[tid]));
+                        auto target = static_cast<index_t>(idx_dist(m_gen[tid]));
 
                         while(marked[target])
                             target = (target + 1) % clmp_block_size;
@@ -1309,7 +1311,7 @@ namespace DGen
                     }
                     if(!has_sbn && clmp_block_size > marked_count)
                     {
-                        auto target = static_cast<size_t>(idx_dist(m_gen[tid]));
+                        auto target = static_cast<index_t>(idx_dist(m_gen[tid]));
                         while(marked[target])
                             target = (target + 1) % clmp_block_size;
                         const auto target_data_i  = block_data_i + target;

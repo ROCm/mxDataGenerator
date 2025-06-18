@@ -32,8 +32,8 @@
 template <>
 inline bool isNaN<bf16>(uint8_t const* scaleBytes [[maybe_unused]],
                         uint8_t const* dataBytes,
-                        size_t         scaleIndex [[maybe_unused]],
-                        size_t         dataIndex)
+                        index_t         scaleIndex [[maybe_unused]],
+                        index_t         dataIndex)
 {
     uint16_t data = getDataFP16(dataBytes, dataIndex);
 
@@ -47,8 +47,8 @@ inline bool isNaN<bf16>(uint8_t const* scaleBytes [[maybe_unused]],
 template <>
 inline bool isZero<bf16>(uint8_t const* scaleBytes,
                          uint8_t const* dataBytes,
-                         size_t         scaleIndex,
-                         size_t         dataIndex)
+                         index_t         scaleIndex,
+                         index_t         dataIndex)
 {
 
     if(isNaN<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex))
@@ -62,8 +62,8 @@ inline bool isZero<bf16>(uint8_t const* scaleBytes,
 template <>
 inline bool isInf<bf16>(uint8_t const* scaleBytes [[maybe_unused]],
                         uint8_t const* dataBytes,
-                        size_t         scaleIndex [[maybe_unused]],
-                        size_t         dataIndex)
+                        index_t         scaleIndex [[maybe_unused]],
+                        index_t         dataIndex)
 {
     uint16_t data = getDataFP16(dataBytes, dataIndex);
     return (data & bf16::setSignMask) == bf16::dataInfMask;
@@ -73,8 +73,8 @@ inline bool isInf<bf16>(uint8_t const* scaleBytes [[maybe_unused]],
 template <>
 inline double toDouble<bf16>(uint8_t const* scaleBytes,
                              uint8_t const* dataBytes,
-                             size_t         scaleIndex,
-                             size_t         dataIndex)
+                             index_t         scaleIndex,
+                             index_t         dataIndex)
 {
 
     if(isNaN<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex))
@@ -109,8 +109,8 @@ inline double toDouble<bf16>(uint8_t const* scaleBytes,
 template <>
 inline float toFloat<bf16>(uint8_t const* scaleBytes,
                            uint8_t const* dataBytes,
-                           size_t         scaleIndex,
-                           size_t         dataIndex)
+                           index_t         scaleIndex,
+                           index_t         dataIndex)
 {
     if(isNaN<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return std::numeric_limits<float>::quiet_NaN();
@@ -145,8 +145,8 @@ inline float toFloat<bf16>(uint8_t const* scaleBytes,
 template <>
 inline bool isOne<bf16>(uint8_t const* scaleBytes,
                         uint8_t const* dataBytes,
-                        size_t         scaleIndex,
-                        size_t         dataIndex)
+                        index_t         scaleIndex,
+                        index_t         dataIndex)
 {
     return toDouble<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex) == 1.0;
 }
@@ -156,8 +156,8 @@ template <>
 inline bool isLess<bf16>(double         val,
                          uint8_t const* scaleBytes,
                          uint8_t const* dataBytes,
-                         size_t         scaleIndex,
-                         size_t         dataIndex)
+                         index_t         scaleIndex,
+                         index_t         dataIndex)
 {
     return toDouble<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex) < val;
 }
@@ -167,8 +167,8 @@ template <>
 inline bool isGreater<bf16>(double         val,
                             uint8_t const* scaleBytes,
                             uint8_t const* dataBytes,
-                            size_t         scaleIndex,
-                            size_t         dataIndex)
+                            index_t         scaleIndex,
+                            index_t         dataIndex)
 {
     return toDouble<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex) > val;
 }
@@ -177,8 +177,8 @@ inline bool isGreater<bf16>(double         val,
 template <>
 inline bool isOnePacked<bf16>(uint8_t const* scaleBytes,
                               uint8_t const* dataBytes,
-                              size_t         scaleIndex,
-                              size_t         dataIndex)
+                              index_t         scaleIndex,
+                              index_t         dataIndex)
 {
 
     return isOne<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
@@ -188,8 +188,8 @@ inline bool isOnePacked<bf16>(uint8_t const* scaleBytes,
 template <>
 inline bool isZeroPacked<bf16>(uint8_t const* scaleBytes,
                                uint8_t const* dataBytes,
-                               size_t         scaleIndex,
-                               size_t         dataIndex)
+                               index_t         scaleIndex,
+                               index_t         dataIndex)
 {
     return isZero<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -198,8 +198,8 @@ inline bool isZeroPacked<bf16>(uint8_t const* scaleBytes,
 template <>
 inline bool isNaNPacked<bf16>(uint8_t const* scaleBytes,
                               uint8_t const* dataBytes,
-                              size_t         scaleIndex,
-                              size_t         dataIndex)
+                              index_t         scaleIndex,
+                              index_t         dataIndex)
 {
     return isNaN<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -207,8 +207,8 @@ inline bool isNaNPacked<bf16>(uint8_t const* scaleBytes,
 template <>
 inline bool isInfPacked<bf16>(uint8_t const* scaleBytes,
                               uint8_t const* dataBytes,
-                              size_t         scaleIndex,
-                              size_t         dataIndex)
+                              index_t         scaleIndex,
+                              index_t         dataIndex)
 {
     return isInf<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -218,8 +218,8 @@ template <>
 inline bool isLessPacked<bf16>(double         val,
                                uint8_t const* scaleBytes,
                                uint8_t const* dataBytes,
-                               size_t         scaleIndex,
-                               size_t         dataIndex)
+                               index_t         scaleIndex,
+                               index_t         dataIndex)
 {
     return isLess<bf16>(val, scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -229,21 +229,21 @@ template <>
 inline bool isGreaterPacked<bf16>(double         val,
                                   uint8_t const* scaleBytes,
                                   uint8_t const* dataBytes,
-                                  size_t         scaleIndex,
-                                  size_t         dataIndex)
+                                  index_t         scaleIndex,
+                                  index_t         dataIndex)
 {
     return isGreater<bf16>(val, scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
 
 template <>
-inline bool isSubnorm<bf16>(uint8_t const* dataBytes, size_t dataIndex)
+inline bool isSubnorm<bf16>(uint8_t const* dataBytes, index_t dataIndex)
 {
     uint16_t data = getDataFP16(dataBytes, dataIndex);
     return isSubNormal<uint16_t>(data, bf16::dataInfo.mantissaBits, bf16::dataInfo.exponentBits);
 }
 
 template <>
-inline bool isSubnormPacked<bf16>(uint8_t const* dataBytes, size_t dataIndex)
+inline bool isSubnormPacked<bf16>(uint8_t const* dataBytes, index_t dataIndex)
 {
     return isSubnorm<bf16>(dataBytes, dataIndex);
 }
@@ -252,8 +252,8 @@ inline bool isSubnormPacked<bf16>(uint8_t const* dataBytes, size_t dataIndex)
 template <>
 inline double toDoublePacked<bf16>(uint8_t const* scaleBytes,
                                    uint8_t const* dataBytes,
-                                   size_t         scaleIndex,
-                                   size_t         dataIndex)
+                                   index_t         scaleIndex,
+                                   index_t         dataIndex)
 {
     return toDouble<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -261,8 +261,8 @@ inline double toDoublePacked<bf16>(uint8_t const* scaleBytes,
 template <>
 inline float toFloatPacked<bf16>(uint8_t const* scaleBytes,
                                  uint8_t const* dataBytes,
-                                 size_t         scaleIndex,
-                                 size_t         dataIndex)
+                                 index_t         scaleIndex,
+                                 index_t         dataIndex)
 {
     return toFloat<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -271,8 +271,8 @@ inline float toFloatPacked<bf16>(uint8_t const* scaleBytes,
 template <>
 inline void setOne<bf16>(uint8_t* scaleBytes [[maybe_unused]],
                          uint8_t* dataBytes,
-                         size_t   scaleIndex [[maybe_unused]],
-                         size_t   dataIndex,
+                         index_t   scaleIndex [[maybe_unused]],
+                         index_t   dataIndex,
                          bool     subNormal [[maybe_unused]])
 {
     setDataFP16(dataBytes, dataIndex, bf16::oneMask);
@@ -282,8 +282,8 @@ inline void setOne<bf16>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setZero<bf16>(uint8_t* scaleBytes [[maybe_unused]],
                           uint8_t* dataBytes,
-                          size_t   scaleIndex [[maybe_unused]],
-                          size_t   dataIndex)
+                          index_t   scaleIndex [[maybe_unused]],
+                          index_t   dataIndex)
 {
     setDataFP16(dataBytes, dataIndex, bf16::positiveZeroMask);
 }
@@ -291,8 +291,8 @@ inline void setZero<bf16>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setNaN<bf16>(uint8_t* scaleBytes [[maybe_unused]],
                          uint8_t* dataBytes,
-                         size_t   scaleIndex [[maybe_unused]],
-                         size_t   dataIndex)
+                         index_t   scaleIndex [[maybe_unused]],
+                         index_t   dataIndex)
 {
     setDataFP16(dataBytes, dataIndex, bf16::dataNanMask);
 }
@@ -300,15 +300,15 @@ inline void setNaN<bf16>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setInf<bf16>(uint8_t* scaleBytes [[maybe_unused]],
                          uint8_t* dataBytes,
-                         size_t   scaleIndex [[maybe_unused]],
-                         size_t   dataIndex)
+                         index_t   scaleIndex [[maybe_unused]],
+                         index_t   dataIndex)
 {
 
     setDataFP16(dataBytes, dataIndex, bf16::dataInfMask);
 }
 
 template <>
-inline void setDataMax<bf16>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
+inline void setDataMax<bf16>(uint8_t* dataBytes, index_t dataIndex, bool subNormal, bool positive)
 {
     if(subNormal)
         setDataFP16(dataBytes,
@@ -325,8 +325,8 @@ inline void setDataMax<bf16>(uint8_t* dataBytes, size_t dataIndex, bool subNorma
 template <>
 inline void setOnePacked<bf16>(uint8_t* scaleBytes,
                                uint8_t* dataBytes,
-                               size_t   scaleIndex,
-                               size_t   dataIndex,
+                               index_t   scaleIndex,
+                               index_t   dataIndex,
                                bool     subNormal [[maybe_unused]])
 {
     setOne<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
@@ -336,8 +336,8 @@ inline void setOnePacked<bf16>(uint8_t* scaleBytes,
 template <>
 inline void setZeroPacked<bf16>(uint8_t* scaleBytes,
                                 uint8_t* dataBytes,
-                                size_t   scaleIndex,
-                                size_t   dataIndex)
+                                index_t   scaleIndex,
+                                index_t   dataIndex)
 {
     setZero<bf16>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -345,8 +345,8 @@ inline void setZeroPacked<bf16>(uint8_t* scaleBytes,
 template <>
 inline void setNaNPacked<bf16>(uint8_t* scaleBytes [[maybe_unused]],
                                uint8_t* dataBytes,
-                               size_t   scaleIndex [[maybe_unused]],
-                               size_t   dataIndex)
+                               index_t   scaleIndex [[maybe_unused]],
+                               index_t   dataIndex)
 {
     setDataFP16(dataBytes, dataIndex, bf16::dataNanMask);
 }
@@ -354,15 +354,15 @@ inline void setNaNPacked<bf16>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setInfPacked<bf16>(uint8_t* scaleBytes [[maybe_unused]],
                                uint8_t* dataBytes,
-                               size_t   scaleIndex [[maybe_unused]],
-                               size_t   dataIndex)
+                               index_t   scaleIndex [[maybe_unused]],
+                               index_t   dataIndex)
 {
     setDataFP16(dataBytes, dataIndex, bf16::dataInfMask);
 }
 
 template <>
 inline void
-    setDataMaxPacked<bf16>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
+    setDataMaxPacked<bf16>(uint8_t* dataBytes, index_t dataIndex, bool subNormal, bool positive)
 {
     setDataMax<bf16>(dataBytes, dataIndex, subNormal, positive);
 }

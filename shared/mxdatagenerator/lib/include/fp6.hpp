@@ -26,11 +26,11 @@
 
 #pragma once
 
-inline uint8_t getDataFromPackedF6(uint8_t const* dataBytes, int index)
+inline uint8_t getDataFromPackedF6(uint8_t const* dataBytes, index_t index)
 {
-    int cellIndex = (index / 4) * 3;
+    index_t cellIndex = (index / 4) * 3;
 
-    int rem = index % 4;
+    index_t rem = index % 4;
 
     uint8_t out = 0b0;
 
@@ -66,11 +66,11 @@ inline uint8_t getDataFromPackedF6(uint8_t const* dataBytes, int index)
     return out;
 }
 
-inline void setDataPackedF6(uint8_t* dataBytes, int index, uint8_t mask)
+inline void setDataPackedF6(uint8_t* dataBytes, size_t index, uint8_t mask)
 {
-    int cellIndex = (index / 4) * 3;
+    size_t cellIndex = (index / 4) * 3;
 
-    int rem = index % 4;
+    size_t rem = index % 4;
 
     uint8_t l = 0b0;
     uint8_t r = 0b0;
