@@ -26,9 +26,9 @@
 
 #pragma once
 
-inline uint16_t getDataFP16(const uint8_t* dataBytes, int index)
+inline uint16_t getDataFP16(const uint8_t* dataBytes, index_t index)
 {
-    int cellIndex = index * 2;
+    index_t cellIndex = index * 2;
 
     uint16_t lsb = dataBytes[cellIndex];
     uint16_t msb = dataBytes[cellIndex + 1];
@@ -36,9 +36,9 @@ inline uint16_t getDataFP16(const uint8_t* dataBytes, int index)
     return (msb << 8) | lsb;
 }
 
-inline void setDataFP16(uint8_t* dataBytes, int index, uint16_t mask)
+inline void setDataFP16(uint8_t* dataBytes, index_t index, uint16_t mask)
 {
-    int cellIndex = index * 2;
+    index_t cellIndex = index * 2;
 
     uint8_t lsb = mask & 0b11111111;
     uint8_t msb = mask >> 8;

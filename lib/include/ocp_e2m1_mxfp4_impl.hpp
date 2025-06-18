@@ -38,9 +38,9 @@
  *      The index to the bit representation
  *      to read
  */
-static uint8_t getDataFromPackedF4(uint8_t const* dataBytes, int index)
+static uint8_t getDataFromPackedF4(uint8_t const* dataBytes, size_t index)
 {
-    int cellIndex = index / 2;
+    size_t cellIndex = index / 2;
 
     // odd index -> first half of cell
     if(index % 2)
@@ -65,9 +65,9 @@ static uint8_t getDataFromPackedF4(uint8_t const* dataBytes, int index)
  *      The mask to set the bit representation
  *      to
  */
-static void setDataPackedF4(uint8_t* dataBytes, int index, uint8_t mask)
+static void setDataPackedF4(uint8_t* dataBytes, size_t index, uint8_t mask)
 {
-    int cellIndex = index / 2;
+    size_t cellIndex = index / 2;
 
     // odd index -> first half of cell
     if(index % 2)
@@ -85,8 +85,8 @@ static void setDataPackedF4(uint8_t* dataBytes, int index, uint8_t mask)
 template <>
 inline bool isNaN<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                   uint8_t const* dataBytes [[maybe_unused]],
-                                  size_t         scaleIndex,
-                                  size_t         dataIndex [[maybe_unused]])
+                                  index_t         scaleIndex,
+                                  index_t         dataIndex [[maybe_unused]])
 {
     // no need to check for data as it does not have representation
     uint8_t scale = *(scaleBytes + scaleIndex);
@@ -96,8 +96,8 @@ inline bool isNaN<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline bool isZero<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                    uint8_t const* dataBytes,
-                                   size_t         scaleIndex,
-                                   size_t         dataIndex)
+                                   index_t         scaleIndex,
+                                   index_t         dataIndex)
 {
     if(isNaN<ocp_e2m1_mxfp4>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return false;
@@ -111,8 +111,8 @@ inline bool isZero<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline double toDouble<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                        uint8_t const* dataBytes,
-                                       size_t         scaleIndex,
-                                       size_t         dataIndex)
+                                       index_t         scaleIndex,
+                                       index_t         dataIndex)
 {
     if(isNaN<ocp_e2m1_mxfp4>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return std::numeric_limits<double>::quiet_NaN();
@@ -132,8 +132,8 @@ inline double toDouble<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline float toFloat<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                      uint8_t const* dataBytes,
-                                     size_t         scaleIndex,
-                                     size_t         dataIndex)
+                                     index_t         scaleIndex,
+                                     index_t         dataIndex)
 {
     if(isNaN<ocp_e2m1_mxfp4>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return std::numeric_limits<float>::quiet_NaN();
@@ -153,8 +153,8 @@ inline float toFloat<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline bool isNaNPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                         uint8_t const* dataBytes [[maybe_unused]],
-                                        size_t         scaleIndex,
-                                        size_t         dataIndex [[maybe_unused]])
+                                        index_t         scaleIndex,
+                                        index_t         dataIndex [[maybe_unused]])
 {
     // no need to check for data as it does not have representation
     uint8_t scale = *(scaleBytes + scaleIndex);
@@ -164,8 +164,8 @@ inline bool isNaNPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline bool isInfPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes [[maybe_unused]],
                                         uint8_t const* dataBytes [[maybe_unused]],
-                                        size_t         scaleIndex [[maybe_unused]],
-                                        size_t         dataIndex [[maybe_unused]])
+                                        index_t         scaleIndex [[maybe_unused]],
+                                        index_t         dataIndex [[maybe_unused]])
 {
     // no infinity representation in ocp_e2m1_mxfp4 will always return false
     return false;
@@ -175,8 +175,8 @@ inline bool isInfPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes [[maybe_unused
 template <>
 inline bool isZeroPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                          uint8_t const* dataBytes,
-                                         size_t         scaleIndex,
-                                         size_t         dataIndex)
+                                         index_t         scaleIndex,
+                                         index_t         dataIndex)
 {
     if(isNaNPacked<ocp_e2m1_mxfp4>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return false;
@@ -189,8 +189,8 @@ inline bool isZeroPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline double toDoublePacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                              uint8_t const* dataBytes,
-                                             size_t         scaleIndex,
-                                             size_t         dataIndex)
+                                             index_t         scaleIndex,
+                                             index_t         dataIndex)
 {
 
     if(isNaNPacked<ocp_e2m1_mxfp4>(scaleBytes, dataBytes, scaleIndex, dataIndex))
@@ -211,8 +211,8 @@ inline double toDoublePacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline float toFloatPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
                                            uint8_t const* dataBytes,
-                                           size_t         scaleIndex,
-                                           size_t         dataIndex)
+                                           index_t         scaleIndex,
+                                           index_t         dataIndex)
 {
     if(isNaNPacked<ocp_e2m1_mxfp4>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return std::numeric_limits<float>::quiet_NaN();
@@ -233,15 +233,15 @@ inline float toFloatPacked<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes,
 template <>
 inline bool isInf<ocp_e2m1_mxfp4>(uint8_t const* scaleBytes [[maybe_unused]],
                                   uint8_t const* dataBytes [[maybe_unused]],
-                                  size_t         scaleIndex [[maybe_unused]],
-                                  size_t         dataIndex [[maybe_unused]])
+                                  index_t         scaleIndex [[maybe_unused]],
+                                  index_t         dataIndex [[maybe_unused]])
 {
     // no inf representation for ocp_e2m1_mxfp4
     return false;
 }
 
 template <>
-inline bool isSubnorm<ocp_e2m1_mxfp4>(uint8_t const* dataBytes, size_t dataIndex)
+inline bool isSubnorm<ocp_e2m1_mxfp4>(uint8_t const* dataBytes, index_t dataIndex)
 {
     uint8_t data = *(dataBytes + dataIndex) & 0b00001111;
     return isSubNormal<uint16_t>(
@@ -249,7 +249,7 @@ inline bool isSubnorm<ocp_e2m1_mxfp4>(uint8_t const* dataBytes, size_t dataIndex
 }
 
 template <>
-inline bool isSubnormPacked<ocp_e2m1_mxfp4>(uint8_t const* dataBytes, size_t dataIndex)
+inline bool isSubnormPacked<ocp_e2m1_mxfp4>(uint8_t const* dataBytes, index_t dataIndex)
 {
     uint8_t data = getDataFromPackedF4(dataBytes, dataIndex);
     return isSubNormal<uint16_t>(
@@ -260,7 +260,7 @@ inline bool isSubnormPacked<ocp_e2m1_mxfp4>(uint8_t const* dataBytes, size_t dat
 //set XN = 1
 template <>
 inline void setOne<ocp_e2m1_mxfp4>(
-    uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex, bool subNormal)
+    uint8_t* scaleBytes, uint8_t* dataBytes, index_t scaleIndex, index_t dataIndex, bool subNormal)
 {
     *(scaleBytes + scaleIndex) = subNormal ? Constants::E8M0_2 : Constants::E8M0_1;
     *(dataBytes + dataIndex)
@@ -271,8 +271,8 @@ inline void setOne<ocp_e2m1_mxfp4>(
 template <>
 inline void setZero<ocp_e2m1_mxfp4>(uint8_t* scaleBytes [[maybe_unused]],
                                     uint8_t* dataBytes,
-                                    size_t   scaleIndex [[maybe_unused]],
-                                    size_t   dataIndex)
+                                    index_t   scaleIndex [[maybe_unused]],
+                                    index_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e2m1_mxfp4::positiveZeroMask;
 }
@@ -280,8 +280,8 @@ inline void setZero<ocp_e2m1_mxfp4>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setNaN<ocp_e2m1_mxfp4>(uint8_t* scaleBytes,
                                    uint8_t* dataBytes [[maybe_unused]],
-                                   size_t   scaleIndex,
-                                   size_t   dataIndex [[maybe_unused]])
+                                   index_t   scaleIndex,
+                                   index_t   dataIndex [[maybe_unused]])
 {
     *(scaleBytes + scaleIndex) = Constants::E8M0_NAN;
 }
@@ -290,15 +290,15 @@ inline void setNaN<ocp_e2m1_mxfp4>(uint8_t* scaleBytes,
 template <>
 inline void setInf<ocp_e2m1_mxfp4>(uint8_t* scaleBytes [[maybe_unused]],
                                    uint8_t* dataBytes [[maybe_unused]],
-                                   size_t   scaleIndex [[maybe_unused]],
-                                   size_t   dataIndex [[maybe_unused]])
+                                   index_t   scaleIndex [[maybe_unused]],
+                                   index_t   dataIndex [[maybe_unused]])
 {
     return;
 }
 
 template <>
 inline void
-    setDataMax<ocp_e2m1_mxfp4>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
+    setDataMax<ocp_e2m1_mxfp4>(uint8_t* dataBytes, index_t dataIndex, bool subNormal, bool positive)
 {
     if(subNormal)
         *(dataBytes + dataIndex) = positive ? ocp_e2m1_mxfp4::dataMaxPositiveSubNormalMask
@@ -310,7 +310,7 @@ inline void
 
 template <>
 inline void setDataMaxPacked<ocp_e2m1_mxfp4>(uint8_t* dataBytes,
-                                             size_t   dataIndex,
+                                             index_t   dataIndex,
                                              bool     subNormal,
                                              bool     positive)
 {
@@ -327,7 +327,7 @@ inline void setDataMaxPacked<ocp_e2m1_mxfp4>(uint8_t* dataBytes,
 
 template <>
 inline void setOnePacked<ocp_e2m1_mxfp4>(
-    uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex, bool subNormal)
+    uint8_t* scaleBytes, uint8_t* dataBytes, index_t scaleIndex, index_t dataIndex, bool subNormal)
 {
     *(scaleBytes + scaleIndex) = subNormal ? Constants::E8M0_2 : Constants::E8M0_1;
     uint8_t dataMask = subNormal ? ocp_e2m1_mxfp4::dataSubNormalOneMask : ocp_e2m1_mxfp4::oneMask;
@@ -339,8 +339,8 @@ inline void setOnePacked<ocp_e2m1_mxfp4>(
 template <>
 inline void setZeroPacked<ocp_e2m1_mxfp4>(uint8_t* scaleBytes [[maybe_unused]],
                                           uint8_t* dataBytes,
-                                          size_t   scaleIndex [[maybe_unused]],
-                                          size_t   dataIndex)
+                                          index_t   scaleIndex [[maybe_unused]],
+                                          index_t   dataIndex)
 {
     setDataPackedF4(dataBytes, dataIndex, ocp_e2m1_mxfp4::positiveZeroMask);
 }
@@ -348,8 +348,8 @@ inline void setZeroPacked<ocp_e2m1_mxfp4>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setNaNPacked<ocp_e2m1_mxfp4>(uint8_t* scaleBytes,
                                          uint8_t* dataBytes [[maybe_unused]],
-                                         size_t   scaleIndex,
-                                         size_t   dataIndex [[maybe_unused]])
+                                         index_t   scaleIndex,
+                                         index_t   dataIndex [[maybe_unused]])
 {
     *(scaleBytes + scaleIndex) = Constants::E8M0_NAN;
 }
