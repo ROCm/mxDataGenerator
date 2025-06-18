@@ -30,8 +30,8 @@
 template <>
 inline bool isNaN<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                   uint8_t const* dataBytes,
-                                  size_t         scaleIndex,
-                                  size_t         dataIndex)
+                                  index_t         scaleIndex,
+                                  index_t         dataIndex)
 {
     uint8_t data  = *(dataBytes + dataIndex);
     uint8_t scale = *(scaleBytes + scaleIndex);
@@ -49,8 +49,8 @@ inline bool isNaN<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline bool isNaNPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                         uint8_t const* dataBytes,
-                                        size_t         scaleIndex,
-                                        size_t         dataIndex)
+                                        index_t         scaleIndex,
+                                        index_t         dataIndex)
 {
     return isNaN<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -58,8 +58,8 @@ inline bool isNaNPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline bool isInf<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes [[maybe_unused]],
                                   uint8_t const* dataBytes,
-                                  size_t         scaleIndex [[maybe_unused]],
-                                  size_t         dataIndex)
+                                  index_t         scaleIndex [[maybe_unused]],
+                                  index_t         dataIndex)
 {
 
     // No need to check the scale since it does not have an inf representation
@@ -74,8 +74,8 @@ inline bool isInf<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes [[maybe_unused]],
 template <>
 inline bool isInfPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                         uint8_t const* dataBytes,
-                                        size_t         scaleIndex,
-                                        size_t         dataIndex)
+                                        index_t         scaleIndex,
+                                        index_t         dataIndex)
 {
     return isInf<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -83,8 +83,8 @@ inline bool isInfPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline bool isZero<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                    uint8_t const* dataBytes,
-                                   size_t         scaleIndex,
-                                   size_t         dataIndex)
+                                   index_t         scaleIndex,
+                                   index_t         dataIndex)
 {
 
     if(isNaN<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex))
@@ -100,8 +100,8 @@ inline bool isZero<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline bool isZeroPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                          uint8_t const* dataBytes,
-                                         size_t         scaleIndex,
-                                         size_t         dataIndex)
+                                         index_t         scaleIndex,
+                                         index_t         dataIndex)
 {
     return isZero<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -109,8 +109,8 @@ inline bool isZeroPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline double toDouble<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                        uint8_t const* dataBytes,
-                                       size_t         scaleIndex,
-                                       size_t         dataIndex)
+                                       index_t         scaleIndex,
+                                       index_t         dataIndex)
 {
     if(isNaN<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return std::numeric_limits<double>::quiet_NaN();
@@ -138,8 +138,8 @@ inline double toDouble<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline double toDoublePacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                              uint8_t const* dataBytes,
-                                             size_t         scaleIndex,
-                                             size_t         dataIndex)
+                                             index_t         scaleIndex,
+                                             index_t         dataIndex)
 {
     return toDouble<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
@@ -147,8 +147,8 @@ inline double toDoublePacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline float toFloat<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                      uint8_t const* dataBytes,
-                                     size_t         scaleIndex,
-                                     size_t         dataIndex)
+                                     index_t         scaleIndex,
+                                     index_t         dataIndex)
 {
     if(isNaN<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex))
         return std::numeric_limits<float>::quiet_NaN();
@@ -176,14 +176,14 @@ inline float toFloat<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
 template <>
 inline float toFloatPacked<ocp_e5m2_mxfp8>(uint8_t const* scaleBytes,
                                            uint8_t const* dataBytes,
-                                           size_t         scaleIndex,
-                                           size_t         dataIndex)
+                                           index_t         scaleIndex,
+                                           index_t         dataIndex)
 {
     return toFloat<ocp_e5m2_mxfp8>(scaleBytes, dataBytes, scaleIndex, dataIndex);
 }
 
 template <>
-inline bool isSubnorm<ocp_e5m2_mxfp8>(uint8_t const* dataBytes, size_t dataIndex)
+inline bool isSubnorm<ocp_e5m2_mxfp8>(uint8_t const* dataBytes, index_t dataIndex)
 {
     uint8_t data = *(dataBytes + dataIndex);
     return isSubNormal<uint8_t>(
@@ -191,14 +191,14 @@ inline bool isSubnorm<ocp_e5m2_mxfp8>(uint8_t const* dataBytes, size_t dataIndex
 }
 
 template <>
-inline bool isSubnormPacked<ocp_e5m2_mxfp8>(uint8_t const* dataBytes, size_t dataIndex)
+inline bool isSubnormPacked<ocp_e5m2_mxfp8>(uint8_t const* dataBytes, index_t dataIndex)
 {
     return isSubnorm<ocp_e5m2_mxfp8>(dataBytes, dataIndex);
 }
 
 template <>
 inline void setOne<ocp_e5m2_mxfp8>(
-    uint8_t* scaleBytes, uint8_t* dataBytes, size_t scaleIndex, size_t dataIndex, bool subNormal)
+    uint8_t* scaleBytes, uint8_t* dataBytes, index_t scaleIndex, index_t dataIndex, bool subNormal)
 {
     *(scaleBytes + scaleIndex) = subNormal ? Constants::E8M0_142 : Constants::E8M0_1;
     *(dataBytes + dataIndex)
@@ -208,8 +208,8 @@ inline void setOne<ocp_e5m2_mxfp8>(
 template <>
 inline void setZero<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                     uint8_t* dataBytes,
-                                    size_t   scaleIndex [[maybe_unused]],
-                                    size_t   dataIndex)
+                                    index_t   scaleIndex [[maybe_unused]],
+                                    index_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e5m2_mxfp8::positiveZeroMask;
 }
@@ -217,8 +217,8 @@ inline void setZero<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setNaN<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                    uint8_t* dataBytes,
-                                   size_t   scaleIndex [[maybe_unused]],
-                                   size_t   dataIndex)
+                                   index_t   scaleIndex [[maybe_unused]],
+                                   index_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e5m2_mxfp8::dataNaNMasks[0];
 }
@@ -226,15 +226,15 @@ inline void setNaN<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
 template <>
 inline void setInf<ocp_e5m2_mxfp8>(uint8_t* scaleBytes [[maybe_unused]],
                                    uint8_t* dataBytes,
-                                   size_t   scaleIndex [[maybe_unused]],
-                                   size_t   dataIndex)
+                                   index_t   scaleIndex [[maybe_unused]],
+                                   index_t   dataIndex)
 {
     *(dataBytes + dataIndex) = ocp_e5m2_mxfp8::positiveInfMask;
 }
 
 template <>
 inline void
-    setDataMax<ocp_e5m2_mxfp8>(uint8_t* dataBytes, size_t dataIndex, bool subNormal, bool positive)
+    setDataMax<ocp_e5m2_mxfp8>(uint8_t* dataBytes, index_t dataIndex, bool subNormal, bool positive)
 {
     if(subNormal)
         *(dataBytes + dataIndex) = positive ? ocp_e5m2_mxfp8::dataMaxPositiveSubNormalMask
