@@ -114,7 +114,7 @@ if(MXDATAGENERATOR_BUILD_TESTING)
       test/ocp_e2m1_mxfp4_test.cpp
     )
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        target_compile_options(mxDataGeneratorTests PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-strict-aliasing -Wno-error=strict-aliasing -fsanitize=undefined)
+        target_compile_options(mxDataGeneratorTests PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-strict-aliasing -Wno-error=strict-aliasing)
         target_link_options(mxDataGeneratorTests PRIVATE -fsanitize=undefined)
     endif()
     target_link_libraries(

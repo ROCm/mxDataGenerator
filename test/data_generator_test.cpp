@@ -46,13 +46,13 @@ using DataGeneratorTypes = ::testing::Types<f32,
                                             ocp_e3m2_mxfp6,
                                             ocp_e2m1_mxfp4>;
 
-typedef std::tuple<bool, bool, bool, bool, vector<double>, DataScaling, vector<int>>
+typedef std::tuple<bool, bool, bool, bool, vector<double>, DataScaling, vector<index_t>>
     BoundedTupleType;
-typedef std::tuple<bool, bool, bool, bool, double, DataScaling, vector<int>>
+typedef std::tuple<bool, bool, bool, bool, double, DataScaling, vector<index_t>>
     BoundedAlternatingSignTupleType;
-typedef std::tuple<bool, bool, bool, bool, DataScaling, vector<int>> UnboundedTupleType;
+typedef std::tuple<bool, bool, bool, bool, DataScaling, vector<index_t>> UnboundedTupleType;
 typedef UnboundedTupleType                                           TrigonometricTupleType;
-typedef std::tuple<bool, DataScaling, vector<int>>                   ZerosTupleType;
+typedef std::tuple<bool, DataScaling, vector<index_t>>                   ZerosTupleType;
 typedef ZerosTupleType                                               OnesTupleType;
 typedef ZerosTupleType                                               IdentityTupleType;
 
@@ -72,7 +72,7 @@ const vector<bool> denorm_params = {false, true};
 const vector<DataScaling> scale_params = {Mean};
 
 // block size, size, stride
-const vector<vector<int>> dim_params = {
+const vector<vector<index_t>> dim_params = {
     {5, 16, 10, 10, 1},
     {5, 10, 16, 1, 10},
     {4, 4, 4, 1, 8},
@@ -83,7 +83,7 @@ const vector<vector<int>> dim_params = {
     {2, 10, 2, 2, 4, 2, 1},
 };
 
-const vector<vector<int>> two_dim_params = {
+const vector<vector<index_t>> two_dim_params = {
     {5, 16, 10, 10, 1},
     {5, 10, 16, 1, 10},
     {4, 4, 4, 1, 8},
@@ -126,18 +126,18 @@ const vector<double> max_denorm_params = {getDataMaxSubnorm<f32>(),
                                           getDataMaxSubnorm<ocp_e4m3_mxfp8>(),
                                           getDataMaxSubnorm<ocp_e5m2_mxfp8>()};
 
-void set_block_size_stride(const vector<int>& dims,
-                           int&               block_scale,
-                           vector<int>&       size,
-                           vector<int>&       stride)
+void set_block_size_stride(const vector<index_t>& dims,
+                           index_t&               block_scale,
+                           vector<index_t>&       size,
+                           vector<index_t>&       stride)
 {
     assert(dims.size() % 2 == 1);
 
     block_scale = dims[0];
 
     const auto n = (dims.size() - 1) / 2 + 1;
-    size         = vector<int>(dims.begin() + 1, dims.begin() + n);
-    stride       = vector<int>(dims.begin() + n, dims.end());
+    size         = vector<index_t>(dims.begin() + 1, dims.begin() + n);
+    stride       = vector<index_t>(dims.begin() + n, dims.end());
 }
 
 std::ostream& operator<<(std::ostream& os, const DataGeneratorOptions& opts)
@@ -159,7 +159,7 @@ std::ostream& operator<<(std::ostream& os, const DataGeneratorOptions& opts)
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::vector<int>& vec)
+std::ostream& operator<<(std::ostream& os, const std::vector<index_t>& vec)
 {
 
     os << "{ ";
@@ -176,8 +176,8 @@ class DataGeneratorBoundedTest : public ::TestWithParam<BoundedTupleType>
 {
     void set_options(BoundedTupleType      tup,
                      DataGeneratorOptions& opts,
-                     vector<int>&          size,
-                     vector<int>&          stride)
+                     vector<index_t>&          size,
+                     vector<index_t>&          stride)
     {
         opts.clampToF32  = std::get<0>(tup);
         opts.includeInf  = std::get<1>(tup);
@@ -196,7 +196,7 @@ public:
     void testForDataType(BoundedTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -211,23 +211,27 @@ public:
         const auto ref_float  = dgen.getReferenceFloat();
 
         auto total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
 
-        bool has_nan = false;
-        bool has_inf = false;
-        bool has_sbn = false;
+        const int              num_threads_test
+            = (std::thread::hardware_concurrency() > 32) ? 32 : std::thread::hardware_concurrency();
+
+        vector<bool> has_nan(num_threads_test, false);
+        vector<bool> has_inf(num_threads_test, false);
+        vector<bool> has_sbn(num_threads_test, false);
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        #pragma omp parallel for num_threads(num_threads_test)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
-            int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            index_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -235,7 +239,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const int scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             const auto ref_value = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
@@ -269,19 +273,23 @@ public:
                 EXPECT_TRUE(std::isnan(ref_float[data_i]));
             }
 
-            has_nan = has_nan || isNaNPacked<DataType>(&scale[0], &data[0], scale_i, data_i);
-            has_inf = has_inf || isInfPacked<DataType>(&scale[0], &data[0], scale_i, data_i);
-            has_sbn = has_sbn || isSubnormPacked<DataType>(&data[0], data_i);
+            const auto tid            = omp_get_thread_num();
+            if (isNaNPacked<DataType>(&scale[0], &data[0], scale_i, data_i))
+                has_nan[tid] = true;
+            if (isInfPacked<DataType>(&scale[0], &data[0], scale_i, data_i))
+                has_inf[tid] = true;
+            if (isSubnormPacked<DataType>(&data[0], data_i))
+                has_sbn[tid] = true;
         }
 
         if(opts.includeNaN && DataType::dataInfo.hasNan)
         {
-            EXPECT_TRUE(has_nan);
+            ASSERT_TRUE(std::any_of(has_nan.begin(), has_nan.end(), [](bool v){ return v;}));
         }
 
         if(opts.includeInf && DataType::dataInfo.hasInf)
         {
-            EXPECT_TRUE(has_inf);
+            ASSERT_TRUE(std::any_of(has_inf.begin(), has_inf.end(), [](bool v){ return v;}));
         }
 
         if(opts.forceDenorm && isScaled<DataType>()
@@ -290,7 +298,7 @@ public:
                || (opts.min < -getDataMinSubnorm<DataType>()
                    && opts.max > -getDataMinSubnorm<DataType>())))
         {
-            EXPECT_TRUE(has_sbn);
+            ASSERT_TRUE(std::any_of(has_sbn.begin(), has_sbn.end(), [](bool v){ return v;}));
         }
     }
 };
@@ -301,8 +309,8 @@ class DataGeneratorBoundedAlternatingSignTest
 {
     void set_options(BoundedAlternatingSignTupleType tup,
                      DataGeneratorOptions&           opts,
-                     vector<int>&                    size,
-                     vector<int>&                    stride)
+                     vector<index_t>&                    size,
+                     vector<index_t>&                    stride)
     {
         opts.clampToF32  = std::get<0>(tup);
         opts.includeInf  = std::get<1>(tup);
@@ -320,7 +328,7 @@ public:
     void testForDataType(BoundedAlternatingSignTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -335,7 +343,7 @@ public:
         const auto ref_float  = dgen.getReferenceFloat();
 
         auto total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -345,13 +353,13 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(int i = 0; i < total_size; i++)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
-            int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            index_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -359,7 +367,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const int scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             const auto ref_value = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
@@ -433,8 +441,8 @@ class DataGeneratorUnboundedTest : public ::TestWithParam<UnboundedTupleType>
 {
     void set_options(UnboundedTupleType    tup,
                      DataGeneratorOptions& opts,
-                     vector<int>&          size,
-                     vector<int>&          stride)
+                     vector<index_t>&          size,
+                     vector<index_t>&          stride)
     {
         opts.clampToF32  = std::get<0>(tup);
         opts.includeInf  = std::get<1>(tup);
@@ -450,7 +458,7 @@ public:
     void testForDataType(UnboundedTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -464,8 +472,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        size_t total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        index_t total_size = size[0];
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -475,13 +483,13 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(size_t i = 0; i < total_size; i++)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
-            int data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            index_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -489,7 +497,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const int scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             const auto ref_value = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
@@ -545,8 +553,8 @@ class DataGeneratorTrigonometricTest : public ::TestWithParam<TrigonometricTuple
 {
     void set_options(TrigonometricTupleType tup,
                      DataGeneratorOptions&  opts,
-                     vector<int>&           size,
-                     vector<int>&           stride)
+                     vector<index_t>&           size,
+                     vector<index_t>&           stride)
     {
         opts.clampToF32  = std::get<0>(tup);
         opts.includeInf  = std::get<1>(tup);
@@ -562,7 +570,7 @@ public:
     void testForDataType(TrigonometricTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -576,8 +584,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        size_t total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        index_t total_size = size[0];
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -587,13 +595,13 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(size_t i = 0; i < total_size; i++)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
-            size_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            index_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(size_t j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -601,7 +609,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const size_t scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             const auto ref_value = toDoublePacked<DataType>(&scale[0], &data[0], scale_i, data_i);
@@ -662,8 +670,8 @@ class DataGeneratorZerosTest : public ::TestWithParam<ZerosTupleType>
 {
     void set_options(ZerosTupleType        tup,
                      DataGeneratorOptions& opts,
-                     vector<int>&          size,
-                     vector<int>&          stride)
+                     vector<index_t>&          size,
+                     vector<index_t>&          stride)
     {
         opts.forceDenorm = std::get<0>(tup);
         opts.scaling     = std::get<1>(tup);
@@ -675,7 +683,7 @@ public:
     void testForDataType(ZerosTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -689,20 +697,20 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        size_t total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        index_t total_size = size[0];
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
 
         // check values
-        for(size_t i = 0; i < total_size; i++)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
-            size_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            index_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -710,7 +718,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const size_t scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             EXPECT_TRUE(isZeroPacked<DataType>(&scale[0], &data[0], scale_i, data_i));
@@ -729,8 +737,8 @@ class DataGeneratorOnesTest : public ::TestWithParam<OnesTupleType>
 {
     void set_options(OnesTupleType         tup,
                      DataGeneratorOptions& opts,
-                     vector<int>&          size,
-                     vector<int>&          stride)
+                     vector<index_t>&          size,
+                     vector<index_t>&          stride)
     {
         opts.forceDenorm = std::get<0>(tup);
         opts.scaling     = std::get<1>(tup);
@@ -742,7 +750,7 @@ public:
     void testForDataType(OnesTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -756,8 +764,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        size_t total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        index_t total_size = size[0];
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -765,13 +773,13 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(size_t i = 0; i < total_size; i++)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
-            size_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
+            index_t data_i = (i % size[size.size() - 1]) * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
                 data_i += (tmp % size[j]) * stride[j];
                 tmp /= size[j];
@@ -779,7 +787,7 @@ public:
 
             data_i += tmp * stride[0];
 
-            const size_t scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             EXPECT_TRUE(isOnePacked<DataType>(&scale[0], &data[0], scale_i, data_i));
@@ -805,8 +813,8 @@ class DataGeneratorIdentityTest : public ::TestWithParam<IdentityTupleType>
 {
     void set_options(IdentityTupleType     tup,
                      DataGeneratorOptions& opts,
-                     vector<int>&          size,
-                     vector<int>&          stride)
+                     vector<index_t>&          size,
+                     vector<index_t>&          stride)
     {
         opts.forceDenorm = std::get<0>(tup);
         opts.scaling     = std::get<1>(tup);
@@ -818,7 +826,7 @@ public:
     void testForDataType(IdentityTupleType& params)
     {
         DataGeneratorOptions opts;
-        vector<int>          size, stride;
+        vector<index_t>          size, stride;
 
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
@@ -832,8 +840,8 @@ public:
         const auto ref_double = dgen.getReferenceDouble();
         const auto ref_float  = dgen.getReferenceFloat();
 
-        size_t total_size = size[0];
-        for(size_t i = 1; i < size.size(); i++)
+        index_t total_size = size[0];
+        for(index_t i = 1; i < size.size(); i++)
         {
             total_size *= size[i];
         }
@@ -841,18 +849,18 @@ public:
         bool has_sbn = false;
 
         // check values
-        for(size_t i = 0; i < total_size; i++)
+        for(index_t i = 0; i < total_size; i++)
         {
             // find position
             bool   diag     = true;
-            size_t past_idx = i % size[size.size() - 1];
+            index_t past_idx = i % size[size.size() - 1];
 
-            size_t data_i = past_idx * stride[size.size() - 1];
+            index_t data_i = past_idx * stride[size.size() - 1];
 
             auto tmp = i / size[size.size() - 1];
-            for(int j = size.size() - 2; j > 0; j--)
+            for(index_t j = size.size() - 2; j > 0; j--)
             {
-                size_t curr_idx = (tmp % size[j]);
+                index_t curr_idx = (tmp % size[j]);
                 diag            = diag && (past_idx == curr_idx);
 
                 data_i += past_idx * stride[j];
@@ -864,7 +872,7 @@ public:
             data_i += tmp * stride[0];
             diag = diag && (past_idx == tmp);
 
-            const size_t scale_i = data_i / opts.blockScaling;
+            const index_t scale_i = data_i / opts.blockScaling;
 
             // test
             if(diag)
@@ -897,6 +905,23 @@ TYPED_TEST_SUITE(DataGeneratorOnesTest, DataGeneratorTypes);
 TYPED_TEST_SUITE(DataGeneratorIdentityTest, DataGeneratorTypes);
 
 #define begin_end(container) begin(container), end(container)
+
+TYPED_TEST(DataGeneratorBoundedTest, LargeBuffer)
+{
+    // This test tries to generate a large MxN matrix.
+    index_t M = 65536;
+    index_t N = 65536;
+
+    BoundedTupleType params = {/*clamp*/ false,
+                               /*inf*/ false,
+                               /*nan*/ false,
+                               /*denorm*/ false,
+                               /*min/max*/ {-1.0, 1.0},
+                               /*scale*/ {DataScaling::Mean},
+                               /*dim*/ {{1, M, N, 1, M}}};
+
+    this->testForDataType(params);
+}
 
 TYPED_TEST(DataGeneratorBoundedTest, TestForEachDataType)
 {

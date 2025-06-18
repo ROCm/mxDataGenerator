@@ -26,12 +26,14 @@
 
 #pragma once
 
+#include <cstdint>
 #include <iostream>
 #include <tuple>
 #include <vector>
 
 namespace DGen
 {
+    typedef uint64_t index_t;
 
     template <typename CartesianProductVectorType, typename... Ts>
     auto cartesian_product_helper(CartesianProductVectorType& vec, std::tuple<Ts...> t)
@@ -61,8 +63,8 @@ namespace DGen
 
     struct dimension_iterator
     {
-        const std::vector<int> dimensions;
-        explicit dimension_iterator(std::vector<int> const& dim)
+        const std::vector<index_t> dimensions;
+        explicit dimension_iterator(std::vector<index_t> const& dim)
             : dimensions(dim)
         {
         }
@@ -70,12 +72,12 @@ namespace DGen
         struct iterator
         {
         private:
-            const std::vector<int> dimensions;
-            std::vector<int>       current;
-            std::vector<int>*      curr_ptr;
+            const std::vector<index_t> dimensions;
+            std::vector<index_t>       current;
+            std::vector<index_t>*      curr_ptr;
 
         public:
-            explicit iterator(std::vector<int> const& dim)
+            explicit iterator(std::vector<index_t> const& dim)
                 : dimensions(dim)
                 , current(dim.size(), 0)
                 , curr_ptr(&current)
@@ -98,11 +100,11 @@ namespace DGen
                 std::cout << "\n";
             }
 
-            const std::vector<int>& operator*() const
+            const std::vector<index_t>& operator*() const
             {
                 return *curr_ptr;
             }
-            const std::vector<int>* operator->()
+            const std::vector<index_t>* operator->()
             {
                 return curr_ptr;
             }
@@ -159,9 +161,9 @@ namespace DGen
         }
     };
 
-    inline int get_strided_idx(const std::vector<int>& indices, const std::vector<int>& stride)
+    inline index_t get_strided_idx(const std::vector<index_t>& indices, const std::vector<index_t>& stride)
     {
-        int res = 0;
+        index_t res = 0;
         for(size_t i = 0; i < indices.size(); i++)
         {
             res += indices[i] * stride[i];
