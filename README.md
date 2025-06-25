@@ -1,4 +1,10 @@
-# AMD's Floating Point Data Generator
+# mxDataGenerator
+
+> [!CAUTION]
+> The mxDataGenerator repository is retired, please use the [ROCm/rocm-libraries](https://github.com/ROCm/rocm-libraries) repository
+>
+
+## AMD's Floating Point Data Generator
 This library supports data generation for different floating point formats, as well as conversion instructions between lower precision floating points and single precision floating point.
 
 ## Formats Supported
