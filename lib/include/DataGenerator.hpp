@@ -106,7 +106,7 @@ namespace DGen
 
         uint                   m_seed = 1713573848;
         std::vector<Generator> m_gen;
-        const int              m_num_threads = std::min(32, omp_get_max_threads());
+        const int              m_num_threads = 32;
 
         struct BufferDesc
         {
