@@ -228,7 +228,8 @@ namespace DGen
         // set seed to each generator
         setGenerator(m_num_threads);
 
-        std::cerr << "m_num_threads " << m_num_threads << std::endl;
+        std::cerr << "m_num_threads: " << m_num_threads << std::endl;
+        std::cerr << "omp_get_max_threads: " << omp_get_max_threads() << std::endl;
 
         dispatch_generate_pattern(sorted_size, sorted_stride);
 
