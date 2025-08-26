@@ -463,7 +463,7 @@ namespace DGen
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
         std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        assert(false);
+        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -621,7 +621,7 @@ namespace DGen
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
         std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        assert(false);
+        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -720,7 +720,7 @@ namespace DGen
         const auto     numBlocks       = m_dataDesc.array_size / block_size;
 
         std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        assert(false);
+        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -818,7 +818,7 @@ namespace DGen
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
         std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        assert(false);
+        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -1222,7 +1222,7 @@ namespace DGen
         const auto numClmpBlocks = m_dataDesc.array_size / clmp_block_size;
 
         std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        assert(false);
+        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t clmp_i = 0; clmp_i < numClmpBlocks; clmp_i++)
         {
