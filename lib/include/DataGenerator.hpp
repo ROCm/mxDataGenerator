@@ -228,8 +228,7 @@ namespace DGen
         // set seed to each generator
         setGenerator(m_num_threads);
 
-        std::cerr << "m_num_threads: " << m_num_threads << std::endl;
-        assert(false);
+        std::cerr << "m_num_threads " << m_num_threads << std::endl;
 
         dispatch_generate_pattern(sorted_size, sorted_stride);
 
@@ -462,6 +461,8 @@ namespace DGen
 
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
+        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
+        assert(false);
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -618,6 +619,8 @@ namespace DGen
 
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
+        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
+        assert(false);
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -715,6 +718,8 @@ namespace DGen
         const uint64_t max             = (ONE << m_dataDesc.bit_size) - 1;
         const auto     numBlocks       = m_dataDesc.array_size / block_size;
 
+        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
+        assert(false);
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -811,6 +816,8 @@ namespace DGen
 
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
+        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
+        assert(false);
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
@@ -1213,6 +1220,8 @@ namespace DGen
             = std::clamp(block_size, {SPRINKLE_BLOCK_MIN}, SPRINKLE_BLOCK_MAX);
         const auto numClmpBlocks = m_dataDesc.array_size / clmp_block_size;
 
+        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
+        assert(false);
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t clmp_i = 0; clmp_i < numClmpBlocks; clmp_i++)
         {
