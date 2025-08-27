@@ -462,11 +462,13 @@ namespace DGen
 
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
-        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
+            std::cerr << "generate_pattern_bounded omp_get_num_threads: " << omp_get_num_threads()
+                      << std::endl;
+            throw std::runtime_error("break");
+
             const auto tid            = omp_get_thread_num();
             int32_t    ub_block_scale = 0;
 
@@ -620,11 +622,13 @@ namespace DGen
 
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
-        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
+            std::cerr << "generate_pattern_bounded_alternating_sign omp_get_num_threads: "
+                      << omp_get_num_threads() << std::endl;
+            throw std::runtime_error("break");
+
             int32_t    ub_block_scale = 0;
             int32_t    block_scale    = 0;
             const auto tid            = omp_get_thread_num();
@@ -719,11 +723,13 @@ namespace DGen
         const uint64_t max             = (ONE << m_dataDesc.bit_size) - 1;
         const auto     numBlocks       = m_dataDesc.array_size / block_size;
 
-        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
+            std::cerr << "generate_pattern_unbounded omp_get_num_threads: " << omp_get_num_threads()
+                      << std::endl;
+            throw std::runtime_error("break");
+
             const auto tid = omp_get_thread_num();
 
             std::uniform_int_distribution<uint64_t> data_dist(0, max);
@@ -817,11 +823,13 @@ namespace DGen
 
         const auto numBlocks = m_dataDesc.array_size / block_size;
 
-        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
+            std::cerr << "generate_pattern_trigonometric omp_get_num_threads: "
+                      << omp_get_num_threads() << std::endl;
+            throw std::runtime_error("break");
+
             const auto            tid = omp_get_thread_num();
             std::vector<uint64_t> temp_data((isScaled<DTYPE>() ? block_size : 0), 0);
             std::vector<uint32_t> temp_scale((isScaled<DTYPE>() ? block_size : 0), 0);
@@ -1221,11 +1229,13 @@ namespace DGen
             = std::clamp(block_size, {SPRINKLE_BLOCK_MIN}, SPRINKLE_BLOCK_MAX);
         const auto numClmpBlocks = m_dataDesc.array_size / clmp_block_size;
 
-        std::cerr << "omp_get_num_threads: " << omp_get_num_threads() << std::endl;
-        throw std::runtime_error("break");
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t clmp_i = 0; clmp_i < numClmpBlocks; clmp_i++)
         {
+            std::cerr << "post_sprinkle omp_get_num_threads: " << omp_get_num_threads()
+                      << std::endl;
+            throw std::runtime_error("break");
+
             const auto                      tid = omp_get_thread_num();
             uint8_t                         temp_scale;
             std::uniform_int_distribution<> idx_dist(0, clmp_block_size - 1);
