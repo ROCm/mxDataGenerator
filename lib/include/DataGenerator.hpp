@@ -29,7 +29,9 @@
 #include "dataTypeInfo.hpp"
 #include "data_generation_utils.hpp"
 
+#include <iostream>
 #include <limits>
+#include <sstream>
 #include <thread>
 
 #include <omp.h>
@@ -465,8 +467,9 @@ namespace DGen
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
-            std::cerr << "generate_pattern_bounded omp_get_num_threads: " << omp_get_num_threads()
-                      << std::endl;
+            std::stringstream ss;
+            ss << "generate_pattern_bounded omp_get_num_threads: " << omp_get_num_threads();
+            std::cerr << ss.str() << std::endl;
             throw std::runtime_error("break");
 
             const auto tid            = omp_get_thread_num();
@@ -625,8 +628,10 @@ namespace DGen
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
-            std::cerr << "generate_pattern_bounded_alternating_sign omp_get_num_threads: "
-                      << omp_get_num_threads() << std::endl;
+            std::stringstream ss;
+            ss << "generate_pattern_bounded_alternating_sign omp_get_num_threads: "
+               << omp_get_num_threads();
+            std::cerr << ss.str() << std::endl;
             throw std::runtime_error("break");
 
             int32_t    ub_block_scale = 0;
@@ -726,8 +731,9 @@ namespace DGen
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
-            std::cerr << "generate_pattern_unbounded omp_get_num_threads: " << omp_get_num_threads()
-                      << std::endl;
+            std::stringstream ss;
+            ss << "generate_pattern_unbounded omp_get_num_threads: " << omp_get_num_threads();
+            std::cerr << ss.str() << std::endl;
             throw std::runtime_error("break");
 
             const auto tid = omp_get_thread_num();
@@ -826,8 +832,9 @@ namespace DGen
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t scale_i = 0; scale_i < numBlocks; scale_i++)
         {
-            std::cerr << "generate_pattern_trigonometric omp_get_num_threads: "
-                      << omp_get_num_threads() << std::endl;
+            std::stringstream ss;
+            ss << "generate_pattern_trigonometric omp_get_num_threads: " << omp_get_num_threads();
+            std::cerr << ss.str() << std::endl;
             throw std::runtime_error("break");
 
             const auto            tid = omp_get_thread_num();
@@ -1232,8 +1239,9 @@ namespace DGen
 #pragma omp parallel for num_threads(m_num_threads)
         for(index_t clmp_i = 0; clmp_i < numClmpBlocks; clmp_i++)
         {
-            std::cerr << "post_sprinkle omp_get_num_threads: " << omp_get_num_threads()
-                      << std::endl;
+            std::stringstream ss;
+            ss << "post_sprinkle omp_get_num_threads: " << omp_get_num_threads();
+            std::cerr << ss.str() << std::endl;
             throw std::runtime_error("break");
 
             const auto                      tid = omp_get_thread_num();
