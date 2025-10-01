@@ -57,9 +57,9 @@ namespace DGen
         // ...
     };
 
-    std::string toString(DataPattern const& pattern);
+    inline std::string toString(DataPattern const& pattern);
 
-    std::string toString(DataPattern const& pattern)
+    inline std::string toString(DataPattern const& pattern)
     {
         switch(pattern)
         {
