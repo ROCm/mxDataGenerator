@@ -1040,35 +1040,29 @@ namespace DGen
                 // set sign
                 uint64_t result = value_sign ? (ONE << (dataExponentBits + dataMantissaBits)) : 0;
 
-                // if normal but less than representable range with scale -> return 0
-
-                // within representable range
-                if(value_unbiased_exp >= static_cast<int32_t>(min_exp))
+                int32_t scaled_exp;
+                if(value_unbiased_exp < scaleUnbiasedEMin)
                 {
-                    int32_t scaled_exp;
-                    if(value_unbiased_exp < scaleUnbiasedEMin)
-                    {
-                        scale      = scaleUnbiasedEMin + scaleBias;
-                        scaled_exp = value_unbiased_exp - scaleUnbiasedEMin;
-                    }
-                    else if(value_unbiased_exp < 0)
-                    {
-                        scale      = value_unbiased_exp + scaleBias;
-                        scaled_exp = 0;
-                    }
-                    else
-                    {
-                        scale      = scaleBias;
-                        scaled_exp = value_unbiased_exp;
-                    }
-
-                    // set exponent
-                    const uint32_t result_exp = static_cast<uint32_t>(scaled_exp + dataBias);
-                    result |= (result_exp & ((ONE << dataExponentBits) - 1)) << dataMantissaBits;
-
-                    // set mantissa (round to zero)
-                    result |= value_mantissa >> (F64MANTISSABITS - dataMantissaBits);
+                    scale      = scaleUnbiasedEMin + scaleBias;
+                    scaled_exp = value_unbiased_exp - scaleUnbiasedEMin;
                 }
+                else if(value_unbiased_exp < 0)
+                {
+                    scale      = value_unbiased_exp + scaleBias;
+                    scaled_exp = 0;
+                }
+                else
+                {
+                    scale      = scaleBias;
+                    scaled_exp = value_unbiased_exp;
+                }
+
+                // set exponent
+                const uint32_t result_exp = static_cast<uint32_t>(scaled_exp + dataBias);
+                result |= (result_exp & ((ONE << dataExponentBits) - 1)) << dataMantissaBits;
+
+                // set mantissa (round to zero)
+                result |= value_mantissa >> (F64MANTISSABITS - dataMantissaBits);
 
                 if constexpr(isScaled<DTYPE>())
                 {
