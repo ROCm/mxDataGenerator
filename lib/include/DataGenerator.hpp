@@ -1035,10 +1035,6 @@ namespace DGen
 
                 const int32_t value_unbiased_exp = value_biased_exp - Constants::F64BIAS;
 
-                // value magnitude must be less than 1;
-                if(value_unbiased_exp > 0)
-                    throw std::runtime_error("Internal Error");
-
                 uint32_t scale = scaleBias;
 
                 // set sign
