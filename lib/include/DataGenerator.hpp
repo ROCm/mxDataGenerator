@@ -1040,62 +1040,34 @@ namespace DGen
                 // set sign
                 uint64_t result = value_sign ? (ONE << (dataExponentBits + dataMantissaBits)) : 0;
 
-                // if subnormal -> return 0
-
                 // if normal but less than representable range with scale -> return 0
 
                 // within representable range
                 if(value_unbiased_exp >= static_cast<int32_t>(min_exp))
                 {
-                    // subnormal
-                    if(value_unbiased_exp < scaleUnbiasedEMin + dataUnbiasedEMin)
+                    int32_t scaled_exp;
+                    if(value_unbiased_exp < scaleUnbiasedEMin)
                     {
-                        // set biased scale
-                        scale = scaleUnbiasedEMin + scaleBias;
-
-                        // set exponent -> biased exp = 0
-
-                        // set mantissa (round to zero)
-                        // get bits from (data_info.unBiasedEMin - 1) to (data_info.unBiasedEMin - data_info.mantissaBits)
-                        //  - get bits that fit in mantissa
-                        //  - set implied 1
-                        //  - shift remaining exponent
-                        uint64_t res_mantissa
-                            = value_mantissa >> (F64MANTISSABITS + 1 - dataMantissaBits);
-                        res_mantissa |= ONE << (dataMantissaBits - 1);
-                        res_mantissa
-                            >>= scaleUnbiasedEMin + dataUnbiasedEMin - value_unbiased_exp - 1;
-
-                        result |= res_mantissa;
+                        scale      = scaleUnbiasedEMin + scaleBias;
+                        scaled_exp = value_unbiased_exp - scaleUnbiasedEMin;
+                    }
+                    else if(value_unbiased_exp < 0)
+                    {
+                        scale      = value_unbiased_exp + scaleBias;
+                        scaled_exp = 0;
                     }
                     else
                     {
-                        // set biased scale and adjust exponent s.t. exponent = 0 if possible
-                        int32_t scaled_exp;
-                        if(value_unbiased_exp < scaleUnbiasedEMin)
-                        {
-                            scale      = scaleUnbiasedEMin + scaleBias;
-                            scaled_exp = value_unbiased_exp - scaleUnbiasedEMin;
-                        }
-                        else if(value_unbiased_exp < 0)
-                        {
-                            scale      = value_unbiased_exp + scaleBias;
-                            scaled_exp = 0;
-                        }
-                        else
-                        {
-                            scale      = scaleBias;
-                            scaled_exp = value_unbiased_exp;
-                        }
-
-                        // set exponent
-                        const uint32_t result_exp = static_cast<uint32_t>(scaled_exp + dataBias);
-                        result |= (result_exp & ((ONE << dataExponentBits) - 1))
-                                  << dataMantissaBits;
-
-                        // set mantissa (round to zero)
-                        result |= value_mantissa >> (F64MANTISSABITS - dataMantissaBits);
+                        scale      = scaleBias;
+                        scaled_exp = value_unbiased_exp;
                     }
+
+                    // set exponent
+                    const uint32_t result_exp = static_cast<uint32_t>(scaled_exp + dataBias);
+                    result |= (result_exp & ((ONE << dataExponentBits) - 1)) << dataMantissaBits;
+
+                    // set mantissa (round to zero)
+                    result |= value_mantissa >> (F64MANTISSABITS - dataMantissaBits);
                 }
 
                 if constexpr(isScaled<DTYPE>())
