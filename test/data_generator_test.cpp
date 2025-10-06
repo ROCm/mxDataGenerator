@@ -201,7 +201,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(Bounded{});
+        opts.init_mode = DataInitMode(RawDataInitMode(Bounded{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -805,7 +805,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Zeros;
+        opts.init_mode = DataInitMode(RawDataInitMode(Zeros{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -872,7 +872,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Ones;
+        opts.init_mode = DataInitMode(RawDataInitMode(Ones{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -948,7 +948,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Identity;
+        opts.init_mode = DataInitMode(RawDataInitMode(Identity{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
