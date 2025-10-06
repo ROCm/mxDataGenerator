@@ -50,21 +50,21 @@ namespace DGen
             overload{
                 [&](const RawDataInitMode& raw_mode) {
                     std::visit(
-                        overload{[&](const Bounded& b) { generate_data_bounded(size); },
-                                 [&](const BoundedAlternatingSign& bas) {
+                        overload{[&](const Bounded&) { generate_data_bounded(size); },
+                                 [&](const BoundedAlternatingSign&) {
                                      generate_data_bounded_alternating_sign(size);
                                  },
-                                 [&](const Unbounded& u) { generate_data_unbounded(size); },
-                                 [&](const IdentityScale_NormalData& isnd) {},
-                                 [&](const NormalScale_UniformData& nsud) {},
-                                 [&](const Identity& i) { generate_data_identity(size, stride); },
-                                 [&](const Ones& o) { generate_data_ones(); },
-                                 [&](const Zeros& z) {}},
+                                 [&](const Unbounded&) { generate_data_unbounded(size); },
+                                 [&](const IdentityScale_NormalData&) {},
+                                 [&](const NormalScale_UniformData&) {},
+                                 [&](const Identity&) { generate_data_identity(size, stride); },
+                                 [&](const Ones&) { generate_data_ones(); },
+                                 [&](const Zeros&) {}},
                         raw_mode);
                 },
                 [&](const FloatDataInitMode& float_mode) {
                     std::visit(
-                        overload{[&](const Trigonometric& t) { generate_data_trigonometric(size); },
+                        overload{[&](const Trigonometric&) { generate_data_trigonometric(size); },
                                  [&](const Normal& n) {
                                      generate_data_normal(size, n.mean, n.std_dev);
                                  }},

@@ -201,7 +201,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Bounded;
+        opts.init_mode = DataInitMode(RawDataInitMode(Bounded{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -333,7 +333,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::BoundedAlternatingSign;
+        opts.init_mode = DataInitMode(RawDataInitMode(BoundedAlternatingSign{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -463,7 +463,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Unbounded;
+        opts.init_mode = DataInitMode(RawDataInitMode(Unbounded{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -575,7 +575,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Trigonometric;
+        opts.init_mode = DataInitMode(FloatDataInitMode(Trigonometric{}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -692,7 +692,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.pattern = DataPattern::Normal;
+        opts.init_mode = DataInitMode(FloatDataInitMode(Normal{0.f, 1.f}));
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
