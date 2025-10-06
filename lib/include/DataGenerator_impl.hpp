@@ -30,7 +30,7 @@
 
 namespace DGen
 {
-    std::string toString(DataInitMode const& init_mode)
+    inline std::string toString(DataInitMode const& init_mode)
     {
         return std::visit(
             overload{[](const RawDataInitMode& raw_mode) {
