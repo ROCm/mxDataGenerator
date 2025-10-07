@@ -201,7 +201,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(Bounded{}));
+        opts.initMode = DataInitMode(Bounded{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -333,7 +333,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(BoundedAlternatingSign{}));
+        opts.initMode = DataInitMode(BoundedAlternatingSign{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -463,7 +463,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(Unbounded{}));
+        opts.initMode = DataInitMode(Unbounded{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -575,7 +575,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(FloatDataInitMode(Trigonometric{}));
+        opts.initMode = DataInitMode(TrigonometricFromFloat{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -692,7 +692,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(FloatDataInitMode(Normal{0.f, 1.f}));
+        opts.initMode = DataInitMode(NormalFromFloat{0.f, 1.f});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -805,7 +805,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(Zeros{}));
+        opts.initMode = DataInitMode(Zeros{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -872,7 +872,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(Ones{}));
+        opts.initMode = DataInitMode(Ones{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
@@ -948,7 +948,7 @@ public:
         set_options(params, opts, size, stride);
         std::cout << "testing " << opts << " size=" << size << " stride=" << stride << "\n";
 
-        opts.init_mode = DataInitMode(RawDataInitMode(Identity{}));
+        opts.initMode = DataInitMode(Identity{});
 
         const auto dgen  = DataGenerator<DataType>().generate(size, stride, opts);
         const auto data  = dgen.getDataBytes();
