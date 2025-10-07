@@ -156,7 +156,7 @@ namespace DGen
     {
         std::string toString() const
         {
-            return "Trigonometric";
+            return "TrigonometricFromFloat";
         }
         friend std::ostream& operator<<(std::ostream& os, const TrigonometricFromFloat& t)
         {
@@ -171,7 +171,7 @@ namespace DGen
 
         std::string toString() const
         {
-            return "Normal(" + std::to_string(mean) + ", " + std::to_string(std_dev) + ")";
+            return "NormalFromFloat(" + std::to_string(mean) + ", " + std::to_string(std_dev) + ")";
         }
         friend std::ostream& operator<<(std::ostream& os, const NormalFromFloat& n)
         {
@@ -201,7 +201,13 @@ namespace DGen
 
     inline std::string toString(DataInitMode const& initMode)
     {
-        return std::visit([](const auto& mode) { return mode.toString(); }, initMode);
+        return "DataInitMode("
+               + std::visit([](const auto& mode) { return mode.toString(); }, initMode) + ")";
+    }
+
+    std::ostream& operator<<(std::ostream& os, const DataInitMode& initMode)
+    {
+        os << toString(initMode);
     }
 
     enum DataScaling
