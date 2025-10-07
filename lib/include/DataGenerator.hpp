@@ -207,7 +207,7 @@ namespace DGen
 
     std::ostream& operator<<(std::ostream& os, const DataInitMode& initMode)
     {
-        os << toString(initMode);
+        return os << toString(initMode);
     }
 
     enum DataScaling
